@@ -1,105 +1,128 @@
 #include <stdio.h>
-#include <netdb.h>
-#include <netinet/in.h>
 #include <stdlib.h>
 #include <string.h>
 #include <sys/socket.h>
-#include <sys/types.h>
+#include <netinet/in.h>
+#include <unistd.h>
+
 #define SA struct sockaddr
-void error(char *msg)
-{ //tato funkcia sa vyuziva ked systemove volanie zlyha
-    perror(msg); //vypise spravu o chybe a ukonci program server
-    exit(0);
+#define P 23  // Простое число P (общий параметр для DF)
+#define G 5   // Примитивный корень P (общий параметр для DF)
+
+void error(const char *msg) {
+    perror(msg);
+    exit(1);
 }
-// Function designed for chat between client and server.
-void func(int connfd)
-{
-    int size;
+
+// Функция для преобразования строки в зашифрованную строку (XOR)
+void encryptDecrypt(char *input, char *output, int key) {
+    int len = strlen(input);
+    for (int i = 0; i < len; i++) {
+        output[i] = input[i] ^ key;  // Простейшее XOR шифрование
+    }
+    output[len] = '\0';  // Завершение строки
+}
+
+// Функция для вычисления (base^exp) % mod
+int powerMod(int base, int exp, int mod) {
+    int result = 1;
+    for (int i = 0; i < exp; i++) {
+        result = (result * base) % mod;
+    }
+    return result;
+}
+
+int main(int argc, char *argv[]) {
+    int sockfd, connfd, len, n;
+    struct sockaddr_in servaddr, cli;
     char buffer[256];
-    int n;
-    // infinite loop for chat
+
+    if (argc < 2) {
+        fprintf(stderr, "Usage: %s <port>\n", argv[0]);
+        exit(1);
+    }
+
+    // Создаем сокет
+    sockfd = socket(AF_INET, SOCK_STREAM, 0);
+    if (sockfd < 0) error("Error opening socket");
+    printf("Socket created successfully\n");
+
+    // Инициализация структуры сокета
+    bzero(&servaddr, sizeof(servaddr));
+    int portno = atoi(argv[1]);
+
+    servaddr.sin_family = AF_INET;
+    servaddr.sin_addr.s_addr = htonl(INADDR_ANY);
+    servaddr.sin_port = htons(portno);
+
+    // Привязываем сокет
+    if ((bind(sockfd, (SA*)&servaddr, sizeof(servaddr))) != 0)
+        error("Socket bind failed");
+    printf("Socket successfully binded\n");
+
+    // Прослушивание входящих соединений
+    if ((listen(sockfd, 5)) != 0)
+        error("Listen failed");
+    printf("Server listening...\n");
+
+    len = sizeof(cli);
+    connfd = accept(sockfd, (SA*)&cli, &len);
+    if (connfd < 0)
+        error("Server accept failed");
+    printf("Client connected\n");
+
+    // --- Обмен ключами по Диффи-Хеллману ---
+    int private_key = 15;  // Приватный ключ сервера (секретное число)
+    int public_key = powerMod(G, private_key, P);  // Публичный ключ сервера
+
+    // Отправляем публичный ключ клиенту
+    n = write(connfd, &public_key, sizeof(public_key));
+    if (n < 0) error("Error sending public key");
+    printf("Sent public key: %d\n", public_key);
+
+    // Получаем публичный ключ клиента
+    int client_public_key;
+    n = read(connfd, &client_public_key, sizeof(client_public_key));
+    if (n < 0) error("Error receiving public key from client");
+    printf("Received client's public key: %d\n", client_public_key);
+
+    // Вычисляем общий секретный ключ
+    int shared_secret = powerMod(client_public_key, private_key, P);
+    printf("Shared secret key: %d\n", shared_secret);
+
+    // --- Основной цикл общения с клиентом ---
     while (1) {
         bzero(buffer, 256);
 
-        // read the message from client and copy it in buffer
-        read(connfd, buffer, sizeof(buffer));
-        size=strlen(buffer);    
-        // print buffer which contains the client contents
-        printf("From client: %sTo client : \nBit: %d\n", buffer, size);
-        bzero(buffer, 256);
-        n = 0;
-        // copy server message in the buffer
-        fgets(buffer, 256, stdin);
-        if (buffer[n]!='\n') {
-            n = write(connfd, buffer, strlen(buffer));
-        }
+        // Чтение сообщения от клиента
+        n = read(connfd, buffer, 255);
+        if (n < 0) error("Error reading from client");
 
-   
-        // if msg contains "Exit" then server exit and chat ended.
-        if (strncmp("exit", buffer, 4) == 0) {
-            printf("\nServer Exit...\n");
+        // Расшифровываем сообщение от клиента
+        char decrypted_msg[256];
+        encryptDecrypt(buffer, decrypted_msg, shared_secret);
+        printf("Client: %s\n", decrypted_msg);
+
+        // Если получено "Bye", завершаем соединение
+        if (strncmp(decrypted_msg, "Bye", 3) == 0) {
+            printf("Client has disconnected.\n");
             break;
         }
-    }
-}
-   
-// Driver function
-int main(int argc, char *argv[])
-{
-    int sockfd, connfd, len, portno;
-    struct sockaddr_in servaddr, cli;
-    if (argc < 2) {
-        fprintf(stderr,"ERROR, no port provided\n");
-        exit(1);
-    }
-    // socket create and verification
-    sockfd = socket(AF_INET, SOCK_STREAM, 0); // domain, type, protocol
-    if (sockfd == -1) {
-        error("Socket creation failed:");
-    }
-    else
-        printf("Socket successfully created..\n");
-    bzero(&servaddr, sizeof(servaddr)); //like memset
-   
-    // assign IP, PORT
-    portno = atoi(argv[1]);// making from char=>int
-    servaddr.sin_family = AF_INET;
-    servaddr.sin_addr.s_addr = htonl(INADDR_ANY); // convert value between host and network byte
-    servaddr.sin_port = htons(portno); // unsigned short integer netshort from Network byte order
-   
-    // Binding newly created socket to given IP and verification
-    if ((bind(sockfd, (SA*)&servaddr, sizeof(servaddr))) != 0) {
-        error("Socket bind failed:");
-    }
-    else
-        printf("Socket successfully binded..\n");
-   
-    // Now server is ready to listen and verification
-    if ((listen(sockfd, 5)) != 0) {
-        error("Listen failed:");
-    }
-    else
-        printf("Server listening..\n");
-    len = sizeof(cli);
-    printf("Write 'exit' to close conection or press 'Enter' to waiting client\n");
-char buff[100];
-char str[100]="exit\n";
-    fgets(buff, 100, stdin);
-    if (strcmp(buff,str)==0){
-        exit(0);
-    }
-    // Accept the data packet from client and verification
-    connfd = accept(sockfd, (SA*)&cli, &len);
 
-    if (connfd < 0) {
-        error("Server accept failed:");
+        // Ответ от сервера
+        printf("Me: ");
+        bzero(buffer, 256);
+        fgets(buffer, 255, stdin);
+
+        // Шифруем сообщение перед отправкой
+        char encrypted_msg[256];
+        encryptDecrypt(buffer, encrypted_msg, shared_secret);
+
+        n = write(connfd, encrypted_msg, strlen(encrypted_msg));
+        if (n < 0) error("Error writing to client");
     }
-    else
-        printf("Server accept the client:\n");
-   
-    // Function for chatting between client and server
-    func(connfd);
-   
-    // After chatting close the socket
+
+    close(connfd);
     close(sockfd);
+    return 0;
 }
