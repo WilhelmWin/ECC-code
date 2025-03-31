@@ -32,13 +32,6 @@
  * 10. encrypt() - Encrypts the plaintext using the current state and the shared secret key.
  * 11. decrypt() - Decrypts the ciphertext using the current state and the shared secret key.
  *
- * Usage:
- * 1. Compile the program with: gcc -o cryptographic_program cryptographic_program.c
- * 2. Run the program with appropriate input data and a shared secret key.
- * 3. The program handles both encryption and decryption processes based on the current state.
- *
- * Known Issues:
- * - This is a basic cryptographic implementation and may require optimizations or security improvements.
  */
 
 #include "ASCON.h"
