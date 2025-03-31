@@ -2,43 +2,50 @@
  * Author: Vladyslav Holovko
  * Date: 16.12.2024
  *
- * This is a simple client-side application that uses elliptic curve cryptography (ECC) for secure communication with a server.
+ * This is a simple client-side application that uses elliptic curve 
+ * cryptography (ECC) for secure communication with a server.
  * The program follows these steps:
  * 1. It generates a private key for the client.
  * 2. It connects to a server over TCP.
- * 3. It performs key exchange using Diffie-Hellman to compute a shared secret.
+ * 3. It performs key exchange using Diffie-Hellman to compute a shared 
+ *    secret.
  * 4. It encrypts and decrypts messages using the shared secret.
  * 5. It allows secure communication with the server.
  *
- * The encryption and decryption process is done using a custom algorithm (possibly Ascon or similar).
+ * The encryption and decryption process is done using a custom algorithm 
+ * (possibly Ascon or similar).
  */
 
 /*
 Date: 31.03.2025
 /*
- * Program: Secure Client-Server Communication using Elliptic Curve Cryptography (ECC)
+ * Program: Secure Client-Server Communication using Elliptic Curve 
+ * Cryptography (ECC)
  *
  * Description:
- * This program implements a client that establishes a secure communication with a server 
- * using Elliptic Curve Cryptography (ECC) and the Diffie-Hellman key exchange protocol.
- * The client generates a private key, calculates the corresponding public key, and 
- * exchanges public keys with the server. The client and server then compute a shared secret 
- * using the Diffie-Hellman method, which is used to encrypt and decrypt messages exchanged 
- * between them.
+ * This program implements a client that establishes a secure communication 
+ * with a server using Elliptic Curve Cryptography (ECC) and the Diffie-Hellman 
+ * key exchange protocol. The client generates a private key, calculates the 
+ * corresponding public key, and exchanges public keys with the server. The 
+ * client and server then compute a shared secret using the Diffie-Hellman 
+ * method, which is used to encrypt and decrypt messages exchanged between them.
  * 
- * The client sends an encrypted message to the server and receives an encrypted message 
- * back. Both messages are encrypted and decrypted using the shared secret. The client 
- * continues to communicate with the server until one of them sends a pre-determined "end word", 
- * which terminates the connection.
+ * The client sends an encrypted message to the server and receives an 
+ * encrypted message back. Both messages are encrypted and decrypted using 
+ * the shared secret. The client continues to communicate with the server 
+ * until one of them sends a pre-determined "end word", which terminates the 
+ * connection.
  * 
- * The program includes platform-specific code for socket programming, supporting both 
- * Windows and Linux/Unix systems.
+ * The program includes platform-specific code for socket programming, 
+ * supporting both Windows and Linux/Unix systems.
  *
  * Key Features:
  * - ECC-based Diffie-Hellman key exchange for secure communication.
  * - Symmetric encryption/decryption of messages using the shared secret.
- * - Platform-independent socket communication (supports both Windows and Linux).
- * - End word mechanism to gracefully close the connection from either the client or server.
+ * - Platform-independent socket communication (supports both Windows and 
+ *    Linux).
+ * - End word mechanism to gracefully close the connection from either the 
+ *    client or server.
  * 
  * Libraries Used:
  * - "ECC.h" for elliptic curve cryptography operations.
@@ -54,12 +61,13 @@ Date: 31.03.2025
  * 1. The client generates a random private key using ECC.
  * 2. The client computes its public key from the private key.
  * 3. The client connects to the server using a socket.
- * 4. The client sends its public key to the server and receives the server's public key.
+ * 4. The client sends its public key to the server and receives the server's 
+ *    public key.
  * 5. Both the client and server compute a shared secret using Diffie-Hellman.
- * 6. Messages are encrypted with the shared secret before being sent and decrypted after 
- *    being received.
- * 7. The client and server can send and receive messages securely until one of them sends 
- *    the respective "end word" to terminate the communication.
+ * 6. Messages are encrypted with the shared secret before being sent and 
+ *    decrypted after being received.
+ * 7. The client and server can send and receive messages securely until one 
+ *    of them sends the respective "end word" to terminate the communication.
  *
  * Platform Dependencies:
  * - Windows: Requires the "ws2_32.lib" library for socket communication.
@@ -72,9 +80,10 @@ Date: 31.03.2025
  *    - On Linux: ./client <hostname> <port>
  * 
  * Notes:
- * - Make sure the server is running and listening on the specified port before starting the client.
- * - The encryption method assumes both the client and server have successfully established 
- *   the shared secret key using Diffie-Hellman.
+ * - Make sure the server is running and listening on the specified port 
+ *    before starting the client.
+ * - The encryption method assumes both the client and server have successfully 
+ *   established the shared secret key using Diffie-Hellman.
  *
  */
 
@@ -88,7 +97,7 @@ Date: 31.03.2025
 #ifdef _WIN32
 #include <winsock2.h>
 #ifdef _MSC_VER
-#pragma comment(lib, "ws2_32.lib")  // Link with ws2_32.lib for Windows socket functions
+#pragma comment(lib, "ws2_32.lib")  // Link with ws2_32.lib for Windows socket 
 #endif
 #else
 #include <sys/socket.h>
@@ -122,7 +131,8 @@ int main(int argc, char *argv[]) {
         exit(0);
     }
 
-    // Generate a random private key for the client using elliptic curve cryptography (ECC)
+    // Generate a random private key for the client using elliptic curve 
+    // cryptography (ECC)
     generate_private_key(private_key);
 
     // Print the generated private key (in hexadecimal format)
@@ -150,7 +160,8 @@ int main(int argc, char *argv[]) {
     // Setup the server's address structure
     memset((char *)&serv_addr, 0, sizeof(serv_addr));
     serv_addr.sin_family = AF_INET;
-    memcpy((char *)&serv_addr.sin_addr.s_addr, (char *)server->h_addr, server->h_length);
+    memcpy((char *)&serv_addr.sin_addr.s_addr, (char *)server->h_addr, 
+           server->h_length);
     serv_addr.sin_port = htons(portno);
 
     // Connect to the server
@@ -160,8 +171,10 @@ int main(int argc, char *argv[]) {
     printf("Connection successful\n");
 
     // --- Key exchange using Diffie-Hellman ---
-    unsigned char public_key[32];  // Client's public key (generated from private key)
-    crypto_scalarmult_base(public_key, private_key);  // Generate the public key using elliptic curve
+    unsigned char public_key[32];  // Client's public key (generated from 
+                                   // private key)
+    crypto_scalarmult_base(public_key, private_key);  // Generate the public 
+                                                     // key using elliptic curve
     
     // Send the public key to the server
     int n = send(sockfd, (char *)public_key, sizeof(public_key), 0);
@@ -181,12 +194,18 @@ int main(int argc, char *argv[]) {
     print_hex(server_public_key, 32);
 
     // Compute the shared secret key using Diffie-Hellman key exchange
-    unsigned char shared_secret[32];  // The shared secret derived from both keys
-    crypto_scalarmult(shared_secret, private_key, server_public_key);  // Compute the shared secret
+    unsigned char shared_secret[32];  // The shared secret derived from both 
+                                      // keys
+    crypto_scalarmult(shared_secret, private_key, server_public_key);  // 
+                                                                      // Compute 
+                                                                      // the 
+                                                                      // shared 
+                                                                      // secret
     printf("Shared secret key: ");
     print_hex(shared_secret, 32);
 
-    // Perform any necessary end protocol initialization (could be server/client specific)
+    // Perform any necessary end protocol initialization (could be 
+    // server/client specific)
     end_client(sockfd, shared_secret, end_word_client, end_word_server);
 
     // --- Main communication loop with the server ---
@@ -203,11 +222,16 @@ int main(int argc, char *argv[]) {
             buffer[len - 1] = '\0';
         }
 
-        // Encrypt the message before sending it to the server using the shared secret
+        // Encrypt the message before sending it to the server using the 
+        // shared secret
         char encrypted_msg[256];
-        encryptDecrypt(buffer, encrypted_msg, shared_secret);  // Use the entire shared secret for encryption
+        encryptDecrypt(buffer, encrypted_msg, shared_secret);  // Use the 
+                                                              // entire shared 
+                                                              // secret for 
+                                                              // encryption
         
-        // Send the encrypted message to the server (platform-dependent send method)
+        // Send the encrypted message to the server (platform-dependent send 
+        // method)
 #ifdef _WIN32
         n = send(sockfd, encrypted_msg, strlen(encrypted_msg), 0);
 #elif defined(__linux__)
@@ -221,7 +245,8 @@ int main(int argc, char *argv[]) {
             break;
         }
 
-        memset(buffer, 0, 256);  // Clear the buffer to receive the server's response
+        memset(buffer, 0, 256);  // Clear the buffer to receive the server's 
+                                 // response
         
         // Receive the encrypted response from the server
 #ifdef _WIN32
@@ -233,7 +258,10 @@ int main(int argc, char *argv[]) {
 
         // Decrypt the server's message using the shared secret
         char decrypted_msg[256];
-        encryptDecrypt(buffer, decrypted_msg, shared_secret);  // Use the entire shared secret for decryption
+        encryptDecrypt(buffer, decrypted_msg, shared_secret);  // Use the 
+                                                              // entire shared 
+                                                              // secret for 
+                                                              // decryption
         printf("Server: %s\n", decrypted_msg);
 
         // Check if the server wants to disconnect
@@ -252,4 +280,3 @@ int main(int argc, char *argv[]) {
 #endif
     return 0;
 }
-
