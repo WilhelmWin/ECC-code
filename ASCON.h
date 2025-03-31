@@ -31,14 +31,6 @@
  * - Bitwise rotations, S-box transformations, and linear mixing
  * - Authenticated encryption with associated data (AEAD)
  *
- * Usage:
- * 1. Include this header file in your C project to access the cryptographic functions.
- * 2. Link with the corresponding implementation file (`ascon.c`) to compile and run the algorithm.
- * 3. Use the provided functions to initialize, encrypt, decrypt, and finalize the encryption process.
- *
- * Known Issues:
- * - This is a basic implementation of the Ascon-like algorithm and may require
- *   optimizations or additional security features for production use.
  */
 
 #ifndef ASCON_H
