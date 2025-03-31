@@ -15,8 +15,69 @@
 
 /*
 Date: 31.03.2025
+/*
+ * Program: Secure Client-Server Communication using Elliptic Curve Cryptography (ECC)
+ *
+ * Description:
+ * This program implements a client that establishes a secure communication with a server 
+ * using Elliptic Curve Cryptography (ECC) and the Diffie-Hellman key exchange protocol.
+ * The client generates a private key, calculates the corresponding public key, and 
+ * exchanges public keys with the server. The client and server then compute a shared secret 
+ * using the Diffie-Hellman method, which is used to encrypt and decrypt messages exchanged 
+ * between them.
+ * 
+ * The client sends an encrypted message to the server and receives an encrypted message 
+ * back. Both messages are encrypted and decrypted using the shared secret. The client 
+ * continues to communicate with the server until one of them sends a pre-determined "end word", 
+ * which terminates the connection.
+ * 
+ * The program includes platform-specific code for socket programming, supporting both 
+ * Windows and Linux/Unix systems.
+ *
+ * Key Features:
+ * - ECC-based Diffie-Hellman key exchange for secure communication.
+ * - Symmetric encryption/decryption of messages using the shared secret.
+ * - Platform-independent socket communication (supports both Windows and Linux).
+ * - End word mechanism to gracefully close the connection from either the client or server.
+ * 
+ * Libraries Used:
+ * - "ECC.h" for elliptic curve cryptography operations.
+ * - Platform-specific libraries for socket programming:
+ *    - Windows: "winsock2.h"
+ *    - Linux/Unix: "sys/socket.h", "netinet/in.h", "arpa/inet.h", "unistd.h"
+ *
+ * Arguments:
+ * - hostname: The server's hostname or IP address.
+ * - port: The port number the server is listening on.
+ *
+ * How it Works:
+ * 1. The client generates a random private key using ECC.
+ * 2. The client computes its public key from the private key.
+ * 3. The client connects to the server using a socket.
+ * 4. The client sends its public key to the server and receives the server's public key.
+ * 5. Both the client and server compute a shared secret using Diffie-Hellman.
+ * 6. Messages are encrypted with the shared secret before being sent and decrypted after 
+ *    being received.
+ * 7. The client and server can send and receive messages securely until one of them sends 
+ *    the respective "end word" to terminate the communication.
+ *
+ * Platform Dependencies:
+ * - Windows: Requires the "ws2_32.lib" library for socket communication.
+ * - Linux/Unix: Uses standard socket libraries such as "sys/socket.h".
+ *
+ * Example Usage:
+ * 1. Compile the program using the appropriate compiler for your platform.
+ * 2. Run the client with the following command:
+ *    - On Windows: client.exe <hostname> <port>
+ *    - On Linux: ./client <hostname> <port>
+ * 
+ * Notes:
+ * - Make sure the server is running and listening on the specified port before starting the client.
+ * - The encryption method assumes both the client and server have successfully established 
+ *   the shared secret key using Diffie-Hellman.
+ *
+ */
 
-Add ifdef _WIN32 and _linux_ and cleaning
 
 */
 #include "common.h"
