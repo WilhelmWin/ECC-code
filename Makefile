@@ -1,39 +1,61 @@
-# Makefile для компиляции клиента и сервера
-
-# Компилятор
+# Compiler and flags
 CC = gcc
+CFLAGS = -Wall -Wextra -O2
 
-# Опции компилятора
-CFLAGS = -Wall -g
+# Target executable names
+SERVER_TARGET = server
+CLIENT_TARGET = client
+LIBRARIES = libkeygen.a libecc.a libascon.a libcommon.a
 
-# Имя исполняемых файлов
-CLIENT = client
-SERVER = server
+# Source files for each component
+SOURCES = keygen2.c ECC.c ASCON.c drng.c common.c
+SERVER_SOURCES = server.c
+CLIENT_SOURCES = client.c
+OBJECTS = $(SOURCES:.c=.o)
+SERVER_OBJECTS = $(SERVER_SOURCES:.c=.o)
+CLIENT_OBJECTS = $(CLIENT_SOURCES:.c=.o)
 
-# Исходные файлы
-CLIENT_SRC = client_tuke.c
-SERVER_SRC = server2.c
+# Header files
+HEADERS = keygen2.h ECC.h drng.h ASCON.h common.h variables.h
 
-# Цели по умолчанию
-all: $(CLIENT) $(SERVER)
+# Default rule: build everything
+all: $(LIBRARIES) $(SERVER_TARGET) $(CLIENT_TARGET)
 
-# Правило для компиляции клиента
-$(CLIENT): $(CLIENT_SRC)
-	$(CC) $(CFLAGS) -o $(CLIENT) $(CLIENT_SRC)
+# Rule to build static libraries
+libkeygen.a: keygen2.o drng.o
+	ar rcs $@ $^
 
-# Правило для компиляции сервера
-$(SERVER): $(SERVER_SRC)
-	$(CC) $(CFLAGS) -o $(SERVER) $(SERVER_SRC)
+libecc.a: ECC.o
+	ar rcs $@ $^
 
-# Очистка
+libascon.a: ASCON.o
+	ar rcs $@ $^
+
+libcommon.a: common.o ASCON.o
+	ar rcs $@ $^
+
+# Rule to build the server executable
+$(SERVER_TARGET): $(SERVER_OBJECTS) $(OBJECTS) $(LIBRARIES)
+	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
+
+# Rule to build the client executable
+$(CLIENT_TARGET): $(CLIENT_OBJECTS) $(OBJECTS) $(LIBRARIES)
+	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
+
+# Rule to compile object files from C sources
+%.o: %.c $(HEADERS)
+	$(CC) $(CFLAGS) -c $< -o $@
+
+# Clean rule to remove all compiled files
 clean:
-	rm -f $(CLIENT) $(SERVER)
+	$(RM) $(OBJECTS) $(SERVER_OBJECTS) $(CLIENT_OBJECTS) $(LIBRARIES) $(SERVER_TARGET) $(CLIENT_TARGET) $(SERVER_TARGET).exe $(CLIENT_TARGET).exe
 
-# Правило для запуска сервера и клиента в разных окнах терминала
-run:
-	@echo "Запуск сервера в новом окне..."
-	xfce4-terminal -e "./$(SERVER) 8010; exec bash" &  # Запускаем сервер на порту 8010
-	@echo "Запуск клиента в новом окне..."
-	xfce4-terminal -e "./$(CLIENT) localhost 8010; exec bash"  # Запускаем клиента, подключаясь к серверу
+# Distclean rule to remove all generated files, including backups
+distclean: clean
+	$(RM) *~ *.bak
 
-.PHONY: all clean run
+# Windows-specific flags
+ifeq ($(OS), Windows_NT)
+    LDFLAGS = -lws2_32
+    RM = del /f /q
+endif
