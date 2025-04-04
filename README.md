@@ -56,64 +56,66 @@ This project uses a **Makefile** that supports both Linux and Windows platforms.
 ```bash
 make
 ```
-To build only the server or client:
+## To build only the server or client:
 
-bash
-Копировать
+```bash
 make server
 make client
-Windows Compilation (MinGW or similar)
-Make sure make and gcc are installed, then run:
+```
+### Windows Compilation (MinGW or similar)
+Make sure `make` and `gcc` are installed, then run:
 
-bash
-Копировать
+```bash
 make
-💡 On Windows, the Makefile automatically links with ws2_32 for Winsock support.
+```
+💡 On Windows, the Makefile automatically links with `ws2_32` for Winsock support.
 
-Cleaning Build Artifacts
+### Cleaning Build Artifacts
 To clean compiled files:
 
-bash
-Копировать
+```bash
 make clean
+```
 To remove all build files including backups:
 
-bash
-Копировать
+```bash
 make distclean
+```
+
+### How to use?
 Running the Applications
-Running the Server
-bash
-Копировать
+##Running the Server
+```bash
 ./server <port_number>
+```
 The server will start and listen for incoming client connections on the specified port.
 
-Running the Client
-bash
-Копировать
+##Running the Client
+```bash
 ./client <server_ip_address> <port_number>
+```
 The client connects to the server and begins secure communication using the shared secret key.
 
-Example Communication Flow
-Server generates its ECC private and public key.
+###Example Communication Flow
+- Server generates its ECC private and public key.
 
-Client generates its ECC key pair.
+- Client generates its ECC key pair.
 
-Both exchange public keys.
+- Both exchange public keys.
 
-Using Diffie-Hellman, they compute a shared secret.
+- Using Diffie-Hellman, they compute a shared secret.
 
-Messages are encrypted/decrypted using this shared secret.
+- Messages are encrypted/decrypted using this shared secret.
 
-Communication continues until the predefined "end word" is sent to terminate.
+- Communication continues until the predefined "end word" is sent to terminate.
 
-Troubleshooting
-Ensure both server and client use the same port.
+###Troubleshooting
+- Ensure both server and client use the same port.
 
-Make sure public keys are exchanged before sending encrypted messages.
+- Make sure public keys are exchanged before sending encrypted messages.
 
-Check firewall, IP address, and network configuration.
+- Check firewall, IP address, and network configuration.
 
-On Windows, verify that Winsock is initialized properly.
+- On Windows, verify that Winsock is initialized properly.
 
-Use make clean and recompile if there are build issues.
+- Use make clean and recompile if there are build issues.
