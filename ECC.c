@@ -1,9 +1,11 @@
 /*
-* Author: Vladyslav Holovko
+ * Author: Vladyslav Holovko
  * Date: 16.12.2024
  *
- * This source code implements elliptic curve operations such as scalar multiplication, inversion, addition, subtraction, and multiplication
- * over a finite field. These operations are commonly used in elliptic curve cryptography (ECC).
+ * This source code implements elliptic curve operations such as scalar
+ * multiplication, inversion, addition, subtraction, and multiplication
+ * over a finite field. These operations are commonly used in elliptic
+ * curve cryptography (ECC).
  *
  * The main operations provided in this code include:
  * - `add`: Adds two elements of the elliptic curve field.
@@ -11,19 +13,23 @@
  * - `mul`: Multiplies two elements of the elliptic curve field.
  * - `inv`: Computes the multiplicative inverse of an element.
  * - `sel`: Selects one of two values based on a binary flag.
- * - `mainloop`: Performs scalar multiplication of a point on the elliptic curve using the specified base point and scalar.
+ * - `mainloop`: Performs scalar multiplication of a point on the elliptic
+ *    curve using the specified base point and scalar.
  * - `unpack`: Converts a byte array into a field element.
  * - `pack`: Converts a field element into a byte array.
- * - `crypto_scalarmult`: Computes the scalar multiplication of an elliptic curve point.
- * - `crypto_scalarmult_base`: Computes the scalar multiplication of the base point with the given scalar.
+ * - `crypto_scalarmult`: Computes the scalar multiplication of an elliptic
+ *    curve point.
+ * - `crypto_scalarmult_base`: Computes the scalar multiplication of the
+ *    base point with the given scalar.
  *
- * The base point used in the scalar multiplication is defined as `base[32] = {9}`.
- * The code operates on 16-word (256-bit) elements over the finite field.
+ * The base point used in the scalar multiplication is defined as
+ * `base[32] = {9}`. The code operates on 16-word (256-bit) elements over
+ * the finite field.
  *
- * The functions use a combination of elliptic curve operations and optimizations like
- * conditional swaps (`sel`), modular reductions, and squaring of elements (`sq`) to achieve efficient scalar multiplication.
+ * The functions use a combination of elliptic curve operations and
+ * optimizations like conditional swaps (`sel`), modular reductions, and
+ * squaring of elements (`sq`) to achieve efficient scalar multiplication.
  */
-
 
 #include "ECC.h"
 #include "variables.h"
