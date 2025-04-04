@@ -4,56 +4,69 @@
 
 # Date: 31.03.2025
 # Description:
-# This Makefile is used to build a secure client-server communication system
-# using elliptic curve cryptography (ECC) and Diffie-Hellman key exchange 
-# protocol. The system consists of a server and client application that 
-# communicate securely over a network. The key exchange process is based 
-# on ECC, and messages exchanged between the server and client are encrypted
-# using a shared secret derived from Diffie-Hellman.
+# This Makefile is used to build a secure client-server communication 
+# system using elliptic curve cryptography (ECC) and Diffie-Hellman 
+# key exchange protocol. The system consists of a server and client 
+# application that communicate securely over a network. The key exchange 
+# process is based on ECC, and messages exchanged between the server 
+# and client are encrypted using a shared secret derived from Diffie-
+# Hellman.
 
 # Components:
 # - The server and client executables.
-# - Static libraries for key generation, ECC operations, encryption, and common utilities.
-# - Platform-specific code for cross-platform compatibility (Windows and Linux/Unix).
+# - Static libraries for key generation, ECC operations, encryption, and 
+# common utilities.
+# - Platform-specific code for cross-platform compatibility (Windows and 
+# Linux/Unix).
 #
-# This Makefile supports both Windows and Linux/Unix platforms by automatically
-# adjusting the compilation flags and linking with the appropriate libraries.
+# This Makefile supports both Windows and Linux/Unix platforms by 
+# automatically adjusting the compilation flags and linking with the 
+# appropriate libraries.
 
 # Key Features:
 # - Static libraries for ECC, key generation, and encryption.
 # - Cross-platform support for both Windows and Linux.
-# - Platform-specific socket communication (Winsock for Windows and standard Unix sockets for Linux).
+# - Platform-specific socket communication (Winsock for Windows and 
+# standard Unix sockets for Linux).
 # - Modular structure for server, client, and cryptographic components.
 
 # Targets:
-# - `all`: Builds the server and client executables along with the required static libraries.
-# - `libkeygen.a`: Builds the static library for key generation.
-# - `libecc.a`: Builds the static library for elliptic curve cryptography (ECC) operations.
-# - `libascon.a`: Builds the static library for encryption-related operations.
-# - `libcommon.a`: Builds the static library for common utilities (e.g., print functions, error handling).
-# - `server`: Builds the server executable.
-# - `client`: Builds the client executable.
-# - `clean`: Removes all compiled object files, libraries, and executables.
-# - `distclean`: Removes all generated files, including backups and temporary files.
+# - all: Builds the server and client executables along with the required 
+# static libraries.
+# - libkeygen.a: Builds the static library for key generation.
+# - libecc.a: Builds the static library for elliptic curve cryptography 
+# (ECC) operations.
+# - libascon.a: Builds the static library for encryption-related operations.
+# - libcommon.a: Builds the static library for common utilities (e.g., 
+# print functions, error handling).
+# - server: Builds the server executable.
+# - client: Builds the client executable.
+# - clean: Removes all compiled object files, libraries, and executables.
+# - distclean: Removes all generated files, including backups and 
+# temporary files.
 
 # Compiler:
 # - GCC (GNU Compiler Collection) is used for compiling the C source files.
 
 # Flags:
-# - `-Wall`: Enables most warnings.
-# - `-Wextra`: Enables additional warnings.
-# - `-O2`: Optimizes the code for speed.
-# - Windows-specific flag `-lws2_32` for linking with the Winsock library (on Windows).
+# - -Wall: Enables most warnings.
+# - -Wextra: Enables additional warnings.
+# - -O2: Optimizes the code for speed.
+# - Windows-specific flag -lws2_32 for linking with the Winsock library 
+# (on Windows).
 
 # Usage:
-# 1. Compile the project using the `make` command.
-# 2. Build the server with `make server` and the client with `make client`.
+# 1. Compile the project using the make command.
+# 2. Build the server with make server and the client with make client.
 # 3. Run the server and client to establish a secure communication.
-# 4. Use `make clean` to remove all compiled files, and `make distclean` to remove backups as well.
+# 4. Use make clean to remove all compiled files, and make distclean to 
+# remove backups as well.
 
 # Platform-Specific Notes:
-# - Windows: Requires the `ws2_32.lib` library for socket communication and uses Winsock for networking.
-# - Linux/Unix: Uses standard socket libraries like `sys/socket.h` for networking.
+# - Windows: Requires the ws2_32.lib library for socket communication 
+# and uses Winsock for networking.
+# - Linux/Unix: Uses standard socket libraries like sys/socket.h for 
+# networking.
 
 #===============================================================================
 # Compiler and flags
@@ -68,13 +81,15 @@ CFLAGS = -Wall -Wextra -O2  # Enable most warnings and optimization
 
 SERVER_TARGET = server  # Define the server target executable
 CLIENT_TARGET = client  # Define the client target executable
-LIBRARIES = libkeygen.a libecc.a libascon.a libcommon.a  # List of static libraries
+LIBRARIES = libkeygen.a libecc.a libascon.a libcommon.a  # List of static 
+# libraries
 
 #===============================================================================
 # Source files for each component
 #===============================================================================
 
-SOURCES = keygen2.c ECC.c ASCON.c drng.c common.c  # Source files for cryptography and common operations
+SOURCES = keygen2.c ECC.c ASCON.c drng.c common.c  # Source files for 
+# cryptography and common operations
 SERVER_SOURCES = server.c  # Source file for the server
 CLIENT_SOURCES = client.c  # Source file for the client
 OBJECTS = $(SOURCES:.c=.o)  # Object files for common components
@@ -85,7 +100,8 @@ CLIENT_OBJECTS = $(CLIENT_SOURCES:.c=.o)  # Object files for the client
 # Header files
 #===============================================================================
 
-HEADERS = keygen2.h ECC.h drng.h ASCON.h common.h variables.h  # Header files for the components
+HEADERS = keygen2.h ECC.h drng.h ASCON.h common.h variables.h  # Header 
+# files for the components
 
 #===============================================================================
 # Default rule: Build everything
@@ -135,7 +151,9 @@ $(CLIENT_TARGET): $(CLIENT_OBJECTS) $(OBJECTS) $(LIBRARIES)
 #===============================================================================
 
 clean:
-	$(RM) $(OBJECTS) $(SERVER_OBJECTS) $(CLIENT_OBJECTS) $(LIBRARIES) $(SERVER_TARGET) $(CLIENT_TARGET) $(SERVER_TARGET).exe $(CLIENT_TARGET).exe
+	$(RM) $(OBJECTS) $(SERVER_OBJECTS) $(CLIENT_OBJECTS) $(LIBRARIES) 
+	$(SERVER_TARGET) $(CLIENT_TARGET) $(SERVER_TARGET).exe 
+	$(CLIENT_TARGET).exe
 
 #===============================================================================
 # Distclean rule to remove all generated files, including backups
