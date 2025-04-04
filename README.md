@@ -51,7 +51,7 @@ This project uses a **Makefile** that supports both Linux and Windows platforms.
   - `make clean`: Removes object files and executables
   - `make distclean`: Removes all generated and backup files
 
-### Linux/Unix Compilation
+## Linux/Unix Compilation
 
 ```bash
 make
@@ -70,7 +70,8 @@ make
 ```
 💡 On Windows, the Makefile automatically links with `ws2_32` for Winsock support.
 
-### Cleaning Build Artifacts
+## Cleaning Build Artifacts
+
 To clean compiled files:
 
 ```bash
@@ -83,14 +84,18 @@ make distclean
 ```
 
 ### How to use?
+
 Running the Applications
+
 ##Running the Server
+
 ```bash
 ./server <port_number>
 ```
 The server will start and listen for incoming client connections on the specified port.
 
 ##Running the Client
+
 ```bash
 ./client <server_ip_address> <port_number>
 ```
