@@ -126,3 +126,9 @@ The client connects to the server and begins secure communication using the shar
 - On Windows, verify that Winsock is initialized properly.
 
 - Use `make clean` and recompile if there are build issues.
+
+## How Interaction Looks
+
+![How Interaction Looks](/images/img1.png)
+
+![How Interaction Looks](/images/img2.png)
