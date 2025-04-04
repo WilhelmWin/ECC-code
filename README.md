@@ -135,6 +135,6 @@ The client connects to the server and begins secure communication using the shar
 
 
 
-## The Final Word or the Problem of the Enigma Cipher
+## The Final Word or the Problem or "Enigma Problem"
 
 The code implements a "final word" function, where communication between the server and client is terminated using a special word. In the early stages, this idea seemed sound, but upon further analysis, the main problem was identified. If this final word, even in its encrypted form, is intercepted by a third party, it could be used to attempt a forced termination of the server or client. The primary issue lies in the insufficient protection of this word in the current implementation. If someone learns or already knows the word, they can intentionally terminate communication between the server and client, representing a significant vulnerability. Despite this, this part of the code has been left for further study, as it illustrates an important security issue and raises questions about protecting key words in encryption systems and communication protocols.
