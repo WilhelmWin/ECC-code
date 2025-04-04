@@ -88,7 +88,7 @@ Date: 31.03.2025
  */
 
 
-*/
+
 #include "common.h"
 #include "variables.h"
 #include "ECC.h"       // Include library for elliptic curve operations
