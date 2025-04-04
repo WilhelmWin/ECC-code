@@ -55,7 +55,7 @@ This project uses a **Makefile** that supports both Linux and Windows platforms.
 
 ```bash
 make
-
+```
 To build only the server or client:
 
 bash
