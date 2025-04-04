@@ -2,7 +2,7 @@
 
 ## Overview
 
-This project demonstrates secure communication between a server and a client using **Elliptic Curve Cryptography (ECC)** and **Diffie-Hellman** key exchange. The server and client establish a shared secret using Diffie-Hellman, which is then used for message encryption and decryption. The communication is conducted over a TCP/IP connection, ensuring confidentiality and integrity of the data exchanged.
+Based on the available information, study and utilize cryptographic algorithms for key exchange using the elliptic curve C25519, which are implemented in the compact cryptographic library TweetNaCl. Design, implement, and test secure communication for a client-server configuration in both Linux and Windows environments, where the cryptographic key exchange is realized using functions from the TweetNaCl library. Choose an appropriate symmetric encryption algorithm for encrypting the communication. Perform experiments using the C language and the GCC compiler for the Windows and Linux operating systems, and verify the functionality of the implemented solution across different operating systems. Also, prepare a set of demonstration applications and appropriate documentation on key exchange using the C25519 curve.
 
 ## Key Features
 
