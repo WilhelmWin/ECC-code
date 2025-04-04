@@ -3,28 +3,35 @@
  * Date: 16.12.2024
  *
  * Description:
- * This header file defines the interface for the Ascon-like encryption algorithm, which
- * is a symmetric block cipher designed for secure encryption and decryption of data.
- * The algorithm uses a combination of S-box and linear transformations, and supports
- * authenticated encryption with associated data.
+ * This header file defines the interface for the Ascon-like encryption
+ * algorithm, which is a symmetric block cipher designed for secure
+ * encryption and decryption of data. The algorithm uses a combination
+ * of S-box and linear transformations, and supports authenticated
+ * encryption with associated data.
  *
  * The main cryptographic functions include:
  * 1. `print_state()` - Prints the current state of the encryption process.
  * 2. `rotate()` - Performs a bitwise rotation on a 64-bit value.
- * 3. `add_constant()` - Adds a constant to the state based on the round index.
+ * 3. `add_constant()` - Adds a constant to the state based on the round
+ *    index.
  * 4. `sbox()` - Applies a non-linear S-box transformation to the state.
  * 5. `linear()` - Applies a linear transformation to the state.
- * 6. `p()` - Performs the full P-transformation, which includes constant addition,
- *    S-box application, and linear transformation.
+ * 6. `p()` - Performs the full P-transformation, which includes constant
+ *    addition, S-box application, and linear transformation.
  * 7. `initialization()` - Initializes the state with a given key.
- * 8. `associated_data()` - Processes associated data for authenticated encryption.
- * 9. `finalization()` - Finalizes the encryption or decryption process with the key.
- * 10. `encrypt()` - Encrypts plaintext into ciphertext using the current state.
- * 11. `decrypt()` - Decrypts ciphertext back into plaintext using the current state.
+ * 8. `associated_data()` - Processes associated data for authenticated
+ *    encryption.
+ * 9. `finalization()` - Finalizes the encryption or decryption process
+ *    with the key.
+ * 10. `encrypt()` - Encrypts plaintext into ciphertext using the current
+ *     state.
+ * 11. `decrypt()` - Decrypts ciphertext back into plaintext using the
+ *     current state.
  *
- * This header file defines the necessary data types, constants, and function declarations
- * to work with the Ascon-like encryption algorithm. The algorithm is based on 64-bit
- * block operations and is intended for use in secure communication protocols.
+ * This header file defines the necessary data types, constants, and
+ * function declarations to work with the Ascon-like encryption algorithm.
+ * The algorithm is based on 64-bit block operations and is intended for
+ * use in secure communication protocols.
  *
  * Key Concepts:
  * - Symmetric encryption using Ascon-like block cipher
@@ -61,7 +68,8 @@ void sbox(bit64 x[5]);
 // Linear transformation function for mixing the state
 void linear(bit64 state[5]);
 
-// Function to apply the full P transformation (constant addition, S-box, and linear)
+// Function to apply the full P transformation (constant addition, S-box,
+// and linear)
 void p(bit64 state[5], int a);
 
 // Initialization function to prepare the state with a given key
@@ -74,9 +82,12 @@ void associated_data(bit64 state[5], int length, bit64 associated_data_text[]);
 void finalization(bit64 state[5], bit64 key[2]);
 
 // Encrypt function to convert plaintext into ciphertext
-void encrypt(bit64 state[5], int length, bit64 plaintext[], bit64 ciphertext[], unsigned char shared_secret[32]);
+void encrypt(bit64 state[5], int length, bit64 plaintext[], bit64 ciphertext[],
+             unsigned char shared_secret[32]);
 
 // Decrypt function to convert ciphertext back into plaintext
-void decrypt(bit64 state[5], int length, bit64 plaintext[], bit64 ciphertext[], unsigned char shared_secret[32]);
+void decrypt(bit64 state[5], int length, bit64 plaintext[], bit64 ciphertext[],
+             unsigned char shared_secret[32]);
 
 #endif // ASCON_H
+
