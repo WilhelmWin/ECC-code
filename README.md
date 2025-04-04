@@ -115,7 +115,7 @@ The client connects to the server and begins secure communication using the shar
 
 - Communication continues until the predefined "end word" is sent to terminate.
 
-### Troubleshooting
+## Troubleshooting
 
 - Ensure both server and client use the same port.
 
