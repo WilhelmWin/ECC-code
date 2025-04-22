@@ -1,0 +1,35 @@
+# Объектные файлы
+*.o
+
+# Статические библиотеки
+*.a
+
+# Исполняемые файлы (Linux/Windows)
+client
+server
+main
+a.out
+*.exe
+
+# Резервные файлы редакторов
+*~
+*.swp
+*.swo
+*.bak
+
+# Настройки IDE
+.vscode/
+.idea/
+
+# Каталоги сборки
+/build/
+/bin/
+/obj/
+
+# Логи
+*.log
+
+# CMake и прочие временные файлы
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
