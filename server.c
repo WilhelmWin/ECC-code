@@ -120,28 +120,64 @@
     #include <unistd.h>
 #endif
 
-int main(int argc, char *argv[]) {
-    int sockfd, newsockfd, portno;
-    socklen_t clilen;  // Use int instead of socklen_t for Windows compatibility
-    struct sockaddr_in serv_addr, cli_addr;
+// Структура для хранения всех общих переменных
+typedef struct {
+    int portno;
+    int sockfd;
+    struct sockaddr_in serv_addr;
+    struct hostent *server;
+
     unsigned char buffer[256];
     unsigned char bufferlen;
     unsigned char private_key[32];
 
     unsigned char shared_secret[32];
-    unsigned char decrypted_msg[256];         // буфер под расшифровку
+    unsigned char decrypted_msg[256];  // Буфер для расшифровки
     unsigned long long decrypted_msglen;
 
-    unsigned char *nsec = NULL;                   // если не используешь
-    unsigned char encrypted_msg[256];     // указатель на шифротекст
-    unsigned long long encrypted_msglen;    // длина шифротекста
+    unsigned char *nsec;  // Если не используется, можно оставлять NULL
+    unsigned char encrypted_msg[256]; // Шифротекст
+    unsigned long long encrypted_msglen; // Длина шифротекста
 
-    const unsigned char *ad = NULL;               // если не используешь AD
-    unsigned long long adlen = 0;
+    const unsigned char *ad; // Если не используется AD
+    unsigned long long adlen;
 
-  const unsigned char npub[16] = "simple_nonce_123";  // 16 байт
+    unsigned char npub[16]; // 16-байтный nonce
+    struct sockaddr_in cli_addr;  // Client address
+    socklen_t clilen;  // Length of client address
+    int newsockfd;  // Socket for the accepted connection
+} ClientServerContext;
+
+// Инициализация структуры
+void initializeContext(ClientServerContext *ctx) {
+    ctx->portno = 0;
+    ctx->sockfd = 0;
+    memset(&ctx->serv_addr, 0, sizeof(ctx->serv_addr));
+    ctx->server = NULL;
+
+    memset(ctx->buffer, 0, sizeof(ctx->buffer));
+    ctx->bufferlen = 0;
+    memset(ctx->private_key, 0, sizeof(ctx->private_key));
+
+    memset(ctx->shared_secret, 0, sizeof(ctx->shared_secret));
+    memset(ctx->decrypted_msg, 0, sizeof(ctx->decrypted_msg));
+    ctx->decrypted_msglen = 0;
+
+    ctx->nsec = NULL;
+    memset(ctx->encrypted_msg, 0, sizeof(ctx->encrypted_msg));
+    ctx->encrypted_msglen = 0;
+
+    ctx->ad = NULL;
+    ctx->adlen = 0;
+
+    memcpy(ctx->npub, "simple_nonce_123", 16);
+}
 
 
+
+int main(int argc, char *argv[]) {
+    ClientServerContext ctx;
+    initializeContext(&ctx);
 
     // Platform-specific socket initialization for Windows
     #ifdef _WIN32
@@ -162,76 +198,76 @@ int main(int argc, char *argv[]) {
         exit(0);
     }
 
-    portno = atoi(argv[1]);
+    ctx.portno = atoi(argv[1]);
 
     // Generate random private key for server
-    generate_private_key(private_key);
+    generate_private_key(ctx.private_key);
 
     // Print the generated private key
     printf("Generated private key for server: ");
-    print_hex(private_key, 32);
+    print_hex(ctx.private_key, 32);
 
     // Create socket
     #ifdef _WIN32
-        sockfd = socket(AF_INET, SOCK_STREAM, 0);
-        if ((unsigned long long)sockfd == (unsigned long long)INVALID_SOCKET)
+        ctx.sockfd = socket(AF_INET, SOCK_STREAM, 0);
+        if ((unsigned long long)ctx.sockfd == (unsigned long long)INVALID_SOCKET)
         {
             error("ERROR opening socket");
             WSACleanup();  // Clean up Winsock before exiting
             exit(1);
         }
     #else
-        sockfd = socket(AF_INET, SOCK_STREAM, 0);
-        if (sockfd < 0) {
+        ctx.sockfd = socket(AF_INET, SOCK_STREAM, 0);
+        if (ctx.sockfd < 0) {
             error("ERROR opening socket");
         }
     #endif
 
     // Prepare server address structure
-    memset((char *)&serv_addr, 0, sizeof(serv_addr));
-    serv_addr.sin_family = AF_INET;
-    serv_addr.sin_addr.s_addr = INADDR_ANY;
-    serv_addr.sin_port = htons(portno);
+    memset((char *)&ctx.serv_addr, 0, sizeof(ctx.serv_addr));
+    ctx.serv_addr.sin_family = AF_INET;
+    ctx.serv_addr.sin_addr.s_addr = INADDR_ANY;
+    ctx.serv_addr.sin_port = htons(ctx.portno);
 
     // Bind socket to address
     #ifdef _WIN32
-        if (bind(sockfd, (struct sockaddr *)&serv_addr, sizeof(serv_addr)) == SOCKET_ERROR) {
+        if (bind(ctx.sockfd, (struct sockaddr *)&ctx.serv_addr, sizeof(ctx.serv_addr)) == SOCKET_ERROR) {
             error("ERROR on binding");
             WSACleanup();  // Clean up Winsock before exiting
             exit(1);
         }
     #else
-        if (bind(sockfd, (struct sockaddr *)&serv_addr, sizeof(serv_addr)) < 0) {
+        if (bind(ctx.sockfd, (struct sockaddr *)&ctx.serv_addr, sizeof(ctx.serv_addr)) < 0) {
             error("ERROR on binding");
         }
     #endif
 
     // Listen for incoming connections
     #ifdef _WIN32
-        if (listen(sockfd, 5) == SOCKET_ERROR) {
+        if (listen(ctx.sockfd, 5) == SOCKET_ERROR) {
             error("ERROR on listen");
             WSACleanup();  // Clean up Winsock before exiting
             exit(1);
         }
     #else
-        if (listen(sockfd, 5) < 0) {
+        if (listen(ctx.sockfd, 5) < 0) {
             error("ERROR on listen");
         }
     #endif
-     clilen = sizeof(cli_addr);
 
     // Accept connection from client
+    ctx.clilen = sizeof(ctx.cli_addr);
     #ifdef _WIN32
-        newsockfd = accept(sockfd, (struct sockaddr *)&cli_addr, &clilen);
-        if ((unsigned long long)newsockfd == (unsigned long long)INVALID_SOCKET)
+        ctx.newsockfd = accept(ctx.sockfd, (struct sockaddr *)&ctx.cli_addr, &ctx.clilen);
+        if ((unsigned long long)ctx.newsockfd == (unsigned long long)INVALID_SOCKET)
         {
             error("ERROR on accept");
             WSACleanup();  // Clean up Winsock before exiting
             exit(1);
         }
     #else
-        newsockfd = accept(sockfd, (struct sockaddr *)&cli_addr, &clilen);
-        if (newsockfd < 0) {
+        ctx.newsockfd = accept(ctx.sockfd, (struct sockaddr *)&ctx.cli_addr, &ctx.clilen);
+        if (ctx.newsockfd < 0) {
             error("ERROR on accept");
         }
     #endif
@@ -239,17 +275,17 @@ int main(int argc, char *argv[]) {
 
     // --- Key exchange using Diffie-Hellman ---
     unsigned char public_key[32];
-    crypto_scalarmult_base(public_key, private_key);  // Generate server public key
+    crypto_scalarmult_base(public_key, ctx.private_key);  // Generate server public key
 
     // Send public key to client
-    int n = send(newsockfd, (char *)public_key, sizeof(public_key), 0);
+    int n = send(ctx.newsockfd, (char *)public_key, sizeof(public_key), 0);
     if (n < 0) {
         error("Error sending public key to client");
     }
 
     // Receive client's public key
     unsigned char client_public_key[32];
-    n = recv(newsockfd, (char *)client_public_key, sizeof(client_public_key), 0);
+    n = recv(ctx.newsockfd, (char *)client_public_key, sizeof(client_public_key), 0);
     if (n < 0) {
         error("Error receiving public key from client");
     }
@@ -259,81 +295,75 @@ int main(int argc, char *argv[]) {
     print_hex(client_public_key, 32);
 
     // Calculate shared secret key
-    crypto_scalarmult(shared_secret, private_key, client_public_key);
+    crypto_scalarmult(ctx.shared_secret, ctx.private_key, client_public_key);
     printf("Shared secret key: ");
-    print_hex(shared_secret, 32);
-
-
+    print_hex(ctx.shared_secret, 32);
 
     // --- Main communication loop with client ---
     while (1) {
         // Чтение зашифрованного сообщения от клиента
-        memset(encrypted_msg, 0, sizeof(encrypted_msg));
+        memset(ctx.encrypted_msg, 0, sizeof(ctx.encrypted_msg));
 #ifdef _WIN32
-        n = recv(newsockfd, encrypted_msg, sizeof(encrypted_msg), 0);
+        n = recv(ctx.newsockfd, ctx.encrypted_msg, sizeof(ctx.encrypted_msg), 0);
 #else
-        n = read(newsockfd, encrypted_msg, sizeof(encrypted_msg));
+        n = read(ctx.newsockfd, ctx.encrypted_msg, sizeof(ctx.encrypted_msg));
 #endif
         if (n < 0) error("Error reading from client");
-        printf("Encrypted massage from Client: %s\n", encrypted_msg);
-        encrypted_msglen = n;
+        printf("Encrypted message from Client: %s\n", ctx.encrypted_msg);
+        ctx.encrypted_msglen = n;
 
         // Расшифровка
-        if (crypto_aead_decrypt(decrypted_msg, &decrypted_msglen,
-                                nsec,
-                                encrypted_msg, encrypted_msglen,
-                                ad, adlen,
-                                npub, shared_secret) != 0) {
-            fprintf(stderr, "Ошибка при расшифровке\n");
+        if (crypto_aead_decrypt(ctx.decrypted_msg, &ctx.decrypted_msglen,
+                                ctx.nsec,
+                                ctx.encrypted_msg, ctx.encrypted_msglen,
+                                ctx.ad, ctx.adlen,
+                                ctx.npub, ctx.shared_secret) != 0) {
+            fprintf(stderr, "Decryption error\n");
             return 1;
-                                }
+        }
 
-        decrypted_msg[decrypted_msglen] = '\0';
-        printf("Client: %s\n", decrypted_msg);
+        ctx.decrypted_msg[ctx.decrypted_msglen] = '\0';
+        printf("Client: %s\n", ctx.decrypted_msg);
 
         // Ответ сервера
         printf("Me: ");
-        memset(buffer, 0, sizeof(buffer));
-        if (fgets((char *)buffer, sizeof(buffer), stdin) == NULL) {
+        memset(ctx.buffer, 0, sizeof(ctx.buffer));
+        if (fgets((char *)ctx.buffer, sizeof(ctx.buffer), stdin) == NULL) {
             error("Error reading input");
         }
 
-        bufferlen = strlen((char *)buffer);
+        ctx.bufferlen = strlen((char *)ctx.buffer);
 
-        if (bufferlen > 0 && buffer[bufferlen - 1] == '\n') {
-            buffer[bufferlen - 1] = '\0';
+        if (ctx.bufferlen > 0 && ctx.buffer[ctx.bufferlen - 1] == '\n') {
+           ctx.buffer[ctx.bufferlen - 1] = '\0';
         }
 
-        bufferlen = strlen((char *)buffer);
+        ctx.bufferlen = strlen((char *)ctx.buffer);
 
-
-        if (crypto_aead_encrypt(encrypted_msg, &encrypted_msglen,
-                                (unsigned char *)buffer, bufferlen,
-                                ad, adlen, nsec, npub, shared_secret) != 0) {
-            fprintf(stderr, "Ошибка при шифровании\n");
+        if (crypto_aead_encrypt(ctx.encrypted_msg, &ctx.encrypted_msglen,
+                                (unsigned char *)ctx.buffer, ctx.bufferlen,
+                                ctx.ad, ctx.adlen, ctx.nsec, ctx.npub, ctx.shared_secret) != 0) {
+            fprintf(stderr, "Encryption error\n");
             return 1;
-                                }
+        }
 
 #ifdef _WIN32
-        n = send(newsockfd, encrypted_msg, encrypted_msglen, 0);
+        n = send(ctx.newsockfd, ctx.encrypted_msg, ctx.encrypted_msglen, 0);
 #else
-        n = write(newsockfd, encrypted_msg, encrypted_msglen);
+        n = write(ctx.newsockfd, ctx.encrypted_msg, ctx.encrypted_msglen);
 #endif
         if (n < 0) error("Error writing to client");
     }
 
-
     // Close sockets
     #ifdef _WIN32
-        closesocket(newsockfd);
-        closesocket(sockfd);
+        closesocket(ctx.newsockfd);
+        closesocket(ctx.sockfd);
         WSACleanup();  // Clean up Winsock
     #else
-        close(newsockfd);
-        close(sockfd);
+        close(ctx.newsockfd);
+        close(ctx.sockfd);
     #endif
 
     return 0;
 }
-
-
