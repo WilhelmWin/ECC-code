@@ -18,6 +18,7 @@
 
 /*
 Date: 31.03.2025
+*/
 /*
  * Program: Secure Client-Server Communication using Elliptic Curve 
  * Cryptography (ECC)
@@ -122,7 +123,7 @@ int main(int argc, char *argv[]) {
     unsigned long long decrypted_msglen;
 
     unsigned char *nsec = NULL;                   // если не используешь
-    const unsigned char encrypted_msg[256];     // указатель на шифротекст
+    unsigned char encrypted_msg[256];     // указатель на шифротекст
     unsigned long long encrypted_msglen;    // длина шифротекста
 
     const unsigned char *ad = NULL;               // если не используешь AD
@@ -260,7 +261,8 @@ int main(int argc, char *argv[]) {
         n = read(sockfd, encrypted_msg, sizeof(encrypted_msg));
 #endif
         if (n < 0) error("Error reading from server");
-printf("Encrypted massage from Server: %s\n", &encrypted_msg);
+        printf("Encrypted message from Server: %s\n", encrypted_msg);
+
         encrypted_msglen = n;  // Сохраняем фактическую длину принятых данных
 
         if (crypto_aead_decrypt(decrypted_msg, &decrypted_msglen,

@@ -90,7 +90,7 @@
 
 typedef unsigned char uch;
 
-void error(const char *msg);
+void error(char *msg);
 
 void print_hex(uch *data, int length);
 

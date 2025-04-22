@@ -121,7 +121,25 @@
 #endif
 
 int main(int argc, char *argv[]) {
+    int sockfd, newsockfd, portno;
+    socklen_t clilen;  // Use int instead of socklen_t for Windows compatibility
+    struct sockaddr_in serv_addr, cli_addr;
+    unsigned char buffer[256];
+    unsigned char bufferlen;
+    unsigned char private_key[32];
 
+    unsigned char shared_secret[32];
+    unsigned char decrypted_msg[256];         // буфер под расшифровку
+    unsigned long long decrypted_msglen;
+
+    unsigned char *nsec = NULL;                   // если не используешь
+    unsigned char encrypted_msg[256];     // указатель на шифротекст
+    unsigned long long encrypted_msglen;    // длина шифротекста
+
+    const unsigned char *ad = NULL;               // если не используешь AD
+    unsigned long long adlen = 0;
+
+  const unsigned char npub[16] = "simple_nonce_123";  // 16 байт
 
 
 
@@ -200,7 +218,7 @@ int main(int argc, char *argv[]) {
             error("ERROR on listen");
         }
     #endif
-    clilen = sizeof(cli_addr);
+     clilen = sizeof(cli_addr);
 
     // Accept connection from client
     #ifdef _WIN32
@@ -257,7 +275,7 @@ int main(int argc, char *argv[]) {
         n = read(newsockfd, encrypted_msg, sizeof(encrypted_msg));
 #endif
         if (n < 0) error("Error reading from client");
-        printf("Encrypted massage from Client: %s\n", &encrypted_msg);
+        printf("Encrypted massage from Client: %s\n", encrypted_msg);
         encrypted_msglen = n;
 
         // Расшифровка
@@ -280,12 +298,14 @@ int main(int argc, char *argv[]) {
             error("Error reading input");
         }
 
-        bufferlen = strlen(buffer);
+        bufferlen = strlen((char *)buffer);
+
         if (bufferlen > 0 && buffer[bufferlen - 1] == '\n') {
             buffer[bufferlen - 1] = '\0';
         }
 
-        bufferlen = strlen(buffer);
+        bufferlen = strlen((char *)buffer);
+
 
         if (crypto_aead_encrypt(encrypted_msg, &encrypted_msglen,
                                 (unsigned char *)buffer, bufferlen,
@@ -315,4 +335,5 @@ int main(int argc, char *argv[]) {
 
     return 0;
 }
+
 

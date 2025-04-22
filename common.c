@@ -49,7 +49,7 @@
 #include "keygen2.h"    // Include key generator
 
 // Function to handle errors
-void error(const char *msg) {
+void error(char *msg) {
     perror(msg);
     exit(1);
 }
