@@ -72,101 +72,110 @@
 # Compiler and flags
 #===============================================================================
 
-CC = gcc  # Set the compiler to GCC
-CFLAGS = -Wall -Wextra -O2  # Enable most warnings and optimization
+CC = gcc
+CFLAGS = -Wall -Wextra -O2
 
 #===============================================================================
 # Target executable names
 #===============================================================================
 
-SERVER_TARGET = server  # Define the server target executable
-CLIENT_TARGET = client  # Define the client target executable
-LIBRARIES = libkeygen.a libecc.a libascon.a libcommon.a  # List of static 
-# libraries
+SERVER_TARGET = server
+CLIENT_TARGET = client
 
 #===============================================================================
-# Source files for each component
+# Directories
 #===============================================================================
 
-SOURCES = keygen2.c ECC.c ASCON.c drng.c common.c  # Source files for 
-# cryptography and common operations
-SERVER_SOURCES = server.c  # Source file for the server
-CLIENT_SOURCES = client.c  # Source file for the client
-OBJECTS = $(SOURCES:.c=.o)  # Object files for common components
-SERVER_OBJECTS = $(SERVER_SOURCES:.c=.o)  # Object files for the server
-CLIENT_OBJECTS = $(CLIENT_SOURCES:.c=.o)  # Object files for the client
+ASCON_DIR = ASCON
 
 #===============================================================================
-# Header files
+# Source and object files
 #===============================================================================
 
-HEADERS = keygen2.h ECC.h drng.h ASCON.h common.h variables.h  # Header 
-# files for the components
+KEYGEN_SRC = keygen2.c drng.c
+KEYGEN_OBJ = keygen2.o drng.o
+
+ECC_SRC = ECC.c
+ECC_OBJ = ECC.o
+
+COMMON_SRC = common.c
+COMMON_OBJ = common.o
+
+ASCON_SRC = $(ASCON_DIR)/aead.c $(ASCON_DIR)/printstate.c
+ASCON_OBJ = $(ASCON_SRC:.c=.o)
+
+SERVER_SRC = server.c
+SERVER_OBJ = $(SERVER_SRC:.c=.o)
+
+CLIENT_SRC = client.c
+CLIENT_OBJ = $(CLIENT_SRC:.c=.o)
 
 #===============================================================================
-# Default rule: Build everything
+# Libraries
 #===============================================================================
 
-all: $(LIBRARIES) $(SERVER_TARGET) $(CLIENT_TARGET)  # Build all the targets
+LIBKEYGEN = libkeygen.a
+LIBECC = libecc.a
+LIBASCON = libascon.a
+LIBCOMMON = libcommon.a
+LIBRARIES = $(LIBKEYGEN) $(LIBECC) $(LIBASCON) $(LIBCOMMON)
 
 #===============================================================================
-# Rule to build static libraries
+# Default rule
 #===============================================================================
 
-libkeygen.a: keygen2.o drng.o
+all: $(LIBRARIES) $(SERVER_TARGET) $(CLIENT_TARGET)
+
+#===============================================================================
+# Static libraries
+#===============================================================================
+
+$(LIBKEYGEN): $(KEYGEN_OBJ)
 	ar rcs $@ $^
 
-libecc.a: ECC.o
+$(LIBECC): $(ECC_OBJ)
 	ar rcs $@ $^
 
-libascon.a: ASCON.o
+$(LIBASCON): $(ASCON_OBJ)
 	ar rcs $@ $^
 
-libcommon.a: common.o ASCON.o
+$(LIBCOMMON): $(COMMON_OBJ)
 	ar rcs $@ $^
 
 #===============================================================================
-# Rule to build the server executable
+# Executables
 #===============================================================================
 
-$(SERVER_TARGET): $(SERVER_OBJECTS) $(OBJECTS) $(LIBRARIES)
+$(SERVER_TARGET): $(SERVER_OBJ) $(LIBRARIES)
+	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
+
+$(CLIENT_TARGET): $(CLIENT_OBJ) $(LIBRARIES)
 	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
 
 #===============================================================================
-# Rule to build the client executable
+# Pattern rule for object files
 #===============================================================================
 
-$(CLIENT_TARGET): $(CLIENT_OBJECTS) $(OBJECTS) $(LIBRARIES)
-	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
-
-#===============================================================================
-# Rule to compile object files from C sources
-#===============================================================================
-
-%.o: %.c $(HEADERS)
+%.o: %.c
 	$(CC) $(CFLAGS) -c $< -o $@
 
 #===============================================================================
-# Clean rule to remove all compiled files
+# Clean rules
 #===============================================================================
 
 clean:
-	$(RM) $(OBJECTS) $(SERVER_OBJECTS) $(CLIENT_OBJECTS) $(LIBRARIES) 
-	$(SERVER_TARGET) $(CLIENT_TARGET) $(SERVER_TARGET).exe 
-	$(CLIENT_TARGET).exe
-
-#===============================================================================
-# Distclean rule to remove all generated files, including backups
-#===============================================================================
+	$(RM) -f *.o $(ASCON_DIR)/*.o $(LIBRARIES) $(SERVER_TARGET) $(CLIENT_TARGET) *.exe
 
 distclean: clean
-	$(RM) *~ *.bak
+	$(RM) -f *~ *.bak
 
 #===============================================================================
-# Windows-specific flags
+# Windows-specific settings
 #===============================================================================
 
 ifeq ($(OS), Windows_NT)
-    LDFLAGS = -lws2_32  # Link with Winsock library on Windows
-    RM = del /f /q  # Windows remove command
+    LDFLAGS = -lws2_32
+    RM = del /f /q
+else
+    RM = rm
 endif

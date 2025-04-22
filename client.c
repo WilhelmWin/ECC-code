@@ -92,6 +92,7 @@ Date: 31.03.2025
 #include "common.h"
 #include "variables.h"
 #include "ECC.h"       // Include library for elliptic curve operations
+#include "ASCON/crypto_aead.h"
 
 // Platform-specific includes for socket programming
 #ifdef _WIN32
@@ -111,10 +112,24 @@ int main(int argc, char *argv[]) {
     int sockfd;
     struct sockaddr_in serv_addr;
     struct hostent *server;
-    char buffer[256];
-    unsigned char private_key[32];  // 32-byte private key for client
-    char end_word_client[256];      // End word for the client
-    char end_word_server[256];      // End word for the server
+
+    unsigned char buffer[256];
+    unsigned char bufferlen;
+    unsigned char private_key[32];
+
+    unsigned char shared_secret[32];
+    unsigned char decrypted_msg[256];         // буфер под расшифровку
+    unsigned long long decrypted_msglen;
+
+    unsigned char *nsec = NULL;                   // если не используешь
+    const unsigned char encrypted_msg[256];     // указатель на шифротекст
+    unsigned long long encrypted_msglen;    // длина шифротекста
+
+    const unsigned char *ad = NULL;               // если не используешь AD
+    unsigned long long adlen = 0;
+
+   unsigned char npub[16] = "simple_nonce_123";  // 16
+
 
     // Initialize Winsock on Windows
 #ifdef _WIN32
@@ -194,7 +209,7 @@ int main(int argc, char *argv[]) {
     print_hex(server_public_key, 32);
 
     // Compute the shared secret key using Diffie-Hellman key exchange
-    unsigned char shared_secret[32];  // The shared secret derived from both 
+
                                       // keys
     crypto_scalarmult(shared_secret, private_key, server_public_key);  // 
                                                                       // Compute 
@@ -204,72 +219,63 @@ int main(int argc, char *argv[]) {
     printf("Shared secret key: ");
     print_hex(shared_secret, 32);
 
-    // Perform any necessary end protocol initialization (could be 
-    // server/client specific)
-    end_client(sockfd, shared_secret, end_word_client, end_word_server);
+
 
     // --- Main communication loop with the server ---
     while (1) {
         printf("Me: ");
-        memset(buffer, 0, 256);  // Clear the buffer for user input
-        if (fgets(buffer, 255, stdin) == NULL) {  // Read user input
+        memset(buffer, 0, sizeof(buffer));
+        if (fgets((char *)buffer, sizeof(buffer), stdin) == NULL) {
             error("Error reading input");
         }
 
-        // Remove newline character from input if present
-        size_t len = strlen(buffer);
+        // Убираем символ новой строки
+        size_t len = strlen((char *)buffer);
         if (len > 0 && buffer[len - 1] == '\n') {
             buffer[len - 1] = '\0';
         }
 
-        // Encrypt the message before sending it to the server using the 
-        // shared secret
-        char encrypted_msg[256];
-        encryptDecrypt(buffer, encrypted_msg, shared_secret);  // Use the 
-                                                              // entire shared 
-                                                              // secret for 
-                                                              // encryption
-        
-        // Send the encrypted message to the server (platform-dependent send 
-        // method)
+        bufferlen = strlen((char *)buffer);
+
+        if (crypto_aead_encrypt(encrypted_msg, &encrypted_msglen,
+                                buffer, bufferlen,
+                                ad, adlen, nsec, npub, shared_secret) != 0) {
+            fprintf(stderr, "Ошибка при шифровании\n");
+            return 1;
+                                }
+
+        // Отправка зашифрованного сообщения
 #ifdef _WIN32
-        n = send(sockfd, encrypted_msg, strlen(encrypted_msg), 0);
-#elif defined(__linux__)
-        n = write(sockfd, encrypted_msg, strlen(encrypted_msg));
+        n = send(sockfd, encrypted_msg, encrypted_msglen, 0);
+#else
+        n = write(sockfd, encrypted_msg, encrypted_msglen);
 #endif
         if (n < 0) error("Error writing to server");
 
-        // Check if the client wants to disconnect
-        if (strncmp(buffer, end_word_client, sizeof(end_word_client)) == 0) {
-            printf("Disconnected\n");
-            break;
-        }
-
-        memset(buffer, 0, 256);  // Clear the buffer to receive the server's 
-                                 // response
-        
-        // Receive the encrypted response from the server
+        // Приём зашифрованного ответа
+        memset(encrypted_msg, 0, sizeof(encrypted_msg));
 #ifdef _WIN32
-        n = recv(sockfd, buffer, 255, 0);
-#elif defined(__linux__)
-        n = read(sockfd, buffer, 255);
+        n = recv(sockfd, encrypted_msg, sizeof(encrypted_msg), 0);
+#else
+        n = read(sockfd, encrypted_msg, sizeof(encrypted_msg));
 #endif
         if (n < 0) error("Error reading from server");
+printf("Encrypted massage from Server: %s\n", &encrypted_msg);
+        encrypted_msglen = n;  // Сохраняем фактическую длину принятых данных
 
-        // Decrypt the server's message using the shared secret
-        char decrypted_msg[256];
-        encryptDecrypt(buffer, decrypted_msg, shared_secret);  // Use the 
-                                                              // entire shared 
-                                                              // secret for 
-                                                              // decryption
+        if (crypto_aead_decrypt(decrypted_msg, &decrypted_msglen,
+                                nsec,
+                                encrypted_msg, encrypted_msglen,
+                                ad, adlen,
+                                npub, shared_secret) != 0) {
+            fprintf(stderr, "Ошибка при расшифровке\n");
+            return 1;
+                                }
+
+        decrypted_msg[decrypted_msglen] = '\0';  // Гарантируем null-терминатор
         printf("Server: %s\n", decrypted_msg);
-
-        // Check if the server wants to disconnect
-        if (strncmp(buffer, end_word_server, sizeof(end_word_server)) == 0) {
-            printf("Server Disconnected\n");
-            break;
-        }
     }
+
 
     // Close the socket and clean up
 #ifdef _WIN32

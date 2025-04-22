@@ -106,6 +106,8 @@
 #include "common.h"
 #include "variables.h"
 #include "ECC.h"  // Include elliptic curve library
+#include "ASCON/crypto_aead.h"
+#include "crypto_config.h"
 
 // Platform-specific includes
 #ifdef _WIN32
@@ -119,14 +121,9 @@
 #endif
 
 int main(int argc, char *argv[]) {
-    int sockfd, newsockfd, portno;
-    int clilen;  // Use int instead of socklen_t for Windows compatibility
-    struct sockaddr_in serv_addr, cli_addr;
-    char buffer[256];
-    unsigned char private_key[32];
-    char end_word_client[256];
-    char end_word_server[256];
-    unsigned char shared_secret[32];
+
+
+
 
     // Platform-specific socket initialization for Windows
     #ifdef _WIN32
@@ -248,59 +245,63 @@ int main(int argc, char *argv[]) {
     printf("Shared secret key: ");
     print_hex(shared_secret, 32);
 
-    // --- Wait for end word from client ---
-    end_server(newsockfd, shared_secret, end_word_client, end_word_server);
+
 
     // --- Main communication loop with client ---
     while (1) {
-        memset(buffer, 0, 256);
-        #ifdef _WIN32
-            n = recv(newsockfd, buffer, 255, 0);  // Use recv() instead of read()
-        #else
-            n = read(newsockfd, buffer, 255);  // Use read() on Linux
-        #endif
+        // Чтение зашифрованного сообщения от клиента
+        memset(encrypted_msg, 0, sizeof(encrypted_msg));
+#ifdef _WIN32
+        n = recv(newsockfd, encrypted_msg, sizeof(encrypted_msg), 0);
+#else
+        n = read(newsockfd, encrypted_msg, sizeof(encrypted_msg));
+#endif
         if (n < 0) error("Error reading from client");
+        printf("Encrypted massage from Client: %s\n", &encrypted_msg);
+        encrypted_msglen = n;
 
-        // Decrypt client message
-        char decrypted_msg[256];
-        encryptDecrypt(buffer, decrypted_msg, shared_secret);  // Use shared secret for decryption
+        // Расшифровка
+        if (crypto_aead_decrypt(decrypted_msg, &decrypted_msglen,
+                                nsec,
+                                encrypted_msg, encrypted_msglen,
+                                ad, adlen,
+                                npub, shared_secret) != 0) {
+            fprintf(stderr, "Ошибка при расшифровке\n");
+            return 1;
+                                }
+
+        decrypted_msg[decrypted_msglen] = '\0';
         printf("Client: %s\n", decrypted_msg);
 
-        // Check if client wants to terminate connection
-        if (strncmp(decrypted_msg, end_word_client, sizeof(end_word_client)) == 0) {
-            printf("Client Disconnected\n");
-            break;
-        }
-
-        // Get server's response
+        // Ответ сервера
         printf("Me: ");
-        memset(buffer, 0, 256);
-        if (fgets(buffer, 255, stdin) == NULL) {
+        memset(buffer, 0, sizeof(buffer));
+        if (fgets((char *)buffer, sizeof(buffer), stdin) == NULL) {
             error("Error reading input");
         }
 
-        // Remove newline character if present
-        size_t len = strlen(buffer);
-        if (len > 0 && buffer[len - 1] == '\n') {
-            buffer[len - 1] = '\0';
+        bufferlen = strlen(buffer);
+        if (bufferlen > 0 && buffer[bufferlen - 1] == '\n') {
+            buffer[bufferlen - 1] = '\0';
         }
 
-        // Encrypt server's message before sending
-        char encrypted_msg[256];
-        encryptDecrypt(buffer, encrypted_msg, shared_secret);  // Use shared secret for encryption
-        #ifdef _WIN32
-            n = send(newsockfd, encrypted_msg, strlen(encrypted_msg), 0);
-        #else
-            n = write(newsockfd, encrypted_msg, strlen(encrypted_msg));  // Use write() on Linux
-        #endif
+        bufferlen = strlen(buffer);
+
+        if (crypto_aead_encrypt(encrypted_msg, &encrypted_msglen,
+                                (unsigned char *)buffer, bufferlen,
+                                ad, adlen, nsec, npub, shared_secret) != 0) {
+            fprintf(stderr, "Ошибка при шифровании\n");
+            return 1;
+                                }
+
+#ifdef _WIN32
+        n = send(newsockfd, encrypted_msg, encrypted_msglen, 0);
+#else
+        n = write(newsockfd, encrypted_msg, encrypted_msglen);
+#endif
         if (n < 0) error("Error writing to client");
-
-        // Check if server wants to terminate connection
-        if (strncmp(buffer, end_word_server, sizeof(end_word_server)) == 0) {
-            printf("Disconnected\n");
-            break;
-        }
     }
+
 
     // Close sockets
     #ifdef _WIN32

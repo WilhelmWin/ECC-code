@@ -67,8 +67,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdint.h>  // Standard library for defining integer types with 
-// fixed width
-#include "ASCON.h"
+// fixed widt
 #include "keygen2.h" 
 
 #ifdef _WIN32
@@ -92,12 +91,8 @@
 typedef unsigned char uch;
 
 void error(const char *msg);
-void encryptDecrypt(char *input, char *output, uch *key);
+
 void print_hex(uch *data, int length);
-void end_server(int newsockfd, unsigned char *shared_secret, char 
-*end_word_client, char *end_word_server);
-void end_client(int newsockfd, unsigned char *shared_secret, char 
-*end_word_client, char *end_word_server);
 
 #endif // COMMON_H
 
