@@ -37,16 +37,14 @@
 // ====================================================
 // Includes for platform-independent socket communication
 // ====================================================
-#include <netinet/in.h>  // For sockaddr_in (used for socket address)
 #include <sys/types.h>   // For socklen_t (used for socket length)
-#include <sys/socket.h>  // For socket functions (socket(), bind(), etc.)
 #include <stdint.h>       // For uint8_t and other fixed-width types
 #include "ECC.h"          // Include elliptic curve library (ECC)
 #include "ASCON/crypto_aead.h"  // For ASCON AEAD encryption
 #include <string.h>       // For string functions like memset(), memcpy()
 #include <stdio.h>        // For standard I/O functions like printf()
 #include <stdlib.h>       // For standard library functions like malloc()
-#include <netdb.h>        // For gethostbyname() and other networking functions
+
 
 // ====================================================
 // Platform-specific includes for Windows and Unix-like systems
@@ -58,6 +56,8 @@
     #include <arpa/inet.h> // For inet_ntoa() and other IP-related functions
     #include <netinet/in.h> // For sockaddr_in and other structures
     #include <unistd.h>     // For close() and other Unix system calls
+    #include <sys/socket.h>  // For socket functions (socket(), bind(), etc.)
+    #include <netdb.h>        // For gethostbyname() and other networking functions
 #endif
 
 // ====================================================
