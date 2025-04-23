@@ -253,7 +253,7 @@ int main(int argc, char *argv[]) {
                                                                // message
                                                                // buffer
         #ifdef _WIN32
-            n = recv(ctx.newsockfd, ctx.encrypted_msg,
+            n = recv(ctx.newsockfd, (char *)ctx.encrypted_msg,
                      sizeof(ctx.encrypted_msg), 0); // Receive encrypted
                                                     // message on Windows
         #else
@@ -318,7 +318,7 @@ int main(int argc, char *argv[]) {
 
         #ifdef _WIN32
         // Send encrypted response on Windows
-            n = send(ctx.newsockfd, ctx.encrypted_msg, ctx.encrypted_msglen, 0);
+        n = send(ctx.newsockfd, (char *)ctx.encrypted_msg, ctx.encrypted_msglen, 0);
         #else
         // Send encrypted response on Linux/Unix
             n = write(ctx.newsockfd, ctx.encrypted_msg, ctx.encrypted_msglen);
