@@ -34,7 +34,10 @@
 #include "ECC.h"
 #include "session.h"
 
+// ============================================================
 // Carry operation for elliptic curve elements
+// This ensures that all elements are within the range [0, 2^16-1]
+// by adding a carry and adjusting the next element as necessary.
 sv car(gf o)
 {
     int i;
@@ -42,12 +45,15 @@ sv car(gf o)
     for (i = 0; i < 16; i++) {
         o[i] += (1 << 16);  // Ensure all elements are in the proper range
         c = o[i] >> 16;  // Carry over if any element exceeds 16 bits
-        o[(i + 1) * (i < 15)] += c - 1 + 37 * (c - 1) * (i == 15);  // Adjust next element if necessary
+        o[(i + 1) * (i < 15)] += c - 1 + 37 * (c - 1) * (i == 15);
+        // Adjust next element if necessary
         o[i] -= c << 16;  // Keep the current element within bounds
     }
 }
 
+// ============================================================
 // Addition of two GF (Galois Field) elements
+// This function performs element-wise addition of two GF elements
 sv add(gf o, gf a, gf b)
 {
     int i;
@@ -55,7 +61,9 @@ sv add(gf o, gf a, gf b)
         o[i] = a[i] + b[i];  // Element-wise addition
 }
 
+// ============================================================
 // Subtraction of two GF elements
+// This function performs element-wise subtraction of two GF elements
 sv sub(gf o, gf a, gf b)
 {
     int i;
@@ -63,7 +71,10 @@ sv sub(gf o, gf a, gf b)
         o[i] = a[i] - b[i];  // Element-wise subtraction
 }
 
+// ============================================================
 // Multiplication of two GF elements
+// This function multiplies two GF elements using long multiplication
+// and adjusts for curve parameters.
 sv mul(gf o, gf a, gf b)
 {
     lli i, j, c[31];
@@ -80,7 +91,10 @@ sv mul(gf o, gf a, gf b)
     car(o);  // Additional carry operation for safety
 }
 
+// ============================================================
 // Inversion of a GF element (modular inverse in the field)
+// This function calculates the modular inverse of a GF element using
+// squaring and multiplication in the field.
 sv inv(gf o, gf i)
 {
     gf c;
@@ -96,7 +110,10 @@ sv inv(gf o, gf i)
         o[a] = c[a];  // Store the final inverse result
 }
 
+// ============================================================
 // Conditional select between two GF elements based on a boolean flag
+// This function selects between two GF elements p and q based on the value
+// of b (0 or 1).
 sv sel(gf p, gf q, int b)
 {
     lli t, i, b1 = ~(b - 1); // b1 is used for bitwise operations
@@ -107,7 +124,10 @@ sv sel(gf p, gf q, int b)
     }
 }
 
+// ============================================================
 // Main loop for scalar multiplication (used in ECC)
+// This loop performs scalar multiplication by processing each bit
+// of the scalar and performing elliptic curve operations.
 sv mainloop(lli x[32], uch *z)
 {
     gf a, b, c, d, e, f;
@@ -148,7 +168,10 @@ sv mainloop(lli x[32], uch *z)
     }
 }
 
+// ============================================================
 // Unpack a byte array into a GF element
+// This function converts a byte array into a GF element by expanding
+// each byte into 16-bit elements.
 sv unpack(gf o, const uch *n)
 {
     int i;
@@ -156,7 +179,10 @@ sv unpack(gf o, const uch *n)
         o[i] = n[2 * i] + ((lli)n[2 * i + 1] << 8);  // Convert bytes into 16-bit elements
 }
 
+// ============================================================
 // Pack a GF element into a byte array
+// This function converts a GF element back into a byte array by adjusting
+// for the curve parameters and ensuring the result fits into the byte format.
 sv pack(uch *o, gf n)
 {
     int i, j, b;
@@ -181,7 +207,9 @@ sv pack(uch *o, gf n)
     }
 }
 
+// ============================================================
 // Perform scalar multiplication (q = n * p)
+// This function multiplies a point p by a scalar n to produce q.
 int crypto_scalarmult(uch *q, const uch *n, const uch *p)
 {
     uch z[32];
@@ -199,7 +227,9 @@ int crypto_scalarmult(uch *q, const uch *n, const uch *p)
     return 0;
 }
 
+// ============================================================
 // Scalar multiplication with the base point (q = n * G)
+// This function multiplies a scalar n with the base point G to produce q.
 int crypto_scalarmult_base(uch *q, const uch *n)
 {
     return crypto_scalarmult(q, n, base);  // Perform scalar multiplication with the base point
