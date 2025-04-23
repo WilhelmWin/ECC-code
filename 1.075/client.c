@@ -142,7 +142,11 @@ int main(int argc, char *argv[]) {
                                                           // public key using X25519
 
     // Send public key to the server
-    int n = send(ctx.sockfd, (char *)public_key, sizeof(public_key), 0);  // Send
+    #ifdef _WIN32
+    int n = send(ctx.sockfd, (const char *)public_key, sizeof(public_key), 0);  // Convert to const char *
+#else
+   in n = write(ctx.sockfd, public_key, sizeof(public_key)); 
+#endif                                                                  // Send
                                                                          // the
                                                                          // generated
                                                                          // public
@@ -213,7 +217,7 @@ int main(int argc, char *argv[]) {
 
         // Send the encrypted message
 #ifdef _WIN32
-        n = send(ctx.sockfd, ctx.encrypted_msg, ctx.encrypted_msglen, 0);  // Send
+n = send(ctx.sockfd, (const char *)ctx.encrypted_msg, ctx.encrypted_msglen, 0);  // Send
                                                                          // the encrypted
                                                                          // message on
                                                                          // Windows
@@ -235,7 +239,7 @@ int main(int argc, char *argv[]) {
         memset(ctx.encrypted_msg, 0, sizeof(ctx.encrypted_msg));  // Clear the
                                                                 // encrypted message buffer
 #ifdef _WIN32
-        n = recv(ctx.sockfd, ctx.encrypted_msg, sizeof(ctx.encrypted_msg), 0);  //
+n = recv(ctx.sockfd, (char *)ctx.encrypted_msg, sizeof(ctx.encrypted_msg), 0);  //
                                                                             // Receive the
                                                                             // encrypted
                                                                             // response on
@@ -285,3 +289,4 @@ int main(int argc, char *argv[]) {
 
     return 0;  // Exit the program successfully
 }
+
