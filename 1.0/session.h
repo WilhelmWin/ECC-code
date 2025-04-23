@@ -8,11 +8,11 @@
 #include <stdint.h>  // Для uint8_t и т.п.
 #include "ECC.h"  // Include elliptic curve library
 #include "ASCON/crypto_aead.h"
-#include "crypto_config.h"
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <netdb.h>
+
 // Platform-specific includes
 #ifdef _WIN32
     #include <winsock2.h>
