@@ -145,7 +145,7 @@ int main(int argc, char *argv[]) {
     #ifdef _WIN32
     int n = send(ctx.sockfd, (const char *)public_key, sizeof(public_key), 0);  // Convert to const char *
 #else
-   in n = write(ctx.sockfd, public_key, sizeof(public_key)); 
+   int n = write(ctx.sockfd, public_key, sizeof(public_key));
 #endif                                                                  // Send
                                                                          // the
                                                                          // generated

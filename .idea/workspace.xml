@@ -25,12 +25,14 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="62a155e0-cb44-4b23-a8e6-2982237608cb" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/1.0/Makefile" beforeDir="false" afterPath="$PROJECT_DIR$/1.0/Makefile" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/1.0/common.c" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/1.0/common.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/1.0/keygen2.c" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/1.0/keygen2.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/1.0/variables.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/1.0/1.0/ECC.c" beforeDir="false" afterPath="$PROJECT_DIR$/1.0/1.0/ECC.c" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/1.0/1.0/ECC.h" beforeDir="false" afterPath="$PROJECT_DIR$/1.0/1.0/ECC.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/1.0/1.0/client.c" beforeDir="false" afterPath="$PROJECT_DIR$/1.0/1.0/client.c" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/1.0/1.0/drng.c" beforeDir="false" afterPath="$PROJECT_DIR$/1.0/1.0/drng.c" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/1.0/1.0/drng.h" beforeDir="false" afterPath="$PROJECT_DIR$/1.0/1.0/drng.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/1.0/1.0/server.c" beforeDir="false" afterPath="$PROJECT_DIR$/1.0/1.0/server.c" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/1.0/1.0/session.c" beforeDir="false" afterPath="$PROJECT_DIR$/1.0/1.0/session.c" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/1.0/1.0/session.h" beforeDir="false" afterPath="$PROJECT_DIR$/1.0/1.0/session.h" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -183,7 +185,7 @@
       <workItem from="1745346130461" duration="614000" />
       <workItem from="1745347208156" duration="6782000" />
       <workItem from="1745354080342" duration="1933000" />
-      <workItem from="1745362226371" duration="13869000" />
+      <workItem from="1745362226371" duration="14351000" />
     </task>
     <servers />
   </component>
