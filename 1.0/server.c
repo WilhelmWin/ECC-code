@@ -164,17 +164,34 @@ int main(int argc, char *argv[]) {
     ctx.serv_addr.sin_port = htons(ctx.portno);
 
     // Bind socket to address
-    #ifdef _WIN32
-        if (bind(ctx.sockfd, (struct sockaddr *)&ctx.serv_addr, sizeof(ctx.serv_addr)) == SOCKET_ERROR) {
-            error("ERROR on binding");
-            WSACleanup();  // Clean up Winsock before exiting
-            exit(1);
-        }
-    #else
-        if (bind(ctx.sockfd, (struct sockaddr *)&ctx.serv_addr, sizeof(ctx.serv_addr)) < 0) {
-            error("ERROR on binding");
-        }
-    #endif
+    int optval = 1; //For closing socket in end of conservation
+#ifdef _WIN32
+    if (setsockopt(ctx.sockfd, SOL_SOCKET, SO_REUSEADDR, (const char *)&optval, sizeof(optval)) == SOCKET_ERROR) {
+        error("setsockopt(SO_REUSEADDR) failed");
+        closesocket(ctx.sockfd);
+        WSACleanup();
+        exit(1);
+    }
+
+    if (bind(ctx.sockfd, (struct sockaddr *)&ctx.serv_addr, sizeof(ctx.serv_addr)) == SOCKET_ERROR) {
+        error("ERROR on binding");
+        closesocket(ctx.sockfd);
+        WSACleanup();
+        exit(1);
+    }
+#else
+    if (setsockopt(ctx.sockfd, SOL_SOCKET, SO_REUSEADDR, &optval, sizeof(optval)) < 0) {
+        error("setsockopt(SO_REUSEADDR) failed");
+        close(ctx.sockfd);
+        exit(1);
+    }
+
+    if (bind(ctx.sockfd, (struct sockaddr *)&ctx.serv_addr, sizeof(ctx.serv_addr)) < 0) {
+        error("ERROR on binding");
+        close(ctx.sockfd);
+        exit(1);
+    }
+#endif
 
     // Listen for incoming connections
     #ifdef _WIN32
@@ -233,61 +250,73 @@ int main(int argc, char *argv[]) {
     printf("Shared secret key: ");
     print_hex(ctx.shared_secret, 32);
 
-    // --- Main communication loop with client ---
-    while (1) {
-        // Чтение зашифрованного сообщения от клиента
-        memset(ctx.encrypted_msg, 0, sizeof(ctx.encrypted_msg));
+  // --- Main communication loop with client ---
+while (1) {
+    // Чтение зашифрованного сообщения от клиента
+    memset(ctx.encrypted_msg, 0, sizeof(ctx.encrypted_msg));
 #ifdef _WIN32
-        n = recv(ctx.newsockfd, ctx.encrypted_msg, sizeof(ctx.encrypted_msg), 0);
+    n = recv(ctx.newsockfd, ctx.encrypted_msg, sizeof(ctx.encrypted_msg), 0);
 #else
-        n = read(ctx.newsockfd, ctx.encrypted_msg, sizeof(ctx.encrypted_msg));
+    n = read(ctx.newsockfd, ctx.encrypted_msg, sizeof(ctx.encrypted_msg));
 #endif
-        if (n < 0) error("Error reading from client");
-        printf("Encrypted message from Client: %s\n", ctx.encrypted_msg);
-        ctx.encrypted_msglen = n;
+    if (n < 0) error("Error reading from client");
+    ctx.encrypted_msglen = n;
 
-        // Расшифровка
-        if (crypto_aead_decrypt(ctx.decrypted_msg, &ctx.decrypted_msglen,
-                                ctx.nsec,
-                                ctx.encrypted_msg, ctx.encrypted_msglen,
-                                ctx.ad, ctx.adlen,
-                                ctx.npub, ctx.shared_secret) != 0) {
-            fprintf(stderr, "Decryption error\n");
-            return 1;
-        }
-
-        ctx.decrypted_msg[ctx.decrypted_msglen] = '\0';
-        printf("Client: %s\n", ctx.decrypted_msg);
-
-        // Ответ сервера
-        printf("Me: ");
-        memset(ctx.buffer, 0, sizeof(ctx.buffer));
-        if (fgets((char *)ctx.buffer, sizeof(ctx.buffer), stdin) == NULL) {
-            error("Error reading input");
-        }
-
-        ctx.bufferlen = strlen((char *)ctx.buffer);
-
-        if (ctx.bufferlen > 0 && ctx.buffer[ctx.bufferlen - 1] == '\n') {
-           ctx.buffer[ctx.bufferlen - 1] = '\0';
-        }
-
-        ctx.bufferlen = strlen((char *)ctx.buffer);
-
-        if (crypto_aead_encrypt(ctx.encrypted_msg, &ctx.encrypted_msglen,
-                                (unsigned char *)ctx.buffer, ctx.bufferlen,
-                                ctx.ad, ctx.adlen, ctx.nsec, ctx.npub, ctx.shared_secret) != 0) {
-            fprintf(stderr, "Encryption error\n");
-            return 1;
-        }
-
-#ifdef _WIN32
-        n = send(ctx.newsockfd, ctx.encrypted_msg, ctx.encrypted_msglen, 0);
-#else
-        n = write(ctx.newsockfd, ctx.encrypted_msg, ctx.encrypted_msglen);
-#endif
-        if (n < 0) error("Error writing to client");
+    // Расшифровка
+    if (crypto_aead_decrypt(ctx.decrypted_msg, &ctx.decrypted_msglen,
+                            ctx.nsec,
+                            ctx.encrypted_msg, ctx.encrypted_msglen,
+                            ctx.ad, ctx.adlen,
+                            ctx.npub, ctx.shared_secret) != 0) {
+        fprintf(stderr, "Decryption error\n");
+        break;
     }
+
+    ctx.decrypted_msg[ctx.decrypted_msglen] = '\0';
+    printf("Client: %s\n", ctx.decrypted_msg);
+
+    // Проверка на слово "Bye" (без учета регистра)
+    if (strcasecmp((char *)ctx.decrypted_msg, "bye") == 0) {
+        printf("Client ended the conversation.\n");
+        break;
+    }
+
+    // Ответ сервера
+    printf("Me: ");
+    memset(ctx.buffer, 0, sizeof(ctx.buffer));
+    if (fgets((char *)ctx.buffer, sizeof(ctx.buffer), stdin) == NULL) {
+        error("Error reading input");
+    }
+
+    ctx.bufferlen = strlen((char *)ctx.buffer);
+
+    if (ctx.bufferlen > 0 && ctx.buffer[ctx.bufferlen - 1] == '\n') {
+        ctx.buffer[ctx.bufferlen - 1] = '\0';
+    }
+
+    ctx.bufferlen = strlen((char *)ctx.buffer);
+
+    if (crypto_aead_encrypt(ctx.encrypted_msg, &ctx.encrypted_msglen,
+                            (unsigned char *)ctx.buffer, ctx.bufferlen,
+                            ctx.ad, ctx.adlen, ctx.nsec, ctx.npub, ctx.shared_secret) != 0) {
+        fprintf(stderr, "Encryption error\n");
+        break;
+    }
+
+#ifdef _WIN32
+    n = send(ctx.newsockfd, ctx.encrypted_msg, ctx.encrypted_msglen, 0);
+#else
+    n = write(ctx.newsockfd, ctx.encrypted_msg, ctx.encrypted_msglen);
+#endif
+    if (n < 0) error("Error writing to client");
+
+    // Проверка, хочет ли сервер завершить общение
+    if (strcasecmp((char *)ctx.buffer, "bye") == 0) {
+        printf("You ended the conversation.\n");
+        break;
+    }
+}
+
 
     // Close sockets
     #ifdef _WIN32

@@ -174,61 +174,74 @@ int main(int argc, char *argv[]) {
     printf("Shared secret key: ");
     print_hex(ctx.shared_secret, 32);
     // --- Main communication loop with the server ---
-    while (1) {
-        printf("Me: ");
-        memset(ctx.buffer, 0, sizeof(ctx.buffer));
-        if (fgets((char *)ctx.buffer, sizeof(ctx.buffer), stdin) == NULL) {
-            error("Error reading input");
-        }
-
-        // Убираем символ новой строки
-        size_t len = strlen((char *)ctx.buffer);
-        if (len > 0 && ctx.buffer[len - 1] == '\n') {
-            ctx.buffer[len - 1] = '\0';
-        }
-
-        ctx.bufferlen = strlen((char *)ctx.buffer);
-
-        if (crypto_aead_encrypt(ctx.encrypted_msg, &ctx.encrypted_msglen,
-                                ctx.buffer, ctx.bufferlen,
-                                ctx.ad, ctx.adlen, ctx.nsec, ctx.npub, ctx.shared_secret) != 0) {
-            fprintf(stderr, "Ошибка при шифровании\n");
-            return 1;
-                                }
-
-        // Отправка зашифрованного сообщения
-#ifdef _WIN32
-        n = send(sockfd, encrypted_msg, encrypted_msglen, 0);
-#else
-        n = write(ctx.sockfd, ctx.encrypted_msg, ctx.encrypted_msglen);
-#endif
-        if (n < 0) error("Error writing to server");
-
-        // Приём зашифрованного ответа
-        memset(ctx.encrypted_msg, 0, sizeof(ctx.encrypted_msg));
-#ifdef _WIN32
-        n = recv(sockfd, encrypted_msg, sizeof(encrypted_msg), 0);
-#else
-        n = read(ctx.sockfd, ctx.encrypted_msg, sizeof(ctx.encrypted_msg));
-#endif
-        if (n < 0) error("Error reading from server");
-        printf("Encrypted message from Server: %s\n", ctx.encrypted_msg);
-
-        ctx.encrypted_msglen = n;  // Сохраняем фактическую длину принятых данных
-
-        if (crypto_aead_decrypt(ctx.decrypted_msg, &ctx.decrypted_msglen,
-                                ctx.nsec,
-                                ctx.encrypted_msg, ctx.encrypted_msglen,
-                                ctx.ad, ctx.adlen,
-                                ctx.npub, ctx.shared_secret) != 0) {
-            fprintf(stderr, "Ошибка при расшифровке\n");
-            return 1;
-                                }
-
-        ctx.decrypted_msg[ctx.decrypted_msglen] = '\0';  // Гарантируем null-терминатор
-        printf("Server: %s\n", ctx.decrypted_msg);
+ while (1) {
+    // Ввод сообщения пользователем
+    printf("Me: ");
+    memset(ctx.buffer, 0, sizeof(ctx.buffer));
+    if (fgets((char *)ctx.buffer, sizeof(ctx.buffer), stdin) == NULL) {
+        error("Error reading input");
     }
 
+    // Убираем символ новой строки
+    size_t len = strlen((char *)ctx.buffer);
+    if (len > 0 && ctx.buffer[len - 1] == '\n') {
+        ctx.buffer[len - 1] = '\0';
+    }
+
+    ctx.bufferlen = strlen((char *)ctx.buffer);
+
+    // Шифруем сообщение
+    if (crypto_aead_encrypt(ctx.encrypted_msg, &ctx.encrypted_msglen,
+                            ctx.buffer, ctx.bufferlen,
+                            ctx.ad, ctx.adlen, ctx.nsec, ctx.npub, ctx.shared_secret) != 0) {
+        fprintf(stderr, "Ошибка при шифровании\n");
+        return 1;
+    }
+
+    // Отправка зашифрованного сообщения
+#ifdef _WIN32
+    n = send(ctx.sockfd, ctx.encrypted_msg, ctx.encrypted_msglen, 0);
+#else
+    n = write(ctx.sockfd, ctx.encrypted_msg, ctx.encrypted_msglen);
+#endif
+    if (n < 0) error("Error writing to server");
+
+    // Если клиент написал "bye", то завершаем
+    if (strcasecmp((char *)ctx.buffer, "bye") == 0) {
+        printf("You ended the conversation.\n");
+        break;
+    }
+
+    // Приём зашифрованного ответа от сервера
+    memset(ctx.encrypted_msg, 0, sizeof(ctx.encrypted_msg));
+#ifdef _WIN32
+    n = recv(ctx.sockfd, ctx.encrypted_msg, sizeof(ctx.encrypted_msg), 0);
+#else
+    n = read(ctx.sockfd, ctx.encrypted_msg, sizeof(ctx.encrypted_msg));
+#endif
+    if (n < 0) error("Error reading from server");
+
+    ctx.encrypted_msglen = n;  // Сохраняем фактическую длину принятых данных
+
+    // Расшифровка ответа
+    if (crypto_aead_decrypt(ctx.decrypted_msg, &ctx.decrypted_msglen,
+                            ctx.nsec,
+                            ctx.encrypted_msg, ctx.encrypted_msglen,
+                            ctx.ad, ctx.adlen,
+                            ctx.npub, ctx.shared_secret) != 0) {
+        fprintf(stderr, "Ошибка при расшифровке\n");
+        return 1;
+    }
+
+    ctx.decrypted_msg[ctx.decrypted_msglen] = '\0';
+    printf("Server: %s\n", ctx.decrypted_msg);
+
+    // Если сервер сказал "bye", тоже выходим
+    if (strcasecmp((char *)ctx.decrypted_msg, "bye") == 0) {
+        printf("Server ended the conversation.\n");
+        break;
+    }
+}
 
     // Close the socket and clean up
 #ifdef _WIN32
