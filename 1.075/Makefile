@@ -83,11 +83,12 @@ ECC_OBJ = ECC.o
 ASCON_SRC = $(ASCON_DIR)/aead.c $(ASCON_DIR)/printstate.c
 ASCON_OBJ = $(ASCON_SRC:.c=.o)
 
-SERVER_SRC = server.c session.c drng.c# Добавляем session.c
-SERVER_OBJ = $(SERVER_SRC:.c=.o)
-
+SERVER_SRC = server.c session.c drng.c
 CLIENT_SRC = client.c session.c drng.c
+
+SERVER_OBJ = $(SERVER_SRC:.c=.o)
 CLIENT_OBJ = $(CLIENT_SRC:.c=.o)
+COMMON_OBJ = session.o drng.o
 
 #===============================================================================
 # Libraries
@@ -95,13 +96,27 @@ CLIENT_OBJ = $(CLIENT_SRC:.c=.o)
 
 LIBECC = libecc.a
 LIBASCON = libascon.a
-LIBRARIES =  $(LIBECC) $(LIBASCON)
+LIBRARIES = $(LIBECC) $(LIBASCON)
+
+#===============================================================================
+# Linker flags and remove command based on OS
+#===============================================================================
+
+ifeq ($(OS), Windows_NT)
+    LDFLAGS = -lws2_32
+    RM = del /f /q
+    NULL = nul
+else
+    LDFLAGS =
+    RM = rm -f
+    NULL = /dev/null
+endif
 
 #===============================================================================
 # Default rule
 #===============================================================================
 
-all: $(LIBRARIES) $(SERVER_TARGET) $(CLIENT_TARGET)
+all: $(LIBRARIES) $(SERVER_TARGET) $(CLIENT_TARGET) postbuild
 
 #===============================================================================
 # Static libraries
@@ -133,35 +148,34 @@ $(CLIENT_TARGET): $(CLIENT_OBJ) $(LIBRARIES)
 #===============================================================================
 # Post-build cleanup
 #===============================================================================
+
 postbuild:
-	$(RM) -f $(ECC_OBJ) $(COMMON_OBJ) $(ASCON_OBJ) \
-	        $(SERVER_OBJ) $(CLIENT_OBJ) session.o \
-	        $(LIBRARIES)
-
-#===============================================================================
-# Default rule
-#===============================================================================
-
-all: $(LIBRARIES) $(SERVER_TARGET) $(CLIENT_TARGET)
-	$(MAKE) postbuild
+ifeq ($(OS), Windows_NT)
+	-$(RM) ECC.o session.o drng.o
+	-$(RM) ASCON\\aead.o ASCON\\printstate.o
+	-$(RM) server.o client.o
+	-$(RM) $(LIBRARIES)
+else
+	$(RM) $(ECC_OBJ) $(COMMON_OBJ) $(ASCON_OBJ) $(SERVER_OBJ) $(CLIENT_OBJ) $(LIBRARIES)
+endif
 
 #===============================================================================
 # Clean rules
 #===============================================================================
 
 clean:
-	$(RM) -f *.o $(ASCON_DIR)/*.o $(LIBRARIES) $(SERVER_TARGET) $(CLIENT_TARGET) *.exe
-
-distclean: clean
-	$(RM) -f *~ *.bak
-
-#===============================================================================
-# Windows-specific settings
-#===============================================================================
-
 ifeq ($(OS), Windows_NT)
-    LDFLAGS = -lws2_32
-    RM = del /f /q
+	-$(RM) *.o
+	-$(RM) ASCON\\aead.o ASCON\\printstate.o
+	-$(RM) $(LIBRARIES)
+	-$(RM) $(SERVER_TARGET) $(CLIENT_TARGET) *.exe
 else
-    RM = rm
+	$(RM) *.o $(ASCON_DIR)/*.o $(LIBRARIES) $(SERVER_TARGET) $(CLIENT_TARGET) *.exe
+endif
+
+distclean:
+ifeq ($(OS), Windows_NT)
+	-$(RM) *~ *.bak
+else
+	$(RM) *~ *.bak
 endif
