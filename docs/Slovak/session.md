@@ -1,4 +1,4 @@
-# Dokumentácia pre hlavičkový súbor `Session`
+# Dokumentácia pre súbor `Session`
 
 ## Prehľad
 
