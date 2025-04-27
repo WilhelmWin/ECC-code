@@ -85,23 +85,27 @@ int main(int argc, char *argv[]) {
     // Inicializácia kontextu pre klient-server komunikáciu
     // ====================================================================
     ClientServerContext ctx; // Deklarácia štruktúry
-    initializeContext(&ctx); // Inicializácia štruktúry kontextu pre správu
+    initializeContext(&ctx); // Inicializácia štruktúry kontextu na správu
                               // nastavení komunikácie
 
     // ====================================================================
     // Platformovo špecifická inicializácia socketov pre Windows
     // ====================================================================
     #ifdef _WIN32
-        WSADATA wsaData 
-      // WSADATA wsaData - štruktúra používaná na uloženie informácií
-      // o verzii Winsock knižnice a ďalších údajoch potrebných pre sieťovú komunikáciu vo Windows.
+        WSADATA wsaData;
+      // WSADATA wsaData - je štruktúra používaná na uloženie 
+      // informácií o verzii knižnice Winsock a ďalších údajov,
+      // potrebných pre prácu so sieťovými pripojeniami vo Windows.
+        
         int result = WSAStartup(MAKEWORD(2, 2), &wsaData);  
         
-      // MAKEWORD(2, 2) — makro, ktoré vytvorí 16-bitové číslo
-      // reprezentujúce verziu Winsock knižnice. Tu je požadovaná verzia 2.2.
+      //  MAKEWORD(2, 2) — makro, ktoré vytvára 16-bitové číslo 
+      // reprezentujúce verziu Winsock. V tomto prípade 
+      // je požadovaná verzia Winsock 2.2 
+      // (hlavná verzia 2 a vedľajšia verzia 2).
          
-      // &wsaData — ukazovateľ na štruktúru WSADATA, kam budú zapísané 
-      // informácie o verzii a parametroch po inicializácii Winsock.
+      // &wsaData — ukazovateľ na štruktúru WSADATA, kde budú uložené 
+      // informácie o verzii a ďalších parametroch knižnice Winsock po inicializácii.
         
         if (result != 0) {
             fprintf(stderr, "Chyba WSAStartup: %d\n", result);
@@ -119,11 +123,11 @@ int main(int argc, char *argv[]) {
         #ifdef _WIN32
             WSACleanup();  // Vyčistenie Winsock pred ukončením
         #endif
-        exit(0); // Ukončenie programu, ak číslo portu nebolo zadané
+        exit(0); // Ukončenie, ak číslo portu nebolo zadané
     }
 
     ctx.portno = atoi(argv[1]);  // Uloženie čísla portu z argumentov
-                                 // príkazového riadku
+                                 // príkazového riadka
 
     // ====================================================================
     // Generovanie náhodného privátneho kľúča pre server
@@ -133,80 +137,92 @@ int main(int argc, char *argv[]) {
     // Výpis vygenerovaného privátneho kľúča pre ladenie
     printf("Vygenerovaný privátny kľúč pre server: ");
     print_hex(ctx.private_key, 32);
-
     // ====================================================================
-    // Vytvorenie socketu pre server
+    // Vytvorenie serverového socketu
     // ====================================================================
     #ifdef _WIN32
         ctx.sockfd = socket(AF_INET, SOCK_STREAM, 0); // Vytvorenie TCP socketu
-                                                      // pre Windows
-   // socket — systémové volanie, ktoré vytvorí nový socket a vráti
-   // jeho deskriptor, ktorý sa potom používa na komunikáciu cez sieťové rozhranie.
+                                                     // vo Windows
+   // socket — systémové volanie, ktoré vytvára nový socket a vracia 
+   // jeho deskriptor (identifikátor), ktorý sa následne používa
+   // na sieťovú komunikáciu.
 
-   // AF_INET — rodina adries, ktorá označuje použitie IPv4.
+   // AF_INET — rodina adries pre socket. AF_INET znamená IPv4.
 
-   // SOCK_STREAM — typ socketu pre prenos dát prostredníctvom TCP spojení.
+   // SOCK_STREAM — typ socketu. SOCK_STREAM určuje, že pôjde o 
+   // spojenie so zaručeným doručením (TCP).
 
-   // 0 — OS automaticky vyberie vhodný protokol (pre SOCK_STREAM to je TCP).
+   // 0 — protokol. Ak je 0, operačný systém automaticky vyberie 
+   // vhodný protokol (v tomto prípade TCP).
    
         if ((unsigned long long)ctx.sockfd ==
             (unsigned long long)INVALID_SOCKET) {
-            error("Chyba otvorenia socketu"); // Chyba pri vytváraní socketu
+            error("Chyba otvorenia socketu"); // Chyba otvorenia socketu
             WSACleanup();  // Vyčistenie Winsock pred ukončením
-            exit(1); // Ukončenie pri neúspechu
+            exit(1); // Ukončenie pri zlyhaní vytvorenia socketu
         }
     #else
         ctx.sockfd = socket(AF_INET, SOCK_STREAM, 0); // Vytvorenie TCP socketu
-                                                      // pre Linux/Unix
+                                                     // v Linux/Unix
         if (ctx.sockfd < 0) {
-            error("Chyba otvorenia socketu"); // Chyba pri vytváraní socketu
+            error("Chyba otvorenia socketu"); // Chyba otvorenia socketu
         }
     #endif
 
     // ====================================================================
-    // Príprava štruktúry adresy servera
+    // Príprava štruktúry serverovej adresy
     // ====================================================================
     memset((char *)&ctx.serv_addr, 0, sizeof(ctx.serv_addr));  // Vymazanie
                                                                // štruktúry adresy
-    ctx.serv_addr.sin_family = AF_INET;  // Použitie internetovej adresnej rodiny
-    ctx.serv_addr.sin_addr.s_addr = INADDR_ANY;  // Pripojenie na všetky dostupné
+    ctx.serv_addr.sin_family = AF_INET;  // Použitie rodiny internetových adries
+    ctx.serv_addr.sin_addr.s_addr = INADDR_ANY;  // Viazanie na všetky dostupné
                                                  // sieťové rozhrania
     ctx.serv_addr.sin_port = htons(ctx.portno);  // Nastavenie portu servera
-                                                 // (v sieťovom bajtovom poradí)
+                                                 // (v sieťovom byteorderi)
 
     // ====================================================================
-    // Priradenie socketu k adrese
+    // Viazanie socketu na adresu
     // ====================================================================
-    int optval = 1; // Nastavenie voľby socketu pre povolenie opätovného použitia adresy
+    int optval = 1; // Nastavenie socketovej voľby na umožnenie
+                    // opätovného použitia adresy
     #ifdef _WIN32
+    
+   // ctx.sockfd — deskriptor socketu, ku ktorému sa priraďujú voľby.
+
+   // SOL_SOCKET — úroveň socketu.
+
+   // SO_REUSEADDR — možnosť opätovného použitia adresy a portu.
+
         if (setsockopt(ctx.sockfd, SOL_SOCKET, SO_REUSEADDR,
                        (const char *)&optval, sizeof(optval))
         == SOCKET_ERROR) {
-            error("Chyba setsockopt(SO_REUSEADDR)"); // Chyba nastavenia socketu
+            error("Chyba setsockopt(SO_REUSEADDR)"); // Chyba nastavenia
+                                                      // socketových volieb
             closesocket(ctx.sockfd);
-            WSACleanup();  
+            WSACleanup();  // Vyčistenie Winsock pred ukončením
             exit(1);
         }
 
         if (bind(ctx.sockfd, (struct sockaddr *)&ctx.serv_addr,
                  sizeof(ctx.serv_addr)) == SOCKET_ERROR) {
-            error("Chyba pri priradení adresy"); 
+            error("Chyba pri viazaní"); // Chyba viazania socketu
             closesocket(ctx.sockfd);
-            WSACleanup();  
+            WSACleanup();  // Vyčistenie Winsock pred ukončením
             exit(1);
         }
     #else
         if (setsockopt(ctx.sockfd, SOL_SOCKET, SO_REUSEADDR,
                        &optval, sizeof(optval)) < 0) {
-            error("Chyba setsockopt(SO_REUSEADDR)"); 
-            close(ctx.sockfd);  
+            error("Chyba setsockopt(SO_REUSEADDR)"); // Chyba nastavenia
+                                                     // socketových volieb
+            close(ctx.sockfd);  // Zatvorenie socketu v Linux/Unix
             exit(1);
         }
 
         if (bind(ctx.sockfd, (struct sockaddr *)&ctx.serv_addr,
                  sizeof(ctx.serv_addr)) < 0) {
-            error("Chyba pri priradení adresy"); 
-            close(ctx.sockfd);  
+            error("Chyba pri viazaní"); // Chyba viazania socketu
+            close(ctx.sockfd);  // Zatvorenie socketu v Linux/Unix
             exit(1);
         }
     #endif
@@ -216,158 +232,127 @@ int main(int argc, char *argv[]) {
     // ====================================================================
     #ifdef _WIN32
         if (listen(ctx.sockfd, 5) == SOCKET_ERROR) {
-            error("Chyba pri počúvaní"); 
-            WSACleanup();  
+            error("Chyba pri počúvaní"); // Chyba počúvania spojení
+            WSACleanup();  // Vyčistenie Winsock pred ukončením
             exit(1);
         }
     #else
         if (listen(ctx.sockfd, 5) < 0) {
-            error("Chyba pri počúvaní"); 
+            error("Chyba pri počúvaní"); // Chyba počúvania spojení
         }
     #endif
 
     // ====================================================================
     // Prijatie spojenia od klienta
     // ====================================================================
-    ctx.clilen = sizeof(ctx.cli_addr);  
+    ctx.clilen = sizeof(ctx.cli_addr);  // Nastavenie veľkosti adresy klienta
     #ifdef _WIN32
         ctx.newsockfd = accept(ctx.sockfd,
                            (struct sockaddr *)&ctx.cli_addr, &ctx.clilen);
         if ((unsigned long long)ctx.newsockfd ==
             (unsigned long long)INVALID_SOCKET) {
-            error("Chyba pri prijatí spojenia"); 
-            WSACleanup();  
+            error("Chyba pri prijatí spojenia"); // Chyba prijatia spojenia
+            WSACleanup();
             exit(1);
         }
     #else
         ctx.newsockfd = accept(ctx.sockfd,
                            (struct sockaddr *)&ctx.cli_addr, &ctx.clilen);
         if (ctx.newsockfd < 0) {
-            error("Chyba pri prijatí spojenia"); 
+            error("Chyba pri prijatí spojenia"); // Chyba prijatia spojenia
         }
     #endif
     printf("Spojenie prijaté\n");
 
     // ====================================================================
-    // Proces výmeny kľúčov podľa Diffie-Hellmana
+    // Výmena kľúčov pomocou algoritmu Diffie-Hellman
     // ====================================================================
-    unsigned char public_key[32];
-    crypto_scalarmult_base(public_key, ctx.private_key);  // Generovanie
-                                                          // verejného kľúča servera
-
-    // Odoslanie verejného kľúča servera klientovi
-    int n = send(ctx.newsockfd, (char *)public_key, sizeof(public_key), 0);
-    if (n < 0) {
-        error("Chyba odoslania verejného kľúča klientovi"); 
-    }
-
-    // Prijatie verejného kľúča od klienta
-    unsigned char client_public_key[32];
-    n = recv(ctx.newsockfd, (char *)client_public_key,
-             sizeof(client_public_key), 0);
-    if (n < 0) {
-        error("Chyba prijatia verejného kľúča od klienta"); 
-    }
-
-    // Výpis prijatého verejného kľúča klienta
-    printf("Prijatý verejný kľúč klienta: ");
-    print_hex(client_public_key, 32);
-
-    // Výpočet spoločného tajného kľúča pomocou Diffie-Hellman protokolu
-    crypto_scalarmult(ctx.shared_secret, ctx.private_key,
-                      client_public_key);
-
-    printf("Spoločný tajný kľúč: ");
-    print_hex(ctx.shared_secret, 32);
+    diffie_hellman(ctx); // Funkcia na výmenu kľúčov medzi serverom a klientom
+                         // cez Diffie-Hellman protokol
+                         //
+                         // Vytvorí sa spoločný tajný kľúč na šifrovanie komunikácie
 
     // ====================================================================
-    // Hlavný cyklus komunikácie s klientom
+    // Inicializácia šifrovacieho a dešifrovacieho kontextu
+    // ====================================================================
+    initialize_encryption_context(&ctx); 
+    // Inicializácia kryptografických operácií — 
+    // nastavenie kľúčov, režimu šifrovania, atď.
+
+    // ====================================================================
+    // Hlavná slučka pre komunikáciu
     // ====================================================================
     while (1) {
-        // Čítanie šifrovanej správy od klienta
-        memset(ctx.encrypted_msg, 0, sizeof(ctx.encrypted_msg)); 
+        // Vymazanie buffera pre prijaté dáta
+        memset(ctx.buffer, 0, BUFFER_SIZE);
+
+        // Prijatie správy od klienta
         #ifdef _WIN32
-            n = recv(ctx.newsockfd, (char *)ctx.encrypted_msg,
-                   sizeof(ctx.encrypted_msg), 0);
+            ctx.n = recv(ctx.newsockfd, ctx.buffer, BUFFER_SIZE, 0);
+            if (ctx.n == SOCKET_ERROR) {
+                error("Chyba pri prijímaní správy"); // Chyba prijatia správy
+                break;
+            } else if (ctx.n == 0) {
+                printf("Klient ukončil spojenie\n"); // Klient ukončil spojenie
+                break;
+            }
         #else
-            n = read(ctx.newsockfd, ctx.encrypted_msg,
-                 sizeof(ctx.encrypted_msg));
+            ctx.n = recv(ctx.newsockfd, ctx.buffer, BUFFER_SIZE, 0);
+            if (ctx.n < 0) {
+                error("Chyba pri prijímaní správy"); // Chyba prijatia správy
+                break;
+            } else if (ctx.n == 0) {
+                printf("Klient ukončil spojenie\n"); // Klient ukončil spojenie
+                break;
+            }
         #endif
-        if (n < 0) error("Chyba čítania od klienta"); 
-        ctx.encrypted_msglen = n; 
 
-        // Dešifrovanie prijatej správy pomocou spoločného tajomstva
-        if (crypto_aead_decrypt(ctx.decrypted_msg, &ctx.decrypted_msglen,
-                                ctx.nsec,
-                                ctx.encrypted_msg, ctx.encrypted_msglen,
-                                ctx.ad, ctx.adlen,
-                                ctx.npub, ctx.shared_secret) != 0) {
-            fprintf(stderr, "Chyba dešifrovania\n"); 
-            break;
-        }
-        ctx.decrypted_msg[ctx.decrypted_msglen] = '\0';
-        printf("Klient: %s\n", ctx.decrypted_msg);
+        // Dešifrovanie prijatej správy
+        decrypt_message(&ctx, (unsigned char*)ctx.buffer, ctx.n);
 
-        // Kontrola, či klient chce ukončiť komunikáciu
-        if (strcasecmp((char *)ctx.decrypted_msg, "bye") == 0) {
-            printf("Klient ukončil komunikáciu.\n");
-            break;
-        }
+        // Zobrazenie prijatej a dešifrovanej správy
+        printf("Klient: %s\n", ctx.buffer);
 
-        // Odpoveď servera
-        printf("Ja: ");
-        memset(ctx.buffer, 0, sizeof(ctx.buffer));  
-        if (fgets((char *)ctx.buffer, sizeof(ctx.buffer), stdin) == NULL)
-        {
-            error("Chyba vstupu"); 
-        }
+        // Vymazanie buffera pre odpoveď
+        memset(ctx.buffer, 0, BUFFER_SIZE);
 
-        ctx.bufferlen = strlen((char *)ctx.buffer); 
+        // Zadanie odpovede zo servera (zo štandardného vstupu)
+        printf("Server: ");
+        fgets(ctx.buffer, BUFFER_SIZE, stdin);
 
-        // Odstránenie znaku novej riadky na konci
-        if (ctx.bufferlen > 0 && ctx.buffer[ctx.bufferlen - 1] == '\n')
-        {
-            ctx.buffer[ctx.bufferlen - 1] = '\0'; 
-        }
+        // Šifrovanie odpovede
+        encrypt_message(&ctx, (unsigned char*)ctx.buffer, strlen(ctx.buffer));
 
-        ctx.bufferlen = strlen((char *)ctx.buffer);
-
-        // Šifrovanie odpovede servera
-        if (crypto_aead_encrypt(ctx.encrypted_msg, &ctx.encrypted_msglen,
-                                (unsigned char *)ctx.buffer,
-                                ctx.bufferlen,
-                                ctx.ad, ctx.adlen, ctx.nsec, ctx.npub,
-                                ctx.shared_secret) != 0) {
-            fprintf(stderr, "Chyba šifrovania\n"); 
-            break;
-        }
-
+        // Odoslanie šifrovanej odpovede klientovi
         #ifdef _WIN32
-        n = send(ctx.newsockfd, (char *)ctx.encrypted_msg,
-                 ctx.encrypted_msglen, 0);
+            ctx.n = send(ctx.newsockfd, ctx.buffer, strlen(ctx.buffer), 0);
+            if (ctx.n == SOCKET_ERROR) {
+                error("Chyba pri odosielaní správy"); // Chyba odoslania správy
+                break;
+            }
         #else
-        n = write(ctx.newsockfd, ctx.encrypted_msg,
-                  ctx.encrypted_msglen);
+            ctx.n = send(ctx.newsockfd, ctx.buffer, strlen(ctx.buffer), 0);
+            if (ctx.n < 0) {
+                error("Chyba pri odosielaní správy"); // Chyba odoslania správy
+                break;
+            }
         #endif
-        if (n < 0) error("Chyba zápisu klientovi");
-
-        if (strcasecmp((char *)ctx.buffer, "bye") == 0) {
-            printf("Ukončili ste komunikáciu.\n");
-            break;
-        }
     }
 
     // ====================================================================
-    // Uzatvorenie socketov a vyčistenie zdrojov
+    // Ukončenie spojenia a vyčistenie zdrojov
     // ====================================================================
     #ifdef _WIN32
-        closesocket(ctx.newsockfd);  
-        closesocket(ctx.sockfd);  
-        WSACleanup();  
+        closesocket(ctx.newsockfd); // Zatvorenie socketu pre klienta
+        closesocket(ctx.sockfd);    // Zatvorenie hlavného socketu
+        WSACleanup();               // Uvoľnenie Winsock knižnice
     #else
-        close(ctx.newsockfd);  
-        close(ctx.sockfd);  
+        close(ctx.newsockfd); // Zatvorenie socketu pre klienta
+        close(ctx.sockfd);    // Zatvorenie hlavného socketu
     #endif
 
-    return 0; 
+    // Vyčistenie kryptografického kontextu
+    cleanup_encryption_context(&ctx);
+
+    return 0;
 }

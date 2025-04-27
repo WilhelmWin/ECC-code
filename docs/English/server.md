@@ -84,43 +84,47 @@ Example of running the program:
 int main(int argc, char *argv[]) {
 
     // ====================================================================
-    // Initialization of context for client-server communication
+    // Initializing the context for client-server communication
     // ====================================================================
-    ClientServerContext ctx; // Declaration of the structure
-    initializeContext(&ctx); // Initialization of the context structure for managing communication settings
+    ClientServerContext ctx; // Declaring the structure
+    initializeContext(&ctx); // Initializing the context structure for managing
+                              // connection settings
 
     // ====================================================================
-    // Platform-specific socket initialization for Windows
+    // Platform-specific initialization of sockets for Windows
     // ====================================================================
     #ifdef _WIN32
         WSADATA wsaData; 
-        // WSADATA wsaData is a structure used to store information about the version 
-        // of the Winsock library and other data necessary for network communication in Windows.
+        // WSADATA wsaData - this structure is used to store 
+        // information about the version of the Winsock library and other 
+        // data necessary for working with network connections in Windows.
         int result = WSAStartup(MAKEWORD(2, 2), &wsaData);  
         
-        // MAKEWORD(2, 2) creates a 16-bit number representing the required Winsock version.
-        // In this case, version 2.2 is needed.
+        // MAKEWORD(2, 2) — this macro creates a 16-bit number 
+        // representing the version of the Winsock library. In this case, 
+        // version 2.2 (i.e., version 2 and minor version 2).
          
-        // &wsaData is a pointer to the WSADATA structure where the information will be stored 
-        // after Winsock initialization.
+        // &wsaData — a pointer to the WSADATA structure where information 
+        // about the version and other parameters of the Winsock library 
+        // will be recorded after initialization.
         
         if (result != 0) {
             fprintf(stderr, "WSAStartup error: %d\n", result);
-            exit(1); // Exit if Winsock initialization fails
+            exit(1); // Exit in case of Winsock initialization failure
         }
     #endif
 
     // ====================================================================
-    // Checking arguments for port number
+    // Checking command-line arguments for port number
     // ====================================================================
     if (argc < 2) {
         fprintf(stderr, "Usage: %s port\n", argv[0]); 
-        // Print message about incorrect usage
+        // Print a usage message if the port number is not provided
         
         #ifdef _WIN32
-            WSACleanup();  // Cleanup Winsock before exiting
+            WSACleanup();  // Clean up Winsock before exiting
         #endif
-        exit(0); // Exit if no port number is provided
+        exit(0); // Exit if port number is not provided
     }
 
     ctx.portno = atoi(argv[1]);  // Save the port number from command-line arguments
@@ -131,111 +135,126 @@ int main(int argc, char *argv[]) {
     generate_private_key(ctx.private_key); // Generate the server's private key
 
     // Print the generated private key for debugging
-    printf("Generated server private key: ");
+    printf("Generated private key for the server: ");
     print_hex(ctx.private_key, 32);
 
     // ====================================================================
-    // Create server socket
+    // Create a socket for the server
     // ====================================================================
     #ifdef _WIN32
-        ctx.sockfd = socket(AF_INET, SOCK_STREAM, 0); // Create a TCP socket on Windows
-        // socket creates a new socket and returns its descriptor (identifier)
-        // used for interacting with network interfaces.
-        // AF_INET indicates IPv4 address family.
-        // SOCK_STREAM means a stream socket (TCP connection).
-        // 0 lets the system choose the correct protocol (TCP for SOCK_STREAM).
+        ctx.sockfd = socket(AF_INET, SOCK_STREAM, 0); // Create TCP socket
+                                                     // on Windows
+        // socket — a system call that creates a new socket and returns 
+        // its descriptor (or identifier), which is then used to interact 
+        // with network interfaces. This creates a socket for a TCP connection.
+
+        // AF_INET — an address family for the socket. In this case, AF_INET
+        // means that the socket will use IPv4.
+
+        // SOCK_STREAM — the type of socket. SOCK_STREAM indicates that 
+        // the socket will use stream-based data transmission, i.e., a 
+        // socket for connections with guaranteed data delivery (TCP connection). 
    
+        // 0 — the third argument to the socket function is the protocol 
+        // that will be used with this socket. If 0 is passed, the 
+        // operating system automatically selects a suitable protocol for 
+        // the specified socket type (in this case, TCP protocol for SOCK_STREAM).
+        
         if ((unsigned long long)ctx.sockfd ==
             (unsigned long long)INVALID_SOCKET) {
-            error("Socket opening error");
-            WSACleanup();
-            exit(1);
+            error("Socket creation error"); // Socket creation error
+            WSACleanup();  // Clean up Winsock before exiting
+            exit(1); // Exit if socket creation fails
         }
     #else
-        ctx.sockfd = socket(AF_INET, SOCK_STREAM, 0); // Create a TCP socket on Linux/Unix
+        ctx.sockfd = socket(AF_INET, SOCK_STREAM, 0); // Create TCP socket
+                                                     // on Linux/Unix
         if (ctx.sockfd < 0) {
-            error("Socket opening error");
+            error("Socket creation error"); // Socket creation error
         }
     #endif
 
     // ====================================================================
-    // Preparing the server address structure
+    // Prepare server's address structure
     // ====================================================================
-    memset((char *)&ctx.serv_addr, 0, sizeof(ctx.serv_addr));  // Zero out the address structure
-    ctx.serv_addr.sin_family = AF_INET;  // Use Internet address family
-    ctx.serv_addr.sin_addr.s_addr = INADDR_ANY;  // Bind to all available interfaces
-    ctx.serv_addr.sin_port = htons(ctx.portno);  // Set the server port (network byte order)
+    memset((char *)&ctx.serv_addr, 0, sizeof(ctx.serv_addr));  // Clear the address structure
+    ctx.serv_addr.sin_family = AF_INET;  // Use the Internet address family
+                                         // (IPv4)
+    ctx.serv_addr.sin_addr.s_addr = INADDR_ANY;  // Bind to all available network interfaces
+    ctx.serv_addr.sin_port = htons(ctx.portno);  // Set the server's port number
+                                                 // (in network byte order)
 
     // ====================================================================
-    // Binding the socket to the address
+    // Bind the socket to the address
     // ====================================================================
-    int optval = 1; // Set socket option to allow address reuse
+    int optval = 1; // Set the socket option to allow address reuse
+                    // (for proper termination)
     #ifdef _WIN32
         if (setsockopt(ctx.sockfd, SOL_SOCKET, SO_REUSEADDR,
                        (const char *)&optval, sizeof(optval))
         == SOCKET_ERROR) {
-            error("setsockopt(SO_REUSEADDR) error");
+            error("setsockopt(SO_REUSEADDR) error"); // Error setting socket options
             closesocket(ctx.sockfd);
-            WSACleanup();
-            exit(1);
+            WSACleanup();  // Clean up Winsock before exiting
+            exit(1); // Exit if setting socket options fails
         }
 
         if (bind(ctx.sockfd, (struct sockaddr *)&ctx.serv_addr,
                  sizeof(ctx.serv_addr)) == SOCKET_ERROR) {
-            error("Binding error");
+            error("Binding error"); // Binding socket error
             closesocket(ctx.sockfd);
-            WSACleanup();
-            exit(1);
+            WSACleanup();  // Clean up Winsock before exiting
+            exit(1); // Exit if binding fails
         }
     #else
         if (setsockopt(ctx.sockfd, SOL_SOCKET, SO_REUSEADDR,
                        &optval, sizeof(optval)) < 0) {
-            error("setsockopt(SO_REUSEADDR) error");
-            close(ctx.sockfd);
-            exit(1);
+            error("setsockopt(SO_REUSEADDR) error"); // Error setting socket options
+            close(ctx.sockfd);  // Close socket on Linux/Unix
+            exit(1); // Exit if setting socket options fails
         }
 
         if (bind(ctx.sockfd, (struct sockaddr *)&ctx.serv_addr,
                  sizeof(ctx.serv_addr)) < 0) {
-            error("Binding error");
-            close(ctx.sockfd);
-            exit(1);
+            error("Binding error"); // Binding socket error
+            close(ctx.sockfd);  // Close socket on Linux/Unix
+            exit(1); // Exit if binding fails
         }
     #endif
 
     // ====================================================================
-    // Waiting for incoming client connections
+    // Listen for incoming client connections
     // ====================================================================
     #ifdef _WIN32
         if (listen(ctx.sockfd, 5) == SOCKET_ERROR) {
-            error("Listen error");
-            WSACleanup();
-            exit(1);
+            error("Listen error"); // Error listening for connections
+            WSACleanup();  // Clean up Winsock before exiting
+            exit(1); // Exit if listening fails
         }
     #else
         if (listen(ctx.sockfd, 5) < 0) {
-            error("Listen error");
+            error("Listen error"); // Error listening for connections
         }
     #endif
 
     // ====================================================================
-    // Accepting client connection
+    // Accept incoming client connection
     // ====================================================================
-    ctx.clilen = sizeof(ctx.cli_addr);  // Set size of the client address structure
+    ctx.clilen = sizeof(ctx.cli_addr);  // Set the size of the client address structure
     #ifdef _WIN32
         ctx.newsockfd = accept(ctx.sockfd,
                            (struct sockaddr *)&ctx.cli_addr, &ctx.clilen);
         if ((unsigned long long)ctx.newsockfd ==
             (unsigned long long)INVALID_SOCKET) {
-            error("Accept error");
-            WSACleanup();
-            exit(1);
+            error("Connection acceptance error"); // Error accepting connection
+            WSACleanup();  // Clean up Winsock before exiting
+            exit(1); // Exit if connection acceptance fails
         }
     #else
         ctx.newsockfd = accept(ctx.sockfd,
                            (struct sockaddr *)&ctx.cli_addr, &ctx.clilen);
         if (ctx.newsockfd < 0) {
-            error("Accept error");
+            error("Connection acceptance error"); // Error accepting connection
         }
     #endif
     printf("Connection accepted\n");
@@ -244,27 +263,28 @@ int main(int argc, char *argv[]) {
     // Diffie-Hellman key exchange process
     // ====================================================================
     unsigned char public_key[32];
-    crypto_scalarmult_base(public_key, ctx.private_key);  // Generate the server's public key using its private key
+    crypto_scalarmult_base(public_key, ctx.private_key);  // Generate the server's public key 
+                                                          // using its private key
 
-    // Send server's public key to the client
+    // Send the server's public key to the client
     int n = send(ctx.newsockfd, (char *)public_key, sizeof(public_key), 0);
     if (n < 0) {
-        error("Sending public key to client error");
+        error("Error sending public key to client"); // Error sending public key
     }
 
-    // Receive client's public key
+    // Receive the client's public key
     unsigned char client_public_key[32];
     n = recv(ctx.newsockfd, (char *)client_public_key,
              sizeof(client_public_key), 0);
     if (n < 0) {
-        error("Receiving public key from client error");
+        error("Error receiving public key from client"); // Error receiving public key
     }
 
-    // Print received client public key
+    // Print the received client's public key
     printf("Received client public key: ");
     print_hex(client_public_key, 32);
 
-    // Calculate shared secret using Diffie-Hellman
+    // Calculate the shared secret key using Diffie-Hellman
     crypto_scalarmult(ctx.shared_secret, ctx.private_key,
                       client_public_key);
 
@@ -272,20 +292,20 @@ int main(int argc, char *argv[]) {
     print_hex(ctx.shared_secret, 32);
 
     // ====================================================================
-    // Main communication loop with client
+    // Main communication loop with the client
     // ====================================================================
     while (1) {
-        // Read encrypted message from client
-        memset(ctx.encrypted_msg, 0, sizeof(ctx.encrypted_msg));
+        // Read the encrypted message from the client
+        memset(ctx.encrypted_msg, 0, sizeof(ctx.encrypted_msg)); // Clear the buffer for encrypted message
         #ifdef _WIN32
             n = recv(ctx.newsockfd, (char *)ctx.encrypted_msg,
-                   sizeof(ctx.encrypted_msg), 0);
+                   sizeof(ctx.encrypted_msg), 0); // Receive encrypted message on Windows
         #else
             n = read(ctx.newsockfd, ctx.encrypted_msg,
-                 sizeof(ctx.encrypted_msg));
+                 sizeof(ctx.encrypted_msg)); // Receive encrypted message on Linux/Unix
         #endif
-        if (n < 0) error("Reading from client error");
-        ctx.encrypted_msglen = n;
+        if (n < 0) error("Error reading from client"); // Error reading message from client
+        ctx.encrypted_msglen = n; // Save the length of the received encrypted message
 
         // Decrypt the received message using the shared secret
         if (crypto_aead_decrypt(ctx.decrypted_msg, &ctx.decrypted_msglen,
@@ -293,36 +313,38 @@ int main(int argc, char *argv[]) {
                                 ctx.encrypted_msg, ctx.encrypted_msglen,
                                 ctx.ad, ctx.adlen,
                                 ctx.npub, ctx.shared_secret) != 0) {
-            fprintf(stderr, "Decryption error\n");
+            fprintf(stderr, "Decryption error\n"); // Decryption error
             break;
         }
-
+        // Add null-terminator to decrypted message
         ctx.decrypted_msg[ctx.decrypted_msglen] = '\0';
+        // Print the decrypted message from the client
         printf("Client: %s\n", ctx.decrypted_msg);
 
-        // Check if client wants to end the conversation
+        // Check if the client wants to end the conversation
         if (strcasecmp((char *)ctx.decrypted_msg, "bye") == 0) {
             printf("Client ended the conversation.\n");
-            break;
+            break; // End the loop if the client ends the conversation
         }
 
         // Server's response
         printf("Me: ");
-        memset(ctx.buffer, 0, sizeof(ctx.buffer));
+        memset(ctx.buffer, 0, sizeof(ctx.buffer));  // Clear the buffer
         if (fgets((char *)ctx.buffer, sizeof(ctx.buffer), stdin) == NULL)
         {
-            error("Input error");
+            error("Input error"); // Error reading input from server
         }
 
-        ctx.bufferlen = strlen((char *)ctx.buffer);
+        ctx.bufferlen = strlen((char *)ctx.buffer); // Save the length of the server's input
+                                                   // message
 
-        // Remove trailing newline character from input
+        // Remove the newline character from the input if it exists
         if (ctx.bufferlen > 0 && ctx.buffer[ctx.bufferlen - 1] == '\n')
         {
-            ctx.buffer[ctx.bufferlen - 1] = '\0';
+            ctx.buffer[ctx.bufferlen - 1] = '\0'; // Remove the newline character
         }
 
-        ctx.bufferlen = strlen((char *)ctx.buffer);
+        ctx.bufferlen = strlen((char *)ctx.buffer); // Recalculate the buffer length
 
         // Encrypt the server's response
         if (crypto_aead_encrypt(ctx.encrypted_msg, &ctx.encrypted_msglen,
@@ -330,23 +352,25 @@ int main(int argc, char *argv[]) {
                                 ctx.bufferlen,
                                 ctx.ad, ctx.adlen, ctx.nsec, ctx.npub,
                                 ctx.shared_secret) != 0) {
-            fprintf(stderr, "Encryption error\n");
+            fprintf(stderr, "Encryption error\n"); // Encryption error
             break;
         }
 
         #ifdef _WIN32
+        // Send the encrypted response on Windows
         n = send(ctx.newsockfd, (char *)ctx.encrypted_msg,
                  ctx.encrypted_msglen, 0);
         #else
-        n = write(ctx.newsockfd, ctx.encrypted_msg,
+        // Send the encrypted response on Linux/Unix
+            n = write(ctx.newsockfd, ctx.encrypted_msg,
                   ctx.encrypted_msglen);
         #endif
-        if (n < 0) error("Writing to client error");
+        if (n < 0) error("Error sending message to client"); // Error sending message to client
 
-        // Check if server wants to end the conversation
+        // Check if the server wants to end the conversation
         if (strcasecmp((char *)ctx.buffer, "bye") == 0) {
             printf("You ended the conversation.\n");
-            break;
+            break; // End the loop if the server ends the conversation
         }
     }
 
@@ -354,13 +378,13 @@ int main(int argc, char *argv[]) {
     // Closing sockets and cleaning up resources
     // ====================================================================
     #ifdef _WIN32
-        closesocket(ctx.newsockfd);
-        closesocket(ctx.sockfd);
-        WSACleanup();
+        closesocket(ctx.newsockfd);  // Close the client socket
+        closesocket(ctx.sockfd);  // Close the server socket
+        WSACleanup();  // Clean up Winsock before exiting
     #else
-        close(ctx.newsockfd);
-        close(ctx.sockfd);
+        close(ctx.newsockfd);  // Close the client socket
+        close(ctx.sockfd);  // Close the server socket
     #endif
 
-    return 0;
+    return 0; // End of program
 }
