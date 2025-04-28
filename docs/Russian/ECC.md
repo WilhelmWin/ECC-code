@@ -138,11 +138,11 @@ sv car(gf o)
     int i;
     lli c;
     for (i = 0; i < 16; i++) {
-        o[i] += (1 << 16);  // Ensure all elements are in the proper range
-        c = o[i] >> 16;  // Carry over if any element exceeds 16 bits
+        o[i] += (1 << 16);  // Обеспечить, чтобы все элементы находились в правильном диапазоне
+        c = o[i] >> 16;  // Перенос, если значение элемента превышает 16 бит
         o[(i + 1) * (i < 15)] += c - 1 + 37 * (c - 1) * (i == 15);
-        // Adjust next element if necessary
-        o[i] -= c << 16;  // Keep the current element within bounds
+        // При необходимости скорректировать следующий элемент
+        o[i] -= c << 16;  // Удержать текущий элемент в пределах диапазона
     }
 }
 ```
@@ -163,7 +163,7 @@ sv add(gf o, gf a, gf b)
 {
     int i;
     for (i = 0; i < 16; i++)
-        o[i] = a[i] + b[i];  // Element-wise addition
+        o[i] = a[i] + b[i];  // Поэлементное сложение
 }
 ```
 
@@ -173,9 +173,9 @@ sv add(gf o, gf a, gf b)
 ```c
 sv sub(gf o, gf a, gf b)
 {
-int i;
-for (i = 0; i < 16; i++)
-o[i] = a[i] - b[i];  // Element-wise subtraction
+    int i;
+    for (i = 0; i < 16; i++)
+        o[i] = a[i] - b[i];  // Поэлементное вычитание
 }
 ```
 
@@ -185,19 +185,20 @@ o[i] = a[i] - b[i];  // Element-wise subtraction
 ```c
 sv mul(gf o, gf a, gf b)
 {
-lli i, j, c[31];
-for (i = 0; i < 31; i++)
-c[i] = 0;  // Initialize carry array
-for (i = 0; i < 16; i++)
-for (j = 0; j < 16; j++)
-c[i + j] += a[i] * b[j];  // Multiply and accumulate the results
-for (i = 16; i < 31; i++)
-c[i - 16] += 38 * c[i];  // Adjust for the curve's specific parameters
-for (i = 0; i < 16; i++)
-o[i] = c[i];  // Store the result in output array
-car(o);  // Carry operation to adjust the result
-car(o);  // Additional carry operation for safety
+    lli i, j, c[31];
+    for (i = 0; i < 31; i++)
+        c[i] = 0;  // Инициализация массива переноса
+    for (i = 0; i < 16; i++)
+        for (j = 0; j < 16; j++)
+            c[i + j] += a[i] * b[j];  // Умножение и накопление результатов
+    for (i = 16; i < 31; i++)
+        c[i - 16] += 38 * c[i];  // Коррекция с учётом специфики кривой
+    for (i = 0; i < 16; i++)
+        o[i] = c[i];  // Сохранение результата в массив
+    car(o);  // Операция переноса для корректировки результата
+    car(o);  // Дополнительная операция переноса для безопасности
 }
+
 ```
 - `c[31]`: Создается массив для хранения промежуточных результатов умножения двух элементов поля Галуа.
 
@@ -211,18 +212,19 @@ car(o);  // Additional carry operation for safety
 ```c
 sv inv(gf o, gf i)
 {
-gf c;
-int a;
-for (a = 0; a < 16; a++)
-c[a] = i[a];  // Copy input to temporary array
-for (a = 253; a >= 0; a--) {
-sq(c, c);  // Square the element
-if (a != 2 && a != 4)  // Skip certain iterations for efficiency
-mul(c, c, i);  // Multiply by the inverse element if needed
+    gf c;
+    int a;
+    for (a = 0; a < 16; a++)
+        c[a] = i[a];  // Копирование входного значения во временный массив
+    for (a = 253; a >= 0; a--) {
+        sq(c, c);  // Возведение элемента в квадрат
+        if (a != 2 && a != 4)  // Пропуск определённых итераций для повышения эффективности
+            mul(c, c, i);  // Умножение на обратный элемент, если это необходимо
+    }
+    for (a = 0; a < 16; a++)
+        o[a] = c[a];  // Сохранение окончательного результата обратного элемента
 }
-for (a = 0; a < 16; a++)
-o[a] = c[a];  // Store the final inverse result
-}
+
 ```
 - `for (a = 253; a >= 0; a--)`: Этот цикл выполняет процесс вычисления обратного элемента в поле Галуа с использованием метода возведения в квадрат и умножения (алгоритм Эдвардса). Каждый шаг в цикле — это либо возведение в квадрат, либо умножение на элемент `i`.
 
@@ -232,13 +234,14 @@ o[a] = c[a];  // Store the final inverse result
 ```c
 sv sel(gf p, gf q, int b)
 {
-lli t, i, b1 = ~(b - 1); // b1 is used for bitwise operations
-for (i = 0; i < 16; i++) {
-t = b1 & (p[i] ^ q[i]);  // XOR the elements and apply the mask
-p[i] ^= t;  // Select p or q based on the flag b
-q[i] ^= t;
+    lli t, i, b1 = ~(b - 1); // b1 используется для побитовых операций
+    for (i = 0; i < 16; i++) {
+        t = b1 & (p[i] ^ q[i]);  // Выполнение побитовой операции XOR и применение маски
+        p[i] ^= t;  // Выбор p или q в зависимости от флага b
+        q[i] ^= t;
+    }
 }
-}
+
 ```
 - `for (i = 0; i < 16; i++)`: Проходит по всем элементам и выполняет побитовую операцию XOR между элементами `p` и `q` в зависимости от флага `b`. Этот флаг определяет, какой из двух массивов (`p`или `q`) будет выбран.
 
@@ -246,43 +249,44 @@ q[i] ^= t;
 ```c
 sv mainloop(lli x[32], uch *z)
 {
-gf a, b, c, d, e, f;
-lli p, i;
-for (i = 0; i < 16; i++) {
-b[i] = x[i];  // Initialize b with the input scalar
-d[i] = a[i] = c[i] = 0;  // Set other elements to 0
+    gf a, b, c, d, e, f;
+    lli p, i;
+    for (i = 0; i < 16; i++) {
+        b[i] = x[i];  // Инициализация b с входным скаляром
+        d[i] = a[i] = c[i] = 0;  // Установка остальных элементов в 0
+    }
+    a[0] = d[0] = 1;  // Установка начальных значений для a и d
+    for (i = 254; i >= 0; --i) {
+        p = (z[i >> 3] >> (i & 7)) & 1;  // Извлечение i-го бита из скаляра
+        sel(a, b, p);  // Условный выбор между a и b на основе бита
+        sel(c, d, p);  // То же для c и d
+        add(e, a, c);  // Выполнение операций эллиптической кривой
+        sub(a, a, c);
+        add(c, b, d);
+        sub(b, b, d);
+        sq(d, e);  // Возведение элементов в квадрат
+        sq(f, a);
+        mul(a, c, a);  // Умножение и добавление результатов
+        mul(c, b, e);
+        add(e, a, c);
+        sub(a, a, c);
+        sq(b, a);
+        sub(c, d, f);
+        mul(a, c, _121665);  // Умножение на константу (_121665)
+        add(a, a, d);  // Добавление результатов
+        mul(c, c, a);  // Дополнительные операции эллиптической кривой
+        mul(a, d, f);
+        mul(d, b, x);  // Умножение на точку скаляра
+        sq(b, e);
+        sel(a, b, p);  // Финальный условный выбор на основе бита
+        sel(c, d, p);
+    }
+    for (i = 0; i < 16; i++) {
+        x[i] = a[i];  // Сохранение результата в x
+        x[i + 16] = c[i];  // Сохранение второй части результата
+    }
 }
-a[0] = d[0] = 1;  // Set the starting values for a and d
-for (i = 254; i >= 0; --i) {
-p = (z[i >> 3] >> (i & 7)) & 1;  // Extract the i-th bit from scalar
-sel(a, b, p);  // Conditionally select between a and b based on the bit
-sel(c, d, p);  // Same for c and d
-add(e, a, c);  // Perform elliptic curve operations
-sub(a, a, c);
-add(c, b, d);
-sub(b, b, d);
-sq(d, e);  // Square the elements
-sq(f, a);
-mul(a, c, a);  // Multiply and add results
-mul(c, b, e);
-add(e, a, c);
-sub(a, a, c);
-sq(b, a);
-sub(c, d, f);
-mul(a, c, _121665);  // Multiply by a constant (_121665)
-add(a, a, d);  // Add the results
-mul(c, c, a);  // More elliptic curve operations
-mul(a, d, f);
-mul(d, b, x);  // Multiply by the scalar point
-sq(b, e);
-sel(a, b, p);  // Final conditional selection based on the bit
-sel(c, d, p);
-}
-for (i = 0; i < 16; i++) {
-x[i] = a[i];  // Store the result in x
-x[i + 16] = c[i];  // Store the second part of the result
-}
-}
+
 ```
 - `for (i = 254; i >= 0; --i)`: Это главный цикл, который обрабатывает каждый бит скаляра и выполняет операции эллиптической кривой на основе этого бита. Каждая итерация выполняет множество операций, таких как сложение, вычитание, умножение и возведение в квадрат, что является типичной операцией в алгоритме быстрого умножения на скаляр на эллиптической кривой.
 

@@ -153,9 +153,9 @@ and storing the result in array `o`. The addition happens for each index `i`.
 ```c
 sv sub(gf o, gf a, gf b)
 {
-int i;
-for (i = 0; i < 16; i++)
-o[i] = a[i] - b[i];  // Element-wise subtraction
+    int i;
+    for (i = 0; i < 16; i++)
+        o[i] = a[i] - b[i];  // Element-wise subtraction
 }
 ```
 - `for (i = 0; i < 16; i++)`: Similar to addition, this loop performs element-wise 
@@ -165,18 +165,18 @@ o[i] = a[i] - b[i];  // Element-wise subtraction
 ```c
 sv mul(gf o, gf a, gf b)
 {
-lli i, j, c[31];
-for (i = 0; i < 31; i++)
-c[i] = 0;  // Initialize carry array
-for (i = 0; i < 16; i++)
-for (j = 0; j < 16; j++)
-c[i + j] += a[i] * b[j];  // Multiply and accumulate the results
-for (i = 16; i < 31; i++)
-c[i - 16] += 38 * c[i];  // Adjust for the curve's specific parameters
-for (i = 0; i < 16; i++)
-o[i] = c[i];  // Store the result in output array
-car(o);  // Carry operation to adjust the result
-car(o);  // Additional carry operation for safety
+    lli i, j, c[31];
+    for (i = 0; i < 31; i++)
+        c[i] = 0;  // Initialize carry array
+    for (i = 0; i < 16; i++)
+        for (j = 0; j < 16; j++)
+            c[i + j] += a[i] * b[j];  // Multiply and accumulate the results
+    for (i = 16; i < 31; i++)
+        c[i - 16] += 38 * c[i];  // Adjust for the curve's specific parameters
+    for (i = 0; i < 16; i++)
+        o[i] = c[i];  // Store the result in output array
+    car(o);  // Carry operation to adjust the result
+    car(o);  // Additional carry operation for safety
 }
 ```
 - `c[31]`: A temporary array is created to store intermediate results of the multiplication of two Galois Field elements.
@@ -192,17 +192,17 @@ of each element of array a with each element of array `b`. The multiplication re
 ```c
 sv inv(gf o, gf i)
 {
-gf c;
-int a;
-for (a = 0; a < 16; a++)
-c[a] = i[a];  // Copy input to temporary array
-for (a = 253; a >= 0; a--) {
-sq(c, c);  // Square the element
-if (a != 2 && a != 4)  // Skip certain iterations for efficiency
-mul(c, c, i);  // Multiply by the inverse element if needed
-}
-for (a = 0; a < 16; a++)
-o[a] = c[a];  // Store the final inverse result
+    gf c;
+    int a;
+    for (a = 0; a < 16; a++)
+        c[a] = i[a];  // Copy input to temporary array
+    for (a = 253; a >= 0; a--) {
+        sq(c, c);  // Square the element
+        if (a != 2 && a != 4)  // Skip certain iterations for efficiency
+            mul(c, c, i);  // Multiply by the inverse element if needed
+    }
+    for (a = 0; a < 16; a++)
+        o[a] = c[a];  // Store the final inverse result
 }
 ```
 - `for (a = 253; a >= 0; a--)`: This loop performs the process of calculating the inverse element in the
@@ -214,13 +214,14 @@ Galois Field using squaring and multiplication (Edwards algorithm). Each step is
 ```c
 sv sel(gf p, gf q, int b)
 {
-lli t, i, b1 = ~(b - 1); // b1 is used for bitwise operations
-for (i = 0; i < 16; i++) {
-t = b1 & (p[i] ^ q[i]);  // XOR the elements and apply the mask
-p[i] ^= t;  // Select p or q based on the flag b
-q[i] ^= t;
+    lli t, i, b1 = ~(b - 1); // b1 is used for bitwise operations
+    for (i = 0; i < 16; i++) {
+        t = b1 & (p[i] ^ q[i]);  // XOR the elements and apply the mask
+        p[i] ^= t;  // Select p or q based on the flag b
+        q[i] ^= t;  // Select p or q based on the flag b
+    }
 }
-}
+
 ```
 - `for (i = 0; i < 16; i++)`: Iterates through all the elements and performs a bitwise XOR operation between
 - elements `p` and `q` based on flag `b`. The flag determines which of the two arrays (`p` or `q`) will be selected.
@@ -229,43 +230,56 @@ q[i] ^= t;
 ```c
 sv mainloop(lli x[32], uch *z)
 {
-gf a, b, c, d, e, f;
-lli p, i;
-for (i = 0; i < 16; i++) {
-b[i] = x[i];  // Initialize b with the input scalar
-d[i] = a[i] = c[i] = 0;  // Set other elements to 0
+    gf a, b, c, d, e, f;
+    lli p, i;
+    
+    for (i = 0; i < 16; i++) {
+        b[i] = x[i];  // Initialize b with the input scalar
+        d[i] = a[i] = c[i] = 0;  // Set other elements to 0
+    }
+    
+    a[0] = d[0] = 1;  // Set the starting values for a and d
+    
+    for (i = 254; i >= 0; --i) {
+        p = (z[i >> 3] >> (i & 7)) & 1;  // Extract the i-th bit from the scalar
+        sel(a, b, p);  // Conditionally select between a and b based on the bit
+        sel(c, d, p);  // Same for c and d
+        
+        add(e, a, c);  // Perform elliptic curve operations (addition)
+        sub(a, a, c);  // Subtract for elliptic curve operations
+        add(c, b, d);  // Add b and d
+        sub(b, b, d);  // Subtract d from b
+        
+        sq(d, e);  // Square the elements
+        sq(f, a);  // Square a
+        
+        mul(a, c, a);  // Multiply a and c, then store the result in a
+        mul(c, b, e);  // Multiply b and e, then store the result in c
+        add(e, a, c);  // Add the results from a and c, and store in e
+        sub(a, a, c);  // Subtract c from a
+        
+        sq(b, a);  // Square a and store the result in b
+        sub(c, d, f);  // Subtract f from d and store in c
+        
+        mul(a, c, _121665);  // Multiply c by the constant _121665 and store in a
+        add(a, a, d);  // Add the result to d and store in a
+        
+        mul(c, c, a);  // Multiply c by a and store the result in c
+        mul(a, d, f);  // Multiply d by f and store the result in a
+        mul(d, b, x);  // Multiply b by x and store the result in d
+        
+        sq(b, e);  // Square e and store the result in b
+        
+        sel(a, b, p);  // Final conditional selection between a and b based on the bit
+        sel(c, d, p);  // Final conditional selection between c and d based on the bit
+    }
+    
+    for (i = 0; i < 16; i++) {
+        x[i] = a[i];  // Store the result in x
+        x[i + 16] = c[i];  // Store the second part of the result in the second half of x
+    }
 }
-a[0] = d[0] = 1;  // Set the starting values for a and d
-for (i = 254; i >= 0; --i) {
-p = (z[i >> 3] >> (i & 7)) & 1;  // Extract the i-th bit from scalar
-sel(a, b, p);  // Conditionally select between a and b based on the bit
-sel(c, d, p);  // Same for c and d
-add(e, a, c);  // Perform elliptic curve operations
-sub(a, a, c);
-add(c, b, d);
-sub(b, b, d);
-sq(d, e);  // Square the elements
-sq(f, a);
-mul(a, c, a);  // Multiply and add results
-mul(c, b, e);
-add(e, a, c);
-sub(a, a, c);
-sq(b, a);
-sub(c, d, f);
-mul(a, c, _121665);  // Multiply by a constant (_121665)
-add(a, a, d);  // Add the results
-mul(c, c, a);  // More elliptic curve operations
-mul(a, d, f);
-mul(d, b, x);  // Multiply by the scalar point
-sq(b, e);
-sel(a, b, p);  // Final conditional selection based on the bit
-sel(c, d, p);
-}
-for (i = 0; i < 16; i++) {
-x[i] = a[i];  // Store the result in x
-x[i + 16] = c[i];  // Store the second part of the result
-}
-}
+
 ```
 - `for (i = 254; i >= 0; --i)`: This is the main loop that processes each bit of the scalar
 and performs elliptic curve operations based on that bit. Each iteration performs a variety 
