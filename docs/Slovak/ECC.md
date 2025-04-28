@@ -12,8 +12,9 @@ Tento súbor obsahuje definície typov, makrá a prototypy funkcií pre operáci
 - Skalárne násobenie s použitím základného bodu pre generovanie verejného kľúča.
 
 ### Použité knižnice:
-Hlavičkový súbor je určený na prácu s kryptografickou implementáciou, ktorá používa dátové typy `long long int` (lli) pre veľké čísla a polia `unsigned char` na reprezentáciu bajtov.
-
+- Hlavičkový súbor je určený na prácu s kryptografickou implementáciou, ktorá používa dátové typy `long long int` (lli) pre veľké čísla a polia `unsigned char` na reprezentáciu bajtov.
+- `ECC.h` -  komunikácia s vonkajším svetom
+- `session.h` -  pre dve premenné v príslušnej sekcii na prácu s krivkou
 ### Závislosti od platformy:
 Tento kód je nezávislý od platformy a môže byť použitý ako v Linuxe, tak aj vo Windows s minimálnymi zmenami.
 
@@ -46,7 +47,7 @@ Premenné pre použitie Curve25519 sa nachádzajú v knižnici `session.h`, konk
     uch o[32];
     pack(o, n); // n — to je prvok Galoisovho poľa
 ```
-## Popis funkcií:
+# Popis funkcií:
 ## `car(gf o)`
 - Táto funkcia vykonáva operáciu prenosu pre prvky Galoisovho poľa, aby sa zabezpečilo, že všetky prvky sa nachádzajú 
 v rozsahu `[0, 2^16-1]`. Pridáva prenos, ak prvok presahuje 16 bitov, a opravuje nasledujúci prvok, ak je to potrebné.

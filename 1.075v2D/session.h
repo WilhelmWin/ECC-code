@@ -130,7 +130,7 @@ typedef unsigned char uch;  // Define 'uch' as a shorthand for unsigned
                            // char
 
 // ========================================================================
-// Example of unused elliptic curve parameters (for ECC implementation)
+// Curve25519 constant and base point
 // ========================================================================
 static gf _121665 __attribute__((unused)) = {0xDB41, 1};  // Constant
 // curve parameter

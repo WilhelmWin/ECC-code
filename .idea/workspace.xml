@@ -26,16 +26,10 @@
   <component name="ChangeListManager">
     <list default="true" id="62a155e0-cb44-4b23-a8e6-2982237608cb" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/1.075v2/ECC.c" beforeDir="false" afterPath="$PROJECT_DIR$/1.075v2/ECC.c" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/1.075v2/Makefile" beforeDir="false" afterPath="$PROJECT_DIR$/1.075v2/Makefile" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/1.075v2D/ASCON/aead.c" beforeDir="false" afterPath="$PROJECT_DIR$/1.075v2D/ASCON/aead.c" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/1.075v2D/ASCON/crypto_aead.h" beforeDir="false" afterPath="$PROJECT_DIR$/1.075v2D/ASCON/crypto_aead.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/1.075v2D/client.c" beforeDir="false" afterPath="$PROJECT_DIR$/1.075v2D/client.c" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/1.075v2D/drng.h" beforeDir="false" afterPath="$PROJECT_DIR$/1.075v2D/drng.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/1.075v2D/server.c" beforeDir="false" afterPath="$PROJECT_DIR$/1.075v2D/server.c" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/1.075v2D/session.c" beforeDir="false" afterPath="$PROJECT_DIR$/1.075v2D/session.c" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/1.075v2D/session.h" beforeDir="false" afterPath="$PROJECT_DIR$/1.075v2D/session.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/Russian/drng.md" beforeDir="false" afterPath="$PROJECT_DIR$/docs/Russian/drng.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/English/ECC.md" beforeDir="false" afterPath="$PROJECT_DIR$/docs/English/ECC.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/Russian/ECC.md" beforeDir="false" afterPath="$PROJECT_DIR$/docs/Russian/ECC.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/Slovak/ECC.md" beforeDir="false" afterPath="$PROJECT_DIR$/docs/Slovak/ECC.md" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -188,7 +182,7 @@
       <workItem from="1745347208156" duration="6782000" />
       <workItem from="1745354080342" duration="1933000" />
       <workItem from="1745362226371" duration="15580000" />
-      <workItem from="1745769074509" duration="22314000" />
+      <workItem from="1745769074509" duration="28506000" />
     </task>
     <servers />
   </component>
