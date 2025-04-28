@@ -19,8 +19,8 @@
 // This code is designed for C programming with standard libraries.
 //
 // Usage example:
-// - crypto_aead_encrypt(c, &clen, m, mlen, ad, adlen, nsec, npub, k);
-// - crypto_aead_decrypt(m, &mlen, nsec, c, clen, ad, adlen, npub, k);
+// - crypto_aead_encrypt(c, &clen, m, mlen,  npub, k);
+// - crypto_aead_decrypt(m, &mlen, nsec, c, adlen, npub, k);
 // ========================================================================
 
 // ========================================================================
@@ -37,7 +37,6 @@
 // - clen: the length of the ciphertext (including tag)
 // - m: message to encrypt
 // - mlen: length of the message
-// - ad: associated data (additional authenticated data)
 // - adlen: length of associated data
 // - nsec: not used in this implementation, always NULL
 // - npub: nonce (unique per encryption)
@@ -47,6 +46,7 @@
 // - 0 on success, non-zero on failure
 // ========================================================================
 
+#include "api.h"
 #include "api.h"
 #include "ascon.h"
 #include "crypto_aead.h"
@@ -76,7 +76,6 @@ int crypto_aead_encrypt(unsigned char* c, unsigned long long* clen,
   print("encrypt\n");
   printbytes("k", k, CRYPTO_KEYBYTES);  // Print key bytes
   printbytes("n", npub, CRYPTO_NPUBBYTES);  // Print nonce bytes
-  printbytes("a", ad, adlen);  // Print associated data bytes
   printbytes("m", m, mlen);  // Print message bytes
 
   // =====================================================================
@@ -199,7 +198,6 @@ int crypto_aead_decrypt(unsigned char* m, unsigned long long* mlen,
   print("decrypt\n");
   printbytes("k", k, CRYPTO_KEYBYTES);    // Print key 'k'
   printbytes("n", npub, CRYPTO_NPUBBYTES); // Print nonce 'npub'
-  printbytes("a", ad, adlen);              // Print associated data
   printbytes("c", c, *mlen);               // Print ciphertext 'c'
   printbytes("t", c + *mlen, CRYPTO_ABYTES); // Print the tag 't'
 
