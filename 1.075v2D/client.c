@@ -223,7 +223,7 @@ int main(int argc, char *argv[]) {
         // Encrypt the message
         if (crypto_aead_encrypt(ctx.encrypted_msg, &ctx.encrypted_msglen,
                                 ctx.buffer, ctx.bufferlen,
-                                ctx.ad, ctx.adlen, ctx.nsec, ctx.npub,
+                                ctx.npub,
                                 ctx.shared_secret) != 0) {
             fprintf(stderr, "Encryption error\n");  // If encryption
                                                     // fails, print an
@@ -270,7 +270,6 @@ n = recv(ctx.sockfd, (char *)ctx.encrypted_msg,
         if (crypto_aead_decrypt(ctx.decrypted_msg, &ctx.decrypted_msglen,
                                 ctx.nsec,
                                 ctx.encrypted_msg, ctx.encrypted_msglen,
-                                ctx.ad, ctx.adlen,
                                 ctx.npub, ctx.shared_secret) != 0) {
             fprintf(stderr, "Decryption error\n");  // If decryption
                                                     // fails, print an

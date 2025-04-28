@@ -116,10 +116,6 @@ typedef struct {
     unsigned long long encrypted_msglen; // Length of the encrypted
                                          // message
 
-    const unsigned char *ad;  // Associated data (could be NULL if
-                              // not used)
-    unsigned long long adlen; // Length of the associated data
-
     unsigned char npub[NONCE_SIZE];  // Nonce (used for encryption,
                                      // 16 bytes)
     struct sockaddr_in cli_addr;     // Client address structure

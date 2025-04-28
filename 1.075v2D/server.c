@@ -288,7 +288,6 @@ int main(int argc, char *argv[]) {
         if (crypto_aead_decrypt(ctx.decrypted_msg, &ctx.decrypted_msglen,
                                 ctx.nsec,
                                 ctx.encrypted_msg, ctx.encrypted_msglen,
-                                ctx.ad, ctx.adlen,
                                 ctx.npub, ctx.shared_secret) != 0) {
             fprintf(stderr, "Decryption error\n"); // Decryption error
             break;
@@ -330,8 +329,7 @@ int main(int argc, char *argv[]) {
         // Encrypt the server's response
         if (crypto_aead_encrypt(ctx.encrypted_msg, &ctx.encrypted_msglen,
                                 (unsigned char *)ctx.buffer,
-                                ctx.bufferlen,
-                                ctx.ad, ctx.adlen, ctx.nsec, ctx.npub,
+                                ctx.bufferlen, ctx.npub,
                                 ctx.shared_secret) != 0) {
             fprintf(stderr, "Encryption error\n"); // Encryption error
             break;

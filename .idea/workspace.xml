@@ -24,7 +24,19 @@
     </configurations>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="62a155e0-cb44-4b23-a8e6-2982237608cb" name="Changes" comment="" />
+    <list default="true" id="62a155e0-cb44-4b23-a8e6-2982237608cb" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/1.075v2/ECC.c" beforeDir="false" afterPath="$PROJECT_DIR$/1.075v2/ECC.c" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/1.075v2/Makefile" beforeDir="false" afterPath="$PROJECT_DIR$/1.075v2/Makefile" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/1.075v2D/ASCON/aead.c" beforeDir="false" afterPath="$PROJECT_DIR$/1.075v2D/ASCON/aead.c" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/1.075v2D/ASCON/crypto_aead.h" beforeDir="false" afterPath="$PROJECT_DIR$/1.075v2D/ASCON/crypto_aead.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/1.075v2D/client.c" beforeDir="false" afterPath="$PROJECT_DIR$/1.075v2D/client.c" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/1.075v2D/drng.h" beforeDir="false" afterPath="$PROJECT_DIR$/1.075v2D/drng.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/1.075v2D/server.c" beforeDir="false" afterPath="$PROJECT_DIR$/1.075v2D/server.c" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/1.075v2D/session.c" beforeDir="false" afterPath="$PROJECT_DIR$/1.075v2D/session.c" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/1.075v2D/session.h" beforeDir="false" afterPath="$PROJECT_DIR$/1.075v2D/session.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/Russian/drng.md" beforeDir="false" afterPath="$PROJECT_DIR$/docs/Russian/drng.md" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -39,7 +51,7 @@
     </projectState>
   </component>
   <component name="Git.Settings">
-    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/1.0" />
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
   <component name="MakefileLocalSettings">
     <option name="availableProjects">
@@ -85,27 +97,31 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;RunOnceActivity.RadMigrateCodeStyle&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.cidr.known.project.marker&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.readMode.enableVisualFormatting&quot;: &quot;true&quot;,
-    &quot;cf.first.check.clang-format&quot;: &quot;false&quot;,
-    &quot;cidr.known.project.marker&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;&lt;unknown&gt;&quot;,
-    &quot;last_opened_file_path&quot;: &quot;/home/kali/ECC-code/1.075&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "RunOnceActivity.RadMigrateCodeStyle": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.cidr.known.project.marker": "true",
+    "RunOnceActivity.readMode.enableVisualFormatting": "true",
+    "cf.first.check.clang-format": "false",
+    "cidr.known.project.marker": "true",
+    "git-widget-placeholder": "master",
+    "last_opened_file_path": "/home/kali/ECC-code",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "vue.rearranger.settings.migration": "true"
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$" />
       <recent name="$PROJECT_DIR$/1.075" />
+    </key>
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/docs/English" />
     </key>
   </component>
   <component name="RunManager" selected="Native Application.all">
@@ -149,11 +165,6 @@
         <option name="CLION.COMPOUND.BUILD" enabled="true" />
       </method>
     </configuration>
-    <configuration default="true" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" EMULATE_TERMINAL="false" PASS_PARENT_ENVS_2="true">
-      <method v="2">
-        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
-      </method>
-    </configuration>
     <list>
       <item itemvalue="Native Application.all" />
       <item itemvalue="Native Application.client" />
@@ -176,7 +187,8 @@
       <workItem from="1745346130461" duration="614000" />
       <workItem from="1745347208156" duration="6782000" />
       <workItem from="1745354080342" duration="1933000" />
-      <workItem from="1745362226371" duration="14883000" />
+      <workItem from="1745362226371" duration="15580000" />
+      <workItem from="1745769074509" duration="22314000" />
     </task>
     <servers />
   </component>

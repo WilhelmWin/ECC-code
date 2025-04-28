@@ -99,9 +99,6 @@
  * specific hardware features. A value of -1 indicates that support
  * has not been checked yet.
  */
-#define DRNG_NO_SUPPORT 0x0  /* No support */
-#define DRNG_HAS_RDRAND 0x1  /* RDRAND support */
-#define DRNG_HAS_RDSEED 0x2  /* RDSEED support */
 
 
 // ========================================================================

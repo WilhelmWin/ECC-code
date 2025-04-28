@@ -69,12 +69,6 @@ void initializeContext(ClientServerContext *ctx) {
     // Initialize the length of the encrypted message to 0
     ctx->encrypted_msglen = 0;
 
-    // Set the associated data (ad) to NULL
-    ctx->ad = NULL;
-
-    // Initialize the length of the associated data to 0
-    ctx->adlen = 0;
-
     // Set a fixed value for the nonce (used for encryption uniqueness)
     memcpy(ctx->npub, "simple_nonce_123", NONCE_SIZE);
 }

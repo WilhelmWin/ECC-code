@@ -171,6 +171,7 @@ ifeq ($(OS), Windows_NT)
 	-$(RM) $(SERVER_TARGET) $(CLIENT_TARGET) *.exe
 else
 	$(RM) $(ASCON_DIR)/*.o $(LIBRARIES) $(SERVER_TARGET) $(CLIENT_TARGET)
+	$(RM) $(ECC_OBJ) $(COMMON_OBJ)  $(SERVER_OBJ) $(CLIENT_OBJ)
 endif
 
 distclean:

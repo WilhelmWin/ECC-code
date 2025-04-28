@@ -60,11 +60,9 @@
 
 int crypto_aead_encrypt(unsigned char* c, unsigned long long* clen,
                         const unsigned char* m, unsigned long long mlen,
-                        const unsigned char* ad, unsigned long long adlen,
-                        const unsigned char* nsec,
                         const unsigned char* npub,
                         const unsigned char* k) {
-  (void)nsec;  // nsec is not used in this implementation
+
 
   // =====================================================================
   // Set ciphertext size
@@ -105,33 +103,6 @@ int crypto_aead_encrypt(unsigned char* c, unsigned long long* clen,
   s.x[4] ^= K1;  // XOR with the second part of the key
   printstate("init 2nd key xor", &s);  // Print state after second XOR
 
-  // =====================================================================
-  // Process associated data
-  // =====================================================================
-  if (adlen) {
-    // Full associated data blocks
-    while (adlen >= ASCON_128A_RATE) {
-      s.x[0] ^= LOADBYTES(ad, 8);  // XOR with first block of associated
-                                   // data
-      s.x[1] ^= LOADBYTES(ad + 8, 8);  // XOR with second block of AD
-      printstate("absorb adata", &s);  // Print state after absorbing AD
-      P8(&s);  // Apply 8 rounds of permutation for AD
-      ad += ASCON_128A_RATE;  // Move to the next associated data block
-      adlen -= ASCON_128A_RATE;  // Decrease associated data length
-    }
-
-    // Final associated data block
-    if (adlen >= 8) {
-      s.x[0] ^= LOADBYTES(ad, 8);  // XOR with final block of AD
-      s.x[1] ^= LOADBYTES(ad + 8, adlen - 8);  // XOR with partial block
-      s.x[1] ^= PAD(adlen - 8);  // Apply padding if necessary
-    } else {
-      s.x[0] ^= LOADBYTES(ad, adlen);  // XOR with final part of AD
-      s.x[0] ^= PAD(adlen);  // Apply padding
-    }
-    printstate("pad adata", &s);  // Print state after padding AD
-    P8(&s);  // Apply 8 rounds of permutation for AD
-  }
 
   // =====================================================================
   // Apply domain separation
@@ -207,8 +178,7 @@ int crypto_aead_encrypt(unsigned char* c, unsigned long long* clen,
 // ========================================================================
 int crypto_aead_decrypt(unsigned char* m, unsigned long long* mlen,
                         unsigned char* nsec, const unsigned char* c,
-                        unsigned long long clen, const unsigned char* ad,
-                        unsigned long long adlen,
+                        unsigned long long clen,
                         const unsigned char* npub,
                         const unsigned char* k) {
   (void)nsec;  // 'nsec' is unused in this function, suppress warning
@@ -259,37 +229,6 @@ int crypto_aead_decrypt(unsigned char* m, unsigned long long* mlen,
   s.x[3] ^= K0;  // XOR with key part K0
   s.x[4] ^= K1;  // XOR with key part K1
   printstate("init 2nd key xor", &s);
-
-   // =====================================================================
-   // Process associated data (if provided). Absorb the
-   // data into the ASCON state.
-   // =====================================================================
-  if (adlen) {
-    // Process full associated data blocks
-    while (adlen >= ASCON_128A_RATE) {
-      s.x[0] ^= LOADBYTES(ad, 8);
-      s.x[1] ^= LOADBYTES(ad + 8, 8);
-      printstate("absorb adata", &s);
-      P8(&s);  // Perform smaller permutation for each block
-      ad += ASCON_128A_RATE;
-      adlen -= ASCON_128A_RATE;
-    }
-
-   // =====================================================================
-   //  Process any remaining associated data block (if less
-   // than a full block). Padding is added to align the data.
-   // =====================================================================
-    if (adlen >= 8) {
-      s.x[0] ^= LOADBYTES(ad, 8);
-      s.x[1] ^= LOADBYTES(ad + 8, adlen - 8);
-      s.x[1] ^= PAD(adlen - 8);
-    } else {
-      s.x[0] ^= LOADBYTES(ad, adlen);
-      s.x[0] ^= PAD(adlen);
-    }
-    printstate("pad adata", &s);
-    P8(&s);
-  }
 
    // =====================================================================
    // Perform domain separation to differentiate between

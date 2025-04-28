@@ -78,11 +78,6 @@ unsigned char *c,              // Output ciphertext (encrypted message)
 unsigned long long *clen,      // Length of the ciphertext (output)
 const unsigned char *m,        // Input message (plaintext)
 unsigned long long mlen,       // Length of the message (plaintext)
-const unsigned char *ad,       // Additional associated data
-                               // (not encrypted, but authenticated)
-unsigned long long adlen,      // Length of the associated data
-const unsigned char *nsec,     // Secret nonce (usually null or zero if
-                               // not used)
 const unsigned char *npub,     // Public nonce
                                // (typically used for uniqueness)
 const unsigned char *k         // Key (secret key used for encryption)
@@ -96,9 +91,7 @@ unsigned char *nsec,           // Secret nonce (may be set to null if
                                // not used)
 const unsigned char *c,        // Input ciphertext (encrypted message)
 unsigned long long clen,       // Length of the ciphertext
-const unsigned char *ad,       // Additional associated data (same as
-                               // encryption)
-unsigned long long adlen,      // Length of the associated data
+
 const unsigned char *npub,     // Public nonce (same as encryption)
 const unsigned char *k         // Key (same key as encryption)
 );
