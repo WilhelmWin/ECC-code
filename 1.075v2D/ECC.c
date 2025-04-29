@@ -60,7 +60,7 @@
 //
 // ========================================================================
 
-
+#define DEFINE_CONSTANTS
 #include "ECC.h"
 #include "session.h"
 

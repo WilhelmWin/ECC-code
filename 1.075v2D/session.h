@@ -132,8 +132,14 @@ typedef unsigned char uch;  // Define 'uch' as a shorthand for unsigned
 // ========================================================================
 // Curve25519 constant and base point
 // ========================================================================
-static gf _121665 __attribute__((unused)) = {0xDB41, 1};  // Constant
+#ifdef DEFINE_CONSTANTS
+gf _121665 = {0xDB41, 1};  // Constant
 // curve parameter
+#else
+extern gf _121665;
+#endif
+
+
 static const uch base[32] = {9};  // Base point for elliptic curve (X25519)
 
 // ========================================================================

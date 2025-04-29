@@ -151,10 +151,16 @@ int main(int argc, char *argv[]) {
         if (setsockopt(ctx.sockfd, SOL_SOCKET, SO_REUSEADDR,
                        (const char *)&optval, sizeof(optval))
         == SOCKET_ERROR) {
+            closesocket(ctx.sockfd);
             error("setsockopt(SO_REUSEADDR) failed"); // Error
                                                       // setting socket
                                                      // options
+
+        }
+        if (bind(ctx.sockfd, (struct sockaddr *)&ctx.serv_addr,
+                 sizeof(ctx.serv_addr)) == SOCKET_ERROR) {
             closesocket(ctx.sockfd);
+            error("ERROR on binding"); // Error binding the socket
         }
     #else
         if (setsockopt(ctx.sockfd, SOL_SOCKET, SO_REUSEADDR,
