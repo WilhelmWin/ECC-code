@@ -195,6 +195,11 @@ int main(int argc, char *argv[]) {
     // ====================================================================
     // Ctrl+Z and Ctrl+C checking
     // ====================================================================
+
+#ifdef _WIN32
+
+    register_signal_handler(&ctx);
+#else
     // Registration
     struct sigaction sa;
     sa.sa_flags = SA_SIGINFO;  // Enable the ability to transmit data
@@ -208,7 +213,7 @@ int main(int argc, char *argv[]) {
     sigaction(SIGINT, &sa, NULL);
     sigaction(SIGTERM, &sa, NULL);
     sigaction(SIGTSTP, &sa, NULL);
-
+#endif
     // ====================================================================
     // Accept connection from the client
     // ====================================================================

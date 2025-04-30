@@ -150,5 +150,6 @@ void generate_private_key(uch private_key[32]);  // Function to generate
                                                 // a random private key
 void hexdump(const uch *data, size_t length);  // Function to print hex
                                               // dump of data
-void handle_signal(int sig, siginfo_t *si, void *ucontext);
+void handle_signal(int sig, siginfo_t *si, void *ucontext); // to destroy
+                                                           // Ctrl+Z
 #endif // SESSION_H
