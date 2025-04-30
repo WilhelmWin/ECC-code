@@ -46,7 +46,7 @@
 #include <string.h>       // For string functions like memset(), memcpy()
 #include <stdio.h>        // For standard I/O functions like printf()
 #include <stdlib.h>       // For standard library functions like malloc()
-#include <signal.h>
+
 
 // ========================================================================
 // Platform-specific includes for Windows and Unix-like systems
@@ -55,6 +55,7 @@
     #include <winsock2.h>     // For Windows socket functions
 typedef int socklen_t;
     #include <windows.h>      // For Windows-specific functionality
+    
 #else
     #include <arpa/inet.h>    // For inet_ntoa() and other IP-related
                               // functions
@@ -65,7 +66,7 @@ typedef int socklen_t;
 
     #include <sys/socket.h>   // For socket functions
                               // (socket(), bind(), etc.)
-
+#include <signal.h>
     #include <netdb.h>        // For gethostbyname() and other networking
                               // functions
 #endif
@@ -150,6 +151,10 @@ void generate_private_key(uch private_key[32]);  // Function to generate
                                                 // a random private key
 void hexdump(const uch *data, size_t length);  // Function to print hex
                                               // dump of data
+#ifdef _WIN32
+void register_signal_handler(ClientServerContext *ctx);
+#else
 void handle_signal(int sig, siginfo_t *si, void *ucontext); // to destroy
                                                            // Ctrl+Z
+#endif
 #endif // SESSION_H
