@@ -144,7 +144,8 @@ void error(char *msg) {
 
 #ifdef _WIN32
 
-// Обработчик "сигналов"
+static ClientServerContext *internal_ctx = NULL;  // static in module
+// Checking signals
 BOOL WINAPI handle_signal(DWORD signal) {
     if (signal == CTRL_C_EVENT || signal == CTRL_BREAK_EVENT || signal == CTRL_CLOSE_EVENT) {
         if (internal_ctx) {
@@ -157,7 +158,7 @@ BOOL WINAPI handle_signal(DWORD signal) {
     return FALSE;
 }
 
-// Инициализация обработчика с передачей указателя
+// Handler initialization with pointer passing
 void register_signal_handler(ClientServerContext *ctx) {
     internal_ctx = ctx;
     if (!SetConsoleCtrlHandler(handle_signal, TRUE)) {
