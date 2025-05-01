@@ -12,7 +12,7 @@
 
 ### What Has Changed?
 
-- All [original files](https://github.com/WilhelmWin/ECC-code/tree/master/2.0/Source/Drng)
+- All [files](https://github.com/WilhelmWin/ECC-code/tree/master/2.0/Source/Drng)
   were moved to two files `drng.c/drng.h`.
 - The main function was removed, as well as other functions, including those working on 16-bit and 32-bit systems, which are not used in the project, leaving only these three functions.
 ---

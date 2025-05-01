@@ -240,8 +240,7 @@ int main(int argc, char *argv[]) {
                                 ctx.buffer, ctx.bufferlen,
                                 ctx.npub,
                                 ctx.shared_secret) != 0) {
-          error("ASCON problem\n"
-          "Encryption error");
+          error("Encryption error");
         }
 
         // Send the encrypted message
@@ -285,8 +284,7 @@ n = recv(ctx.sockfd, (char *)ctx.encrypted_msg,
                                 ctx.encrypted_msg, ctx.encrypted_msglen,
                                 ctx.npub, ctx.shared_secret) != 0) {
 
-            error("ASCON problem\n"
-            "Decryption error");
+            error("Decryption error");
         }
 
         ctx.decrypted_msg[ctx.decrypted_msglen] = '\0';  // Null-terminate

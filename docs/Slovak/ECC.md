@@ -13,7 +13,7 @@
 - Poskytol ju vedecký vedúci Miloš Drutarovský počas úvodných stretnutí týkajúcich sa projektu.
 
 ### Čo bolo zmenené?
-- [Pôvodný súbor](https://github.com/WilhelmWin/ECC-code/tree/master/2.0/Source/Curve25519) 
+- [Súbor](https://github.com/WilhelmWin/ECC-code/tree/master/2.0/Source/Curve25519) 
 bol prispôsobený pre klient-server štruktúru.
 
 ---

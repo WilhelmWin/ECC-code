@@ -8,13 +8,13 @@ CC = gcc
 CFLAGS = -Wall -Wextra -O2 -fstack-protector-strong -fPIE -D_FORTIFY_SOURCE=2
 LDFLAGS = -pie -Wl,-z,relro -Wl,-z,now
 ```
-- CC: используемый C-компилятор (GCC).
-- CFLAGS: флаги компиляции для предупреждений, оптимизации и безопасности:
-  - Wall -Wextra: включение стандартных и дополнительных предупреждений.
-  - O2: оптимизация второго уровня.
-  - fstack-protector-strong: защита стека от переполнения.
-  - fPIE и -pie: позиционно-независимые исполняемые файлы (для ASLR).
-  - D_FORTIFY_SOURCE=2: проверки во время компиляции и выполнения.
+- `CC`: используемый C-компилятор (GCC).
+- `CFLAGS`: флаги компиляции для предупреждений, оптимизации и безопасности:
+  - `Wall -Wextra`: включение стандартных и дополнительных предупреждений.
+  - `O2`: оптимизация второго уровня.
+  - `fstack`-protector-strong: защита стека от переполнения.
+  - `fPIE` и `-pie`: позиционно-независимые исполняемые файлы (для ASLR).
+  - `D_FORTIFY_SOURCE=2`: проверки во время компиляции и выполнения.
 
 ## 🎯 Названия целевых исполняемых файлов
 ```make
@@ -47,16 +47,16 @@ ASCON_OBJ = $(ASCON_SRC:.c=.o)
 
 ### Server / Client
 ```make
-SERVER_SRC = server.c session.c drng.c
-CLIENT_SRC = client.c session.c drng.c
+SERVER_SRC = server.c session.c drng.c error.c
+CLIENT_SRC = client.c session.c drng.c error.c
 ```
-- Server использует: `server.c`, общий `session.c` и ГСЧ `drng.c`.
+- Server использует: `server.c`, общий `session.c`, ГСЧ `drng.c` и ошибки `error.c`.
 
-- Client использует: `client.c`, `session.c` и `drng.c`.
+- Client использует: `client.c`, `session.c` и `drng.c`, `error.c`.
 ```make
 SERVER_OBJ = $(SERVER_SRC:.c=.o)
 CLIENT_OBJ = $(CLIENT_SRC:.c=.o)
-COMMON_OBJ = session.o drng.o
+COMMON_OBJ = session.o drng.o error.o
 ```
 - Объектные файлы создаются автоматически на основе исходников.
 
@@ -132,7 +132,7 @@ $(CC) $(CFLAGS) -c $< -o $@
 ```make
 postbuild:
 ifeq ($(OS), Windows_NT)
--$(RM) ECC.o session.o drng.o
+-$(RM) ECC.o session.o drng.o error.o
 -$(RM) ASCON\\aead.o ASCON\\printstate.o
 -$(RM) server.o client.o
 -$(RM) $(LIBRARIES)

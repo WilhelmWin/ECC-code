@@ -58,17 +58,17 @@ ASCON_OBJ = $(ASCON_SRC:.c=.o)
 
 ### Server / Client
 ```make
-SERVER_SRC = server.c session.c drng.c
-CLIENT_SRC = client.c session.c drng.c
+SERVER_SRC = server.c session.c drng.c error.c
+CLIENT_SRC = client.c session.c drng.c erroc.c
 ```
-- Server používa: `server.c`, zdieľaný session.c a generátor 
-náhodných čísel `drng.c`.
+- Server používa: `server.c`, zdieľaný session.c, generátor 
+náhodných čísel `drng.c` a errors `error.c`.
 
-- Client používa: `client.c`,` session.c `a `drng.c`.
+- Client používa: `client.c`,` session.c `, `drng.c` a `error.c`.
 ```make
 SERVER_OBJ = $(SERVER_SRC:.c=.o)
 CLIENT_OBJ = $(CLIENT_SRC:.c=.o)
-COMMON_OBJ = session.o drng.o
+COMMON_OBJ = session.o drng.o error.o
 ```
 - Objektové súbory sa generujú automaticky z príslušných zdrojových súborov.
 
@@ -144,7 +144,7 @@ $(CLIENT_TARGET): $(CLIENT_OBJ) $(LIBRARIES)
 ```make
 postbuild:
 ifeq ($(OS), Windows_NT)
-	-$(RM) ECC.o session.o drng.o
+	-$(RM) ECC.o session.o drng.o error.o
 	-$(RM) ASCON\\aead.o ASCON\\printstate.o
 	-$(RM) server.o client.o
 	-$(RM) $(LIBRARIES)

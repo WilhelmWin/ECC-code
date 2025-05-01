@@ -53,7 +53,7 @@
 
 
 #include "session.h"
-
+#include "error.h"
 
 
 int main(int argc, char *argv[]) {
@@ -116,15 +116,15 @@ int main(int argc, char *argv[]) {
                                                      // on Windows
         if ((unsigned long long)ctx.sockfd ==
             (unsigned long long)INVALID_SOCKET) {
-            closesocket(ctx.sockfd);
-            error("ERROR opening socket"); // Error opening socket
+            error_server("ERROR opening socket", ctx.sockfd, ctx.newsockfd);
+            // Error opening socket
         }
     #else
         ctx.sockfd = socket(AF_INET, SOCK_STREAM, 0); // Create TCP socket
                                                      // on Linux/Unix
         if (ctx.sockfd < 0) {
-            close(ctx.sockfd);
-            error("ERROR opening socket"); // Error opening socket
+            error_server("ERROR opening socket", ctx.sockfd, ctx.newsockfd);
+            // Error opening socket
         }
     #endif
 
@@ -151,30 +151,30 @@ int main(int argc, char *argv[]) {
         if (setsockopt(ctx.sockfd, SOL_SOCKET, SO_REUSEADDR,
                        (const char *)&ctx.optval, sizeof(ctx.optval))
         == SOCKET_ERROR) {
-            closesocket(ctx.sockfd);
-            error("setsockopt(SO_REUSEADDR) failed"); // Error
+            error_server("setsockopt(SO_REUSEADDR) failed", ctx.sockfd,
+                       ctx.newsockfd); // Error
                                                       // setting socket
                                                      // options
 
         }
         if (bind(ctx.sockfd, (struct sockaddr *)&ctx.serv_addr,
                  sizeof(ctx.serv_addr)) == SOCKET_ERROR) {
-            closesocket(ctx.sockfd);
-            error("ERROR on binding"); // Error binding the socket
+            error_server("ERROR on binding", ctx.sockfd, ctx.newsockfd);
+            // Error binding the socket
         }
     #else
         if (setsockopt(ctx.sockfd, SOL_SOCKET, SO_REUSEADDR,
                        &ctx.optval, sizeof(ctx.optval)) < 0) {
-            close(ctx.sockfd);
-            error("setsockopt(SO_REUSEADDR) failed"); // Error
+            error_server("setsockopt(SO_REUSEADDR) failed", ctx.sockfd,
+                                       ctx.newsockfd); // Error
                                                       // setting socket
                                                      // options
         }
 
         if (bind(ctx.sockfd, (struct sockaddr *)&ctx.serv_addr,
                  sizeof(ctx.serv_addr)) < 0) {
-            close(ctx.sockfd);
-            error("ERROR on binding"); // Error binding the socket
+            error_server("ERROR on binding", ctx.sockfd, ctx.newsockfd);
+            // Error binding the socket
         }
     #endif
 
@@ -183,13 +183,14 @@ int main(int argc, char *argv[]) {
     // ====================================================================
     #ifdef _WIN32
         if (listen(ctx.sockfd, 5) == SOCKET_ERROR) {
-            closesocket(ctx.sockfd);
-            error("ERROR on listen"); // Error listening for connections
+            error_server("ERROR on listen", ctx.sockfd, ctx.newsockfd);
+            // Error listening for connections
         }
     #else
         if (listen(ctx.sockfd, 5) < 0) {
             close(ctx.sockfd);
-            error("ERROR on listen"); // Error listening for connections
+            error_server("ERROR on listen", ctx.sockfd, ctx.newsockfd);
+            // Error listening for connections
         }
     #endif
     // ====================================================================
@@ -224,13 +225,15 @@ int main(int argc, char *argv[]) {
                            (struct sockaddr *)&ctx.cli_addr, &ctx.clilen);
         if ((unsigned long long)ctx.newsockfd ==
             (unsigned long long)INVALID_SOCKET) {
-            error("ERROR on accept"); // Error accepting the connection
+            error_server("ERROR on accept", ctx.sockfd, ctx.newsockfd);
+            // Error accepting the connection
         }
     #else
         ctx.newsockfd = accept(ctx.sockfd,
                            (struct sockaddr *)&ctx.cli_addr, &ctx.clilen);
         if (ctx.newsockfd < 0) {
-            error("ERROR on accept"); // Error accepting the connection
+            error_server("ERROR on accept", ctx.sockfd, ctx.newsockfd);
+            // Error accepting the connection
         }
     #endif
     printf("Connection accepted\n");
@@ -248,7 +251,8 @@ int main(int argc, char *argv[]) {
     // Send the server's public key to the client
     int n = send(ctx.newsockfd, ctx.public_key, sizeof(ctx.public_key), 0);
     if (n < 0) {
-        error("Error sending public key to client"); // Error sending the
+        error_server("Error sending public key to client", ctx.sockfd,
+                                    ctx.newsockfd); // Error sending the
                                                     // public key to the
                                                     // client
     }
@@ -257,7 +261,8 @@ int main(int argc, char *argv[]) {
     n = recv(ctx.newsockfd, ctx.client_public_key,
              sizeof(ctx.client_public_key), 0);
     if (n < 0) {
-        error("Error receiving public key from client"); // Error receiving
+        error_server("Error receiving public key from client", ctx.sockfd,
+                                        ctx.newsockfd); // Error receiving
                                                         // the client's
                                                         // public key
     }
@@ -293,7 +298,8 @@ int main(int argc, char *argv[]) {
                  sizeof(ctx.encrypted_msg)); // Receive encrypted message
                                              // on Linux/Unix
         #endif
-        if (n < 0) error("Error reading from client"); // Error reading
+        if (n < 0) error_server("Error reading from client", ctx.sockfd,
+                                        ctx.newsockfd); // Error reading
                                                        // the
                                                       // message from the
                                                       // client
@@ -305,7 +311,8 @@ int main(int argc, char *argv[]) {
                                 ctx.nsec,
                                 ctx.encrypted_msg, ctx.encrypted_msglen,
                                 ctx.npub, ctx.shared_secret) != 0) {
-            error("ASCON problem\nDecryption error");
+            error_server("Decryption error", ctx.sockfd,
+                       ctx.newsockfd);
         }
         // Null-terminate the decrypted message
         ctx.decrypted_msg[ctx.decrypted_msglen] = '\0';
@@ -324,7 +331,8 @@ int main(int argc, char *argv[]) {
         memset(ctx.buffer, 0, sizeof(ctx.buffer));  // Clear the buffer
         if (fgets((char *)ctx.buffer, sizeof(ctx.buffer), stdin) == NULL)
         {
-            error("Error reading input"); // Error reading server's input
+            error_server("Error reading input", ctx.sockfd, ctx.newsockfd);
+            // Error reading server's input
         }
 
         ctx.bufferlen = strlen((char *)ctx.buffer); // Store the length of
@@ -346,7 +354,8 @@ int main(int argc, char *argv[]) {
                                 ctx.buffer,
                                 ctx.bufferlen, ctx.npub,
                                 ctx.shared_secret) != 0) {
-            error("ASCON problem\nEncryption error");
+            error_server("Encryption error", ctx.sockfd,
+                       ctx.newsockfd);
         }
 
         #ifdef _WIN32
@@ -358,7 +367,8 @@ int main(int argc, char *argv[]) {
             n = write(ctx.newsockfd, ctx.encrypted_msg,
                   ctx.encrypted_msglen);
         #endif
-        if (n < 0) error("Error writing to client");
+        if (n < 0) error_server("Error writing to client", ctx.sockfd,
+                       ctx.newsockfd);
         // Error writing to client
 
         // Check if the server wants to end the communication

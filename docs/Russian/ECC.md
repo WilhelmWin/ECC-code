@@ -14,7 +14,7 @@
 
 ### Что изменено?
 
-- [Оригинальный файл](https://github.com/WilhelmWin/ECC-code/tree/master/2.0/Source/Curve25519)
+- [Файл](https://github.com/WilhelmWin/ECC-code/tree/master/2.0/Source/Curve25519)
   был адаптирован под структуру клиент-сервер.
 
 ---

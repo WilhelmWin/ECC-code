@@ -1,51 +1,3 @@
-// ========================================================================
-// crypto_aead_encrypt and crypto_aead_decrypt
-// =====================================================================
-//
-// Date: 2025-04-23
-//
-// This file implements the ASCON-128a AEAD encryption and decryption
-// functions. These functions are used to encrypt and decrypt data
-// using authenticated encryption with associated data (AEAD) mode.
-//
-// Libraries used:
-// - ascon.h: ASCON cipher implementation
-// - crypto_aead.h: AEAD encryption interface
-// - permutations.h: Permutation functions for ASCON
-// - printstate.h: Utility to print the internal state
-// - word.h: Word operations for byte manipulations
-//
-// Platform dependencies:
-// This code is designed for C programming with standard libraries.
-//
-// Usage example:
-// - crypto_aead_encrypt(c, &clen, m, mlen,  npub, k);
-// - crypto_aead_decrypt(m, &mlen, nsec, c, adlen, npub, k);
-// ========================================================================
-
-// ========================================================================
-// crypto_aead_encrypt - Encrypts the message m with associated data ad
-// ========================================================================
-// This function implements the encryption part of AEAD using
-// the ASCON-128a algorithm. It takes the message m and associated
-// data ad as input, and produces the ciphertext c along with a
-// tag t. The key k and nonce npub are used in the cryptographic
-// operations.
-//
-// Parameters:
-// - c: ciphertext output (encrypted message + tag)
-// - clen: the length of the ciphertext (including tag)
-// - m: message to encrypt
-// - mlen: length of the message
-// - adlen: length of associated data
-// - nsec: not used in this implementation, always NULL
-// - npub: nonce (unique per encryption)
-// - k: secret key used in encryption
-//
-// Returns:
-// - 0 on success, non-zero on failure
-// ========================================================================
-
 #include "ascon.h"
 #include "word.h"
 #include "constants.h"
@@ -166,12 +118,6 @@ int crypto_aead_decrypt(unsigned char* m, unsigned long long* mlen,
    // the tag size (CRYPTO_ABYTES) from the ciphertext length.
    // =====================================================================
   *mlen = clen - CRYPTO_ABYTES;
-
-   // =====================================================================
-   // Debugging: Print input parameters for transparency.
-   // This helps verify if the input data is correct.
-   // =====================================================================
-
 
    // =====================================================================
    // Load the key and nonce from the provided buffers into

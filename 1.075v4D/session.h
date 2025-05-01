@@ -41,11 +41,13 @@
 // ========================================================================
 #include <sys/types.h>   // For socklen_t (used for socket length)
 #include <stdint.h>       // For uint8_t and other fixed-width types
-#include "ECC.h"          // Include elliptic curve library (ECC)
-#include "ASCON/ascon.h"  // For ASCON AEAD encryption
 #include <string.h>       // For string functions like memset(), memcpy()
 #include <stdio.h>        // For standard I/O functions like printf()
 #include <stdlib.h>       // For standard library functions like malloc()
+#include "ECC.h"          // Include elliptic curve library (ECC)
+#include "ASCON/ascon.h"  // For ASCON AEAD encryption
+#include "error.h"        // For errors
+
 
 
 // ========================================================================
@@ -145,17 +147,8 @@ typedef struct {
 // ========================================================================
 void initializeContext(ClientServerContext *ctx);  // Function to
                                                   // initialize context
-void error(char *msg);  // Function to handle errors
-
 void generate_private_key(uch private_key[32]);  // Function to generate
                                                 // a random private key
 void hexdump(const uch *data, size_t length);  // Function to print hex
                                               // dump of data
-#ifdef _WIN32
-void register_signal_handler(ClientServerContext *ctx); // to destroy
-                                                       // Ctrl+C
-#else
-void handle_signal(int sig, siginfo_t *si, void *ucontext); // to destroy
-                                                           // Ctrl+Z
-#endif
 #endif // SESSION_H

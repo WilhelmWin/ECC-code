@@ -11,7 +11,7 @@
 
 ### Čo bolo zmenené?
 
-- Všetky [originálne súbory](https://github.com/WilhelmWin/ECC-code/tree/master/2.0/Source/Drng)
+- Všetky [súbory](https://github.com/WilhelmWin/ECC-code/tree/master/2.0/Source/Drng)
   boli presunuté do dvoch súborov `drng.c/drng.h`.
 - Hlavná funkcia (main) bola odstránená, rovnako ako všetky ďalšie funkcie, ako napríklad tie, ktoré pracovali na 16 a 32 bitových systémoch, ktoré sa v projekte nevyužívajú, a ponechané boli iba tieto tri funkcie.
 ---

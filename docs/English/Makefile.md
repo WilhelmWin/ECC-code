@@ -61,15 +61,15 @@ ASCON_OBJ = $(ASCON_SRC:.c=.o)
 
 ### Server / Client Sources
 ```make
-SERVER_SRC = server.c session.c drng.c
-CLIENT_SRC = client.c session.c drng.c
+SERVER_SRC = server.c session.c drng.c error.c
+CLIENT_SRC = client.c session.c drng.c error.c
 ```
-- **Server uses**: `server.c`, shared `session.c`, and RNG `drng.c`.
-- **Client uses**: `client.c`, `session.c`, and `drng.c`.
+- **Server uses**: `server.c`, shared `session.c`, and RNG `drng.c`, and errors `error.c`.
+- **Client uses**: `client.c`, `session.c`, and `drng.c`, and errors `error.c`.
 ```make
 SERVER_OBJ = $(SERVER_SRC:.c=.o)
 CLIENT_OBJ = $(CLIENT_SRC:.c=.o)
-COMMON_OBJ = session.o drng.o
+COMMON_OBJ = session.o drng.o error.o
 ``` 
 - Auto-generates object file names for each source file.
 
@@ -150,7 +150,7 @@ Pattern rule: `compiles .c` files to `.o` files.
 ```make
 postbuild:
 ifeq ($(OS), Windows_NT)
-	-$(RM) ECC.o session.o drng.o
+	-$(RM) ECC.o session.o drng.o error.o
 	-$(RM) ASCON\\aead.o ASCON\\printstate.o
 	-$(RM) server.o client.o
 	-$(RM) $(LIBRARIES)

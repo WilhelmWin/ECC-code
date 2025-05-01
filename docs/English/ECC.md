@@ -12,7 +12,7 @@
 - Provided by academic advisor Miloš Drutarovský during the initial project meetings.
 
 ### What has been changed?
-- The [original file](https://github.com/WilhelmWin/ECC-code/tree/master/2.0/Source/Curve25519) has been adapted to a client-server structure.
+- The [file](https://github.com/WilhelmWin/ECC-code/tree/master/2.0/Source/Curve25519) has been adapted to a client-server structure.
 ---
 ## 🔍 Description
 

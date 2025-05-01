@@ -29,12 +29,12 @@ ECC_OBJ = ECC.o              # Объектный файл для ECC
 ASCON_SRC = $(ASCON_DIR)/aead.c        # Исходный файл ASCON
 ASCON_OBJ = $(ASCON_SRC:.c=.o)         # Соответствующий объектный файл
 
-SERVER_SRC = server.c session.c drng.c # Исходные файлы сервера
-CLIENT_SRC = client.c session.c drng.c # Исходные файлы клиента
+SERVER_SRC = server.c session.c drng.c error.c # Исходные файлы сервера
+CLIENT_SRC = client.c session.c drng.c error.c # Исходные файлы клиента
 
 SERVER_OBJ = $(SERVER_SRC:.c=.o)       # Объектные файлы для сервера
 CLIENT_OBJ = $(CLIENT_SRC:.c=.o)       # Объектные файлы для клиента
-COMMON_OBJ = session.o drng.o          # Общие объектные файлы
+COMMON_OBJ = session.o drng.o error.o  # Общие объектные файлы
 
 # ========================================================================
 # Статические библиотеки
@@ -97,7 +97,7 @@ $(CLIENT_TARGET): $(CLIENT_OBJ) $(LIBRARIES)
 
 postbuild:
 ifeq ($(OS), Windows_NT)
-	-$(RM) ECC.o session.o drng.o
+	-$(RM) ECC.o session.o drng.o error.o
 	-$(RM) ASCON\\aead.o ASCON\\printstate.o
 	-$(RM) server.o client.o
 	-$(RM) $(LIBRARIES)

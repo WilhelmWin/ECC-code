@@ -7,65 +7,65 @@ CFLAGS = -Wall -Wextra -O2 -fstack-protector-strong -fPIE -D_FORTIFY_SOURCE=2
 LDFLAGS = -pie -Wl,-z,relro -Wl,-z,now
 
 # ========================================================================
-# Target executable names
+# Executable names
 # ========================================================================
 
-SERVER_TARGET = server
-CLIENT_TARGET = client
+SERVER_TARGET = server       # Server application
+CLIENT_TARGET = client       # Client application
 
 # ========================================================================
 # Directories
 # ========================================================================
 
-ASCON_DIR = ASCON
+ASCON_DIR = ASCON            # Directory containing ASCON code
 
 # ========================================================================
 # Source and object files
 # ========================================================================
 
-ECC_SRC = ECC.c
-ECC_OBJ = ECC.o
+ECC_SRC = ECC.c              # ECC module source file
+ECC_OBJ = ECC.o              # Object file for ECC
 
-ASCON_SRC = $(ASCON_DIR)/aead.c
-ASCON_OBJ = $(ASCON_SRC:.c=.o)
+ASCON_SRC = $(ASCON_DIR)/aead.c        # ASCON source file
+ASCON_OBJ = $(ASCON_SRC:.c=.o)         # Corresponding object file
 
-SERVER_SRC = server.c session.c drng.c
-CLIENT_SRC = client.c session.c drng.c
+SERVER_SRC = server.c session.c drng.c error.c # Server source files
+CLIENT_SRC = client.c session.c drng.c error.c # Client source files
 
-SERVER_OBJ = $(SERVER_SRC:.c=.o)
-CLIENT_OBJ = $(CLIENT_SRC:.c=.o)
-COMMON_OBJ = session.o drng.o
-
-# ========================================================================
-# Libraries
-# ========================================================================
-
-LIBECC = libecc.a
-LIBASCON = libascon.a
-LIBRARIES = $(LIBECC) $(LIBASCON)
+SERVER_OBJ = $(SERVER_SRC:.c=.o)       # Object files for server
+CLIENT_OBJ = $(CLIENT_SRC:.c=.o)       # Object files for client
+COMMON_OBJ = session.o drng.o error.o  # Common object files
 
 # ========================================================================
-# Linker flags and remove command based on OS
+# Static libraries
+# ========================================================================
+
+LIBECC = libecc.a             # ECC static library
+LIBASCON = libascon.a         # ASCON static library
+LIBRARIES = $(LIBECC) $(LIBASCON)  # List of libraries for linking
+
+# ========================================================================
+# Linker flags and delete command based on OS
 # ========================================================================
 
 ifeq ($(OS), Windows_NT)
-    LDFLAGS = -lws2_32
-    RM = del /f /q
-    NULL = nul
+    LDFLAGS = -lws2_32        # For Windows: add socket library
+    RM = del /f /q            # Delete command for Windows
+    NULL = nul                # Null device on Windows
 else
-    LDFLAGS =
-    RM = rm -f
-    NULL = /dev/null
+    LDFLAGS =                 # For Unix-like systems: no extra flags
+    RM = rm -f                # Delete command for Unix
+    NULL = /dev/null          # Null device on Unix
 endif
 
 # ========================================================================
-# Default rule
+# Default rule (build entire project)
 # ========================================================================
 
 all: $(LIBRARIES) $(SERVER_TARGET) $(CLIENT_TARGET) postbuild
 
 # ========================================================================
-# Static libraries
+# Build static libraries
 # ========================================================================
 
 $(LIBECC): $(ECC_OBJ)
@@ -75,7 +75,7 @@ $(LIBASCON): $(ASCON_OBJ)
 	ar rcs $@ $^
 
 # ========================================================================
-# Executables
+# Build executables
 # ========================================================================
 
 $(SERVER_TARGET): $(SERVER_OBJ) $(LIBRARIES)
@@ -85,19 +85,19 @@ $(CLIENT_TARGET): $(CLIENT_OBJ) $(LIBRARIES)
 	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
 
 # ========================================================================
-# Pattern rule for object files
+# Pattern rule for compiling .c to .o
 # ========================================================================
 
 %.o: %.c
 	$(CC) $(CFLAGS) -c $< -o $@
 
 # ========================================================================
-# Post-build cleanup
+# Post-build cleanup (temporary files)
 # ========================================================================
 
 postbuild:
 ifeq ($(OS), Windows_NT)
-	-$(RM) ECC.o session.o drng.o
+	-$(RM) ECC.o session.o drng.o error.o
 	-$(RM) ASCON\\aead.o ASCON\\printstate.o
 	-$(RM) server.o client.o
 	-$(RM) $(LIBRARIES)
@@ -107,7 +107,7 @@ else
 endif
 
 # ========================================================================
-# Clean rules
+# Clean commands
 # ========================================================================
 
 clean:

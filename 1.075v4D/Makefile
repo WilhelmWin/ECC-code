@@ -84,12 +84,13 @@ ECC_OBJ = ECC.o
 ASCON_SRC = $(ASCON_DIR)/aead.c
 ASCON_OBJ = $(ASCON_SRC:.c=.o)
 
-SERVER_SRC = server.c session.c drng.c
-CLIENT_SRC = client.c session.c drng.c
+SERVER_SRC = server.c session.c drng.c error.c
+CLIENT_SRC = client.c session.c drng.c error.c
 
 SERVER_OBJ = $(SERVER_SRC:.c=.o)
 CLIENT_OBJ = $(CLIENT_SRC:.c=.o)
-COMMON_OBJ = session.o drng.o
+
+COMMON_OBJ = session.o drng.o error.o
 
 # ========================================================================
 # Libraries
@@ -152,7 +153,7 @@ $(CLIENT_TARGET): $(CLIENT_OBJ) $(LIBRARIES)
 
 postbuild:
 ifeq ($(OS), Windows_NT)
-	-$(RM) ECC.o session.o drng.o
+	-$(RM) ECC.o session.o drng.o error.o
 	-$(RM) ASCON\\aead.o ASCON\\printstate.o
 	-$(RM) server.o client.o
 	-$(RM) $(LIBRARIES)
@@ -172,7 +173,7 @@ ifeq ($(OS), Windows_NT)
 	-$(RM) $(SERVER_TARGET) $(CLIENT_TARGET) *.exe
 else
 	$(RM) $(ASCON_DIR)/*.o $(LIBRARIES) $(SERVER_TARGET) $(CLIENT_TARGET)
-	$(RM) $(ECC_OBJ) $(COMMON_OBJ)  $(SERVER_OBJ) $(CLIENT_OBJ)
+	$(RM) $(ECC_OBJ) $(COMMON_OBJ) $(SERVER_OBJ) $(CLIENT_OBJ)
 endif
 
 distclean:
