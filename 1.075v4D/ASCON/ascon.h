@@ -50,4 +50,27 @@ typedef struct {
   // state
 } ascon_state_t;
 
+int crypto_aead_encrypt(
+unsigned char *c,              // Output ciphertext (encrypted message)
+unsigned long long *clen,      // Length of the ciphertext (output)
+const unsigned char *m,        // Input message (plaintext)
+unsigned long long mlen,       // Length of the message (plaintext)
+const unsigned char *npub,     // Public nonce
+                               // (typically used for uniqueness)
+const unsigned char *k         // Key (secret key used for encryption)
+);
+// =====================================================================
+int crypto_aead_decrypt(
+unsigned char *m,              // Output message (decrypted message)
+unsigned long long *mlen,      // Length of the decrypted message
+                               // (output)
+unsigned char *nsec,           // Secret nonce (may be set to null if
+                               // not used)
+const unsigned char *c,        // Input ciphertext (encrypted message)
+unsigned long long clen,       // Length of the ciphertext
+
+const unsigned char *npub,     // Public nonce (same as encryption)
+const unsigned char *k         // Key (same key as encryption)
+);
+
 #endif /* ASCON_H_ */

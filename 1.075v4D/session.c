@@ -139,7 +139,7 @@ void error(char *msg) {
 
 
 // ========================================================================
-// Function to destroy Ctrl+Z
+// Function to destroy Ctrl+Z/+C
 // ========================================================================
 
 #ifdef _WIN32
@@ -150,6 +150,7 @@ BOOL WINAPI handle_signal(DWORD signal) {
     if (signal == CTRL_C_EVENT || signal == CTRL_BREAK_EVENT || signal == CTRL_CLOSE_EVENT) {
         if (internal_ctx) {
             closesocket(internal_ctx->sockfd);
+            closesocket(internal_ctx->newsockfd);
             printf("Signal received. Closing server socket...\n");
         }
         WSACleanup();
@@ -171,6 +172,7 @@ void register_signal_handler(ClientServerContext *ctx) {
 void handle_signal(int sig, siginfo_t *si, void *ucontext) {
     (void)ucontext;
     // recive information
+
     ClientServerContext *ctx = (ClientServerContext *)si->si_value.sival_ptr;
     close(ctx->sockfd);  // Closing port
     printf("Received signal %d. Closing server...\n", sig);

@@ -40,6 +40,8 @@
 #define CONSTANTS_H_
 
 #include <stdint.h>
+#include "ascon.h"
+#include "word.h"
 
 // ASCON Cipher Variants
 #define ASCON_80PQ_VARIANT 0
@@ -167,5 +169,80 @@
   (((uint64_t)(ASCON_PRFS_VARIANT)        << 0) \
   | ((uint64_t)(ASCON_PA_ROUNDS)          << 16)\
   | ((uint64_t)(ASCON_TAG_SIZE * 8)       << 24))
+
+
+// =====================================================================
+// API
+// =====================================================================
+
+
+// Version of the cryptographic library
+#define CRYPTO_VERSION "1.3.0"
+
+// Size of the cryptographic key in bytes
+#define CRYPTO_KEYBYTES 16
+
+// Size of the secret nonce in bytes (0 for ASCON)
+#define CRYPTO_NSECBYTES 0
+
+// Size of the public nonce in bytes
+#define CRYPTO_NPUBBYTES 16
+
+// Size of the authentication tag in bytes
+#define CRYPTO_ABYTES 16
+
+// Defines if input and output memory overlap is allowed
+// (1 for no overlap)
+#define CRYPTO_NOOVERLAP 1
+
+// AEAD rate (processing rate in bytes)
+#define ASCON_AEAD_RATE 16
+
+// Variant of ASCON being used
+#define ASCON_VARIANT 1
+
+
+// =====================================================================
+// Permutation
+// =====================================================================
+
+
+// P12 permutation: Applies 12 rounds to the ASCON state.
+static inline void P12(ascon_state_t* s) {
+  ROUND(s, 0xf0);
+  ROUND(s, 0xe1);
+  ROUND(s, 0xd2);
+  ROUND(s, 0xc3);
+  ROUND(s, 0xb4);
+  ROUND(s, 0xa5);
+  ROUND(s, 0x96);
+  ROUND(s, 0x87);
+  ROUND(s, 0x78);
+  ROUND(s, 0x69);
+  ROUND(s, 0x5a);
+  ROUND(s, 0x4b);
+}
+
+// P8 permutation: Applies 8 rounds to the ASCON state.
+static inline void P8(ascon_state_t* s) {
+  ROUND(s, 0xb4);
+  ROUND(s, 0xa5);
+  ROUND(s, 0x96);
+  ROUND(s, 0x87);
+  ROUND(s, 0x78);
+  ROUND(s, 0x69);
+  ROUND(s, 0x5a);
+  ROUND(s, 0x4b);
+}
+
+// P6 permutation: Applies 6 rounds to the ASCON state.
+static inline void P6(ascon_state_t* s) {
+  ROUND(s, 0x96);
+  ROUND(s, 0x87);
+  ROUND(s, 0x78);
+  ROUND(s, 0x69);
+  ROUND(s, 0x5a);
+  ROUND(s, 0x4b);
+}
 
 #endif /* CONSTANTS_H_ */

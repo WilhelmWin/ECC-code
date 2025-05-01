@@ -46,13 +46,9 @@
 // - 0 on success, non-zero on failure
 // ========================================================================
 
-#include "api.h"
-#include "api.h"
 #include "ascon.h"
-#include "crypto_aead.h"
-#include "permutations.h"
 #include "word.h"
-
+#include "constants.h"
 // ========================================================================
 // AEAD encryption function for ASCON-128a
 // ========================================================================
