@@ -24,7 +24,22 @@
     </configurations>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="62a155e0-cb44-4b23-a8e6-2982237608cb" name="Changes" comment="" />
+    <list default="true" id="62a155e0-cb44-4b23-a8e6-2982237608cb" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/1.075v4D/ASCON/constants.h" beforeDir="false" afterPath="$PROJECT_DIR$/1.075v4D/ASCON/constants.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/2.0/English/ASCON/constants.h" beforeDir="false" afterPath="$PROJECT_DIR$/2.0/English/ASCON/constants.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/English/ECC.md" beforeDir="false" afterPath="$PROJECT_DIR$/docs/English/ECC.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/English/Makefile.md" beforeDir="false" afterPath="$PROJECT_DIR$/docs/English/Makefile.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/English/drng.md" beforeDir="false" afterPath="$PROJECT_DIR$/docs/English/drng.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/Russian/ASCON.md" beforeDir="false" afterPath="$PROJECT_DIR$/docs/Russian/ASCON.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/Russian/ECC.md" beforeDir="false" afterPath="$PROJECT_DIR$/docs/Russian/ECC.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/Russian/Makefile.md" beforeDir="false" afterPath="$PROJECT_DIR$/docs/Russian/Makefile.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/Russian/drng.md" beforeDir="false" afterPath="$PROJECT_DIR$/docs/Russian/drng.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/Slovak/ECC.md" beforeDir="false" afterPath="$PROJECT_DIR$/docs/Slovak/ECC.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/Slovak/Makefile.md" beforeDir="false" afterPath="$PROJECT_DIR$/docs/Slovak/Makefile.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/Slovak/drng.md" beforeDir="false" afterPath="$PROJECT_DIR$/docs/Slovak/drng.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/archiv/Russian/drng.md" beforeDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -85,36 +100,41 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;RunOnceActivity.RadMigrateCodeStyle&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.cidr.known.project.marker&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.readMode.enableVisualFormatting&quot;: &quot;true&quot;,
-    &quot;cf.first.check.clang-format&quot;: &quot;false&quot;,
-    &quot;cidr.known.project.marker&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;master&quot;,
-    &quot;last_opened_file_path&quot;: &quot;/home/kali/ECC-code&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "RunOnceActivity.RadMigrateCodeStyle": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.cidr.known.project.marker": "true",
+    "RunOnceActivity.readMode.enableVisualFormatting": "true",
+    "cf.first.check.clang-format": "false",
+    "cidr.known.project.marker": "true",
+    "git-widget-placeholder": "master",
+    "last_opened_file_path": "/home/kali/ECC-code/2.0/English/ASCON",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "vue.rearranger.settings.migration": "true"
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
-      <recent name="$PROJECT_DIR$" />
-      <recent name="$PROJECT_DIR$/1.075" />
-    </key>
-    <key name="MoveFile.RECENT_KEYS">
-      <recent name="$PROJECT_DIR$/2.0/Source/Drng" />
-      <recent name="$PROJECT_DIR$/docs/archiv" />
+      <recent name="$PROJECT_DIR$/2.0/English/ASCON" />
+      <recent name="$PROJECT_DIR$/2.0/English" />
+      <recent name="$PROJECT_DIR$/2.0/Slovak" />
+      <recent name="$PROJECT_DIR$/2.0/Russian" />
       <recent name="$PROJECT_DIR$/docs/English" />
     </key>
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/2.0/English/ASCON" />
+      <recent name="$PROJECT_DIR$/2.0/English" />
+      <recent name="$PROJECT_DIR$/docs/Slovak" />
+      <recent name="$PROJECT_DIR$/docs/English" />
+      <recent name="$PROJECT_DIR$/2.0/Russian" />
+    </key>
   </component>
-  <component name="RunManager" selected="Native Application.all">
+  <component name="RunManager" selected="Native Application.server">
     <configuration name="all" type="CLionNativeAppRunConfigurationType" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" EMULATE_TERMINAL="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="ECC-code" TARGET_NAME="all" CONFIG_NAME="all" version="1">
       <method v="2">
         <option name="CLION.COMPOUND.BUILD" enabled="true" />
@@ -181,7 +201,7 @@
       <workItem from="1745769074509" duration="30384000" />
       <workItem from="1745853465930" duration="899000" />
       <workItem from="1745956406603" duration="9592000" />
-      <workItem from="1746051361470" duration="10910000" />
+      <workItem from="1746051361470" duration="21481000" />
     </task>
     <servers />
   </component>

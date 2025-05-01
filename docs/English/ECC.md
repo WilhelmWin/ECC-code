@@ -14,7 +14,7 @@
 ### What has been changed?
 - The [original file](https://github.com/WilhelmWin/ECC-code/tree/master/2.0/Source/Curve25519) has been adapted to a client-server structure.
 ---
-## Description
+## 🔍 Description
 
 This file contains type definitions, macros, and function prototypes for operations with elliptic curves (ECC), including basic arithmetic (addition, subtraction, multiplication), scalar multiplication, and the calculation of inverse elements in a Galois Field (GF). These operations are essential for performing cryptographic computations using elliptic curves, such as Diffie-Hellman key exchange and public key generation.
 
@@ -39,7 +39,14 @@ The functions in this header file perform various operations for cryptography us
 - `crypto_scalarmult_base` for scalar multiplication using the curve's base point.
 - `pack` and `unpack` for converting between byte arrays and Galois field elements.
 
-### Variables?
+### Variables
+
+- **`static gf _121665 = {0xDB41, 1}`**:
+    - **static** - designed for use only within Curve25519
+    - **gf** - Galois Field
+    - **_121665** - fixed number and variable name
+    - **{0xDB41, 1}** - variable initialization
+- **`static uch base[32] = {9};`**: The base point on Curve25519 for both the client and server. It must be identical for both.
 
 
 ---
