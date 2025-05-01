@@ -155,6 +155,7 @@ sv pack(uch *o,gf n)
         o[2*i+1] = n[i]>>8;
     }
 }
+
 int crypto_scalarmult(uch *q,
 const uch *n,const uch *p)
 {
