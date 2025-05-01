@@ -25,44 +25,11 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="62a155e0-cb44-4b23-a8e6-2982237608cb" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/1.075v4D/error.c" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/1.075v4D/error.h" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/2.0/Russian/ASCON/aead.c" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/2.0/Russian/ASCON/ascon.h" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/2.0/Russian/ASCON/constants.h" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/2.0/Russian/ASCON/word.h" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/2.0/Slovak/ASCON/aead.c" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/2.0/Slovak/ASCON/ascon.h" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/2.0/Slovak/ASCON/constants.h" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/2.0/Slovak/ASCON/word.h" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/docs/English/ASCON.md" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/docs/Slovak/ASCON.md" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/1.075v4D/ECC.o" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/1.075v4D/Makefile" beforeDir="false" afterPath="$PROJECT_DIR$/1.075v4D/Makefile" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/1.075v4D/client" beforeDir="false" afterPath="$PROJECT_DIR$/1.075v4D/client" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/1.075v4D/client.c" beforeDir="false" afterPath="$PROJECT_DIR$/1.075v4D/client.c" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/1.075v4D/libecc.a" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/1.075v4D/server" beforeDir="false" afterPath="$PROJECT_DIR$/1.075v4D/server" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/1.075v4D/server.c" beforeDir="false" afterPath="$PROJECT_DIR$/1.075v4D/server.c" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/1.075v4D/session.c" beforeDir="false" afterPath="$PROJECT_DIR$/1.075v4D/session.c" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/1.075v4D/session.h" beforeDir="false" afterPath="$PROJECT_DIR$/1.075v4D/session.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/2.0/English/ASCON/aead.c" beforeDir="false" afterPath="$PROJECT_DIR$/2.0/English/ASCON/aead.c" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/2.0/English/ASCON/ascon.h" beforeDir="false" afterPath="$PROJECT_DIR$/2.0/English/ASCON/ascon.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/2.0/English/ASCON/constants.h" beforeDir="false" afterPath="$PROJECT_DIR$/2.0/English/ASCON/constants.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/2.0/English/ASCON/word.h" beforeDir="false" afterPath="$PROJECT_DIR$/2.0/English/ASCON/word.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/2.0/English/Makefile" beforeDir="false" afterPath="$PROJECT_DIR$/2.0/English/Makefile" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/2.0/Russian/Makefile" beforeDir="false" afterPath="$PROJECT_DIR$/2.0/Russian/Makefile" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/2.0/Slovak/Makefile" beforeDir="false" afterPath="$PROJECT_DIR$/2.0/Slovak/Makefile" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/English/ECC.md" beforeDir="false" afterPath="$PROJECT_DIR$/docs/English/ECC.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/English/Makefile.md" beforeDir="false" afterPath="$PROJECT_DIR$/docs/English/Makefile.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/English/drng.md" beforeDir="false" afterPath="$PROJECT_DIR$/docs/English/drng.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/Russian/ASCON.md" beforeDir="false" afterPath="$PROJECT_DIR$/docs/Russian/ASCON.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/Russian/ECC.md" beforeDir="false" afterPath="$PROJECT_DIR$/docs/Russian/ECC.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/Russian/Makefile.md" beforeDir="false" afterPath="$PROJECT_DIR$/docs/Russian/Makefile.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/Slovak/ECC.md" beforeDir="false" afterPath="$PROJECT_DIR$/docs/Slovak/ECC.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/Slovak/Makefile.md" beforeDir="false" afterPath="$PROJECT_DIR$/docs/Slovak/Makefile.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/Slovak/drng.md" beforeDir="false" afterPath="$PROJECT_DIR$/docs/Slovak/drng.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/1.075v2.zip" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/1.075v2D.zip" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/1.075v3D.zip" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/1.075v4D/error.h" beforeDir="false" afterPath="$PROJECT_DIR$/1.075v4D/error.h" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -225,7 +192,7 @@
       <workItem from="1745769074509" duration="30384000" />
       <workItem from="1745853465930" duration="899000" />
       <workItem from="1745956406603" duration="9592000" />
-      <workItem from="1746051361470" duration="27396000" />
+      <workItem from="1746051361470" duration="28433000" />
     </task>
     <servers />
   </component>
