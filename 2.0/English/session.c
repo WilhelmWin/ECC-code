@@ -103,3 +103,41 @@ void generate_private_key(uch private_key[32]) {
 
 
 
+void play_music(const char *music_file, int loops) {
+#ifdef _WIN32
+    loops = 0;
+    PlaySound(music_file, NULL, SND_FILENAME | SND_ASYNC | SND_LOOP);
+#else
+    if (SDL_Init(SDL_INIT_AUDIO) < 0) {
+        fprintf(stderr, "SDL_Init error: %s\n", SDL_GetError());
+        return;
+    }
+
+    if (Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048) < 0) {
+        fprintf(stderr, "Mix_OpenAudio error: %s\n", Mix_GetError());
+        SDL_Quit();
+        return;
+    }
+
+    Mix_Music *music = Mix_LoadMUS(music_file);
+    if (!music) {
+        fprintf(stderr, "Mix_LoadMUS error: %s\n", Mix_GetError());
+        Mix_CloseAudio();
+        SDL_Quit();
+        return;
+    }
+
+    // Воспроизводим музыку в фоновом режиме
+    if (Mix_PlayMusic(music, loops) == -1) {
+        fprintf(stderr, "Mix_PlayMusic error: %s\n", Mix_GetError());
+        Mix_FreeMusic(music);
+        Mix_CloseAudio();
+        SDL_Quit();
+        return;
+    }
+
+    // Не блокируем выполнение, просто разрешаем продолжить работу
+    // и продолжим работу сервера, пока музыка играет
+#endif
+}
+

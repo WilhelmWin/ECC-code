@@ -30,11 +30,11 @@
 // - Tag size
 // - Encryption rate
 #define ASCON_128A_IV                           \
-  (((uint64_t)(ASCON_AEAD_VARIANT)      << 0)   // 8 bits for AEAD variant
-  | ((uint64_t)(ASCON_PA_ROUNDS)        << 16)  // 8 bits for PA rounds count
-  | ((uint64_t)(ASCON_128A_PB_ROUNDS)   << 20)  // 4 bits for PB rounds count
-  | ((uint64_t)(ASCON_TAG_SIZE * 8)     << 24)  // 8 bits for tag size (multiplied by 8 for bits)
-  | ((uint64_t)(ASCON_128A_RATE)        << 40)) // 8 bits for encryption rate
+(((uint64_t)(ASCON_AEAD_VARIANT)      << 0)   \
+| ((uint64_t)(ASCON_PA_ROUNDS)        << 16)  \
+| ((uint64_t)(ASCON_128A_PB_ROUNDS)   << 20)  \
+| ((uint64_t)(ASCON_TAG_SIZE * 8)     << 24)  \
+| ((uint64_t)(ASCON_128A_RATE)        << 40))
 
 // =====================================================================
 // API for encryption and authentication operations

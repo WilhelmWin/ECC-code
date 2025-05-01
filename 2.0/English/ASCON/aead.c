@@ -5,6 +5,10 @@
 // AEAD encryption function for ASCON-128a
 // ========================================================================
 
+// ========================================================================
+// AEAD encryption function for ASCON-128a
+// ========================================================================
+
 int crypto_aead_encrypt(unsigned char* c, unsigned long long* clen,
                         const unsigned char* m, unsigned long long mlen,
                         const unsigned char* npub,
@@ -118,6 +122,12 @@ int crypto_aead_decrypt(unsigned char* m, unsigned long long* mlen,
    // the tag size (CRYPTO_ABYTES) from the ciphertext length.
    // =====================================================================
   *mlen = clen - CRYPTO_ABYTES;
+
+   // =====================================================================
+   // Debugging: Print input parameters for transparency.
+   // This helps verify if the input data is correct.
+   // =====================================================================
+
 
    // =====================================================================
    // Load the key and nonce from the provided buffers into

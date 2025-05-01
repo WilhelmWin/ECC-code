@@ -3,69 +3,70 @@
 # ========================================================================
 
 CC = gcc
-CFLAGS = -Wall -Wextra -O2 -fstack-protector-strong -fPIE -D_FORTIFY_SOURCE=2
-LDFLAGS = -pie -Wl,-z,relro -Wl,-z,now
+CFLAGS = -Wall -Wextra -O2 -fstack-protector-strong -fPIE -D_FORTIFY_SOURCE=2 `sdl2-config --cflags`
+LDFLAGS = `sdl2-config --libs` -lSDL2_mixer
 
 # ========================================================================
-# Executable names
+# Target executable names
 # ========================================================================
 
-SERVER_TARGET = server       # Server application
-CLIENT_TARGET = client       # Client application
+SERVER_TARGET = server
+CLIENT_TARGET = client
 
 # ========================================================================
 # Directories
 # ========================================================================
 
-ASCON_DIR = ASCON            # Directory containing ASCON code
+ASCON_DIR = ASCON
 
 # ========================================================================
 # Source and object files
 # ========================================================================
 
-ECC_SRC = ECC.c              # ECC module source file
-ECC_OBJ = ECC.o              # Object file for ECC
+ECC_SRC = ECC.c
+ECC_OBJ = ECC.o
 
-ASCON_SRC = $(ASCON_DIR)/aead.c        # ASCON source file
-ASCON_OBJ = $(ASCON_SRC:.c=.o)         # Corresponding object file
+ASCON_SRC = $(ASCON_DIR)/aead.c
+ASCON_OBJ = $(ASCON_SRC:.c=.o)
 
-SERVER_SRC = server.c session.c drng.c error.c # Server source files
-CLIENT_SRC = client.c session.c drng.c error.c # Client source files
+SERVER_SRC = server.c session.c drng.c error.c
+CLIENT_SRC = client.c session.c drng.c error.c
 
-SERVER_OBJ = $(SERVER_SRC:.c=.o)       # Object files for server
-CLIENT_OBJ = $(CLIENT_SRC:.c=.o)       # Object files for client
-COMMON_OBJ = session.o drng.o error.o  # Common object files
+SERVER_OBJ = $(SERVER_SRC:.c=.o)
+CLIENT_OBJ = $(CLIENT_SRC:.c=.o)
 
-# ========================================================================
-# Static libraries
-# ========================================================================
-
-LIBECC = libecc.a             # ECC static library
-LIBASCON = libascon.a         # ASCON static library
-LIBRARIES = $(LIBECC) $(LIBASCON)  # List of libraries for linking
+COMMON_OBJ = session.o drng.o error.o
 
 # ========================================================================
-# Linker flags and delete command based on OS
+# Libraries
+# ========================================================================
+
+LIBECC = libecc.a
+LIBASCON = libascon.a
+LIBRARIES = $(LIBECC) $(LIBASCON)
+
+# ========================================================================
+# Linker flags and remove command based on OS
 # ========================================================================
 
 ifeq ($(OS), Windows_NT)
-    LDFLAGS = -lws2_32        # For Windows: add socket library
-    RM = del /f /q            # Delete command for Windows
-    NULL = nul                # Null device on Windows
+    LDFLAGS = -lws2_32
+    RM = del /f /q
+    NULL = nul
 else
-    LDFLAGS =                 # For Unix-like systems: no extra flags
-    RM = rm -f                # Delete command for Unix
-    NULL = /dev/null          # Null device on Unix
+    LDFLAGS += `sdl2-config --libs` -lSDL2_mixer
+    RM = rm -f
+    NULL = /dev/null
 endif
 
 # ========================================================================
-# Default rule (build entire project)
+# Default rule
 # ========================================================================
 
 all: $(LIBRARIES) $(SERVER_TARGET) $(CLIENT_TARGET) postbuild
 
 # ========================================================================
-# Build static libraries
+# Static libraries
 # ========================================================================
 
 $(LIBECC): $(ECC_OBJ)
@@ -75,7 +76,7 @@ $(LIBASCON): $(ASCON_OBJ)
 	ar rcs $@ $^
 
 # ========================================================================
-# Build executables
+# Executables
 # ========================================================================
 
 $(SERVER_TARGET): $(SERVER_OBJ) $(LIBRARIES)
@@ -85,14 +86,14 @@ $(CLIENT_TARGET): $(CLIENT_OBJ) $(LIBRARIES)
 	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
 
 # ========================================================================
-# Pattern rule for compiling .c to .o
+# Pattern rule for object files
 # ========================================================================
 
 %.o: %.c
 	$(CC) $(CFLAGS) -c $< -o $@
 
 # ========================================================================
-# Post-build cleanup (temporary files)
+# Post-build cleanup
 # ========================================================================
 
 postbuild:
@@ -107,7 +108,7 @@ else
 endif
 
 # ========================================================================
-# Clean commands
+# Clean rules
 # ========================================================================
 
 clean:
@@ -117,7 +118,7 @@ ifeq ($(OS), Windows_NT)
 	-$(RM) $(SERVER_TARGET) $(CLIENT_TARGET) *.exe
 else
 	$(RM) $(ASCON_DIR)/*.o $(LIBRARIES) $(SERVER_TARGET) $(CLIENT_TARGET)
-	$(RM) $(ECC_OBJ) $(COMMON_OBJ)  $(SERVER_OBJ) $(CLIENT_OBJ)
+	$(RM) $(ECC_OBJ) $(COMMON_OBJ) $(SERVER_OBJ) $(CLIENT_OBJ)
 endif
 
 distclean:

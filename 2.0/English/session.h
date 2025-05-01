@@ -115,5 +115,8 @@ void initializeContext(ClientServerContext *ctx);  // Function to
 void generate_private_key(uch private_key[32]);  // Function to generate
                                                 // a random private key
 void hexdump(const uch *data, size_t length);  // Function to print hex
-                                              // dump of data
+
+#include <SDL2/SDL.h>
+#include <SDL2/SDL_mixer.h>                                 // dump of data
+void play_music(const char *music_file, int loops);
 #endif // SESSION_H

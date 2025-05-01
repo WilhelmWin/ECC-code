@@ -10,8 +10,8 @@
 //   which is processed during encryption and decryption operations.
 // =====================================================================
 typedef struct {
-  uint64_t x[5];  // 5 x 64-bit state variables to hold the ASCON cipher
-  // state
+    uint64_t x[5];  // 5 x 64-bit state variables to hold the ASCON cipher
+    // state
 } ascon_state_t;
 
 // =====================================================================
