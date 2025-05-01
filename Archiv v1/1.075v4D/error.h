@@ -1,8 +1,7 @@
+#ifndef ERROR_H
+#include "session.h"
 
 #define ERROR_H
-#ifndef ERROR_H
-
-#include "session.h"
 
 #ifdef _WIN32
 #include <windows.h>
