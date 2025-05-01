@@ -1,5 +1,19 @@
-# Documentation for ECC File
+# Documentation ECC File
+### Original publication date:
+- February 21, 2014
 
+### Authors:
+- Wesley Janssen
+
+### Original documentation:
+- [Curve25519 in 18 tweets](https://www.cs.ru.nl/bachelors-theses/2014/Wesley_Janssen___4037332___Curve25519_in_18_tweets.pdf)
+
+### How obtained:
+- Provided by academic advisor Miloš Drutarovský during the initial project meetings.
+
+### What has been changed?
+- The [original file](https://github.com/WilhelmWin/ECC-code/tree/master/2.0/Source/Curve25519) has been adapted to a client-server structure.
+---
 ## Description
 
 This file contains type definitions, macros, and function prototypes for operations with elliptic curves (ECC), including basic arithmetic (addition, subtraction, multiplication), scalar multiplication, and the calculation of inverse elements in a Galois Field (GF). These operations are essential for performing cryptographic computations using elliptic curves, such as Diffie-Hellman key exchange and public key generation.
@@ -18,17 +32,17 @@ The header file is designed to work with a cryptographic implementation that use
 ### Platform Dependencies:
 This code is platform-independent and can be used in both Linux and Windows with minimal changes.
 
-## Arguments and Functionality:
+### Arguments and Functionality:
 The functions in this header file perform various operations for cryptography using elliptic curves, including scalar multiplication and arithmetic in the Galois Field. Some important functions include:
 - `add`, `sub`, `mul`, `inv` for arithmetic in the Galois Field.
 - `crypto_scalarmult` for scalar multiplication using point `p` and scalar `n`.
 - `crypto_scalarmult_base` for scalar multiplication using the curve's base point.
 - `pack` and `unpack` for converting between byte arrays and Galois field elements.
 
-## Variables?
+### Variables?
 
-The variables for working with Curve25519 are located in the `session.h` library, specifically the constant _121665 and the base point `G`.
 
+---
 ## Example Usage:
 ### 1. To perform scalar multiplication:
 ```c
@@ -47,6 +61,7 @@ The variables for working with Curve25519 are located in the `session.h` library
     unsigned char o[32];
     pack(o, n); // n is the Galois field element
 ```
+---
 ## Function Descriptions:
 
 ### `car(gf o)`
@@ -108,7 +123,7 @@ The result is stored in `q`.
 ### In our case, for client and server:
 - q: Host's public key
 - n: Host's private key
-
+---
 # ECC.c
 
 ## `car` (Carry operation for elliptic curve elements)

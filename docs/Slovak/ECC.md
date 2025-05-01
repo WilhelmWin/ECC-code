@@ -1,4 +1,20 @@
-# Dokumentácia pre súbor ECC
+# Dokumentácia súbor ECC
+
+### Pôvodný dátum publikácie:
+- 21. februára 2014
+
+### Autori:
+- Wesley Janssen
+
+### Pôvodná dokumentácia:
+- [Curve25519 v 18 tweotoch](https://www.cs.ru.nl/bachelors-theses/2014/Wesley_Janssen___4037332___Curve25519_in_18_tweets.pdf)
+
+### Ako bola získaná:
+- Poskytol ju vedecký vedúci Miloš Drutarovský počas úvodných stretnutí týkajúcich sa projektu.
+
+### Čo bolo zmenené?
+- [Pôvodný súbor](https://github.com/WilhelmWin/ECC-code/tree/master/2.0/Source/Curve25519) bol prispôsobený pre klient-server štruktúru.
+
 
 ## Popis
 
