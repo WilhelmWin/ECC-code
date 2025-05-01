@@ -120,120 +120,82 @@ Alias pre `unsigned char`.
 
 ## Session.c
 
+
+## 1. `initializeContext` (Inicializácia kontextu klienta/servera)
 ```c
-#include "session.h" // Hlavná knižnica pre komunikáciu s vonkajším svetom
-#include "drng.h" // Na generovanie súkromného kľúča
+void initializeContext(ClientServerContext *ctx)
+{
+    ctx->portno = 0;  // Port nie je nastavený
+    ctx->sockfd = 0;  // Socket nie je otvorený
+    memset(&ctx->serv_addr, 0, sizeof(ctx->serv_addr));  // Vymazanie adresy servera
+    ctx->optval = 1;  // Voľba socketu – povoliť opätovné použitie adresy
 
-// ========================================================================
-// Funkcia na inicializáciu kontextu pre komunikáciu klient-server
-// ========================================================================
-void initializeContext(ClientServerContext *ctx) {
-// Inicializuj číslo portu na 0 (port ešte nebol nastavený)
-ctx->portno = 0;
+    ctx->server = NULL;  // Ukazovateľ na server = NULL
 
-    // Inicializuj popisovač zásuvky na 0 (zásuvka ešte nebola otvorená)
-    ctx->sockfd = 0;
+    memset(ctx->buffer, 0, sizeof(ctx->buffer));  // Vymazanie komunikačného buffera
+    ctx->bufferlen = 0;  // Dĺžka buffera = 0
 
-    // Vynuluj štruktúru adresy servera
-    memset(&ctx->serv_addr, 0, sizeof(ctx->serv_addr));
+    memset(ctx->client_public_key, 0, sizeof(ctx->client_public_key));  // Vymazanie verejného kľúča klienta
+    memset(ctx->server_public_key, 0, sizeof(ctx->server_public_key));  // Vymazanie verejného kľúča servera
+    memset(ctx->private_key, 0, sizeof(ctx->private_key));              // Vymazanie súkromného kľúča
+    memset(ctx->shared_secret, 0, sizeof(ctx->shared_secret));          // Vymazanie zdieľaného tajomstva
+    memset(ctx->decrypted_msg, 0, sizeof(ctx->decrypted_msg));          // Vymazanie buffera dešifrovanej správy
+    ctx->decrypted_msglen = 0;                                          // Dĺžka dešifrovanej správy = 0
 
-    // Nastav ukazovateľ servera na NULL (server ešte nebol nastavený)
-    ctx->server = NULL;
+    ctx->nsec = NULL;  // Bezpečnostný parameter nonce = NULL
 
-    // Vynuluj buffer používaný na komunikáciu
-    memset(ctx->buffer, 0, sizeof(ctx->buffer));
+    memset(ctx->encrypted_msg, 0, sizeof(ctx->encrypted_msg));  // Vymazanie buffera šifrovanej správy
+    ctx->encrypted_msglen = 0;                                  // Dĺžka šifrovanej správy = 0
 
-    // Nastav dĺžku bufferu na 0
-    ctx->bufferlen = 0;
-
-    // Vynuluj súkromný kľúč
-    // (bude použitý pre kryptografické operácie)
-    memset(ctx->private_key, 0, sizeof(ctx->private_key));
-
-    // Vynuluj zdieľaný tajný kľúč (používaný na šifrovanie a dešifrovanie)
-    memset(ctx->shared_secret, 0, sizeof(ctx->shared_secret));
-
-    // Vynuluj buffer pre dešifrovanú správu
-    memset(ctx->decrypted_msg, 0, sizeof(ctx->decrypted_msg));
-
-    // Inicializuj dĺžku dešifrovanej správy na 0
-    ctx->decrypted_msglen = 0;
-
-    // Nastav bezpečnostný parameter nonce na NULL
-    ctx->nsec = NULL;
-
-    // Vynuluj buffer pre šifrovanú správu
-    memset(ctx->encrypted_msg, 0, sizeof(ctx->encrypted_msg));
-
-    // Inicializuj dĺžku šifrovanej správy na 0
-    ctx->encrypted_msglen = 0;
-
-    // Nastav asociované dáta (ad) na NULL
-    ctx->ad = NULL;
-
-    // Inicializuj dĺžku asociovaných dát na 0
-    ctx->adlen = 0;
-
-    // Nastav pevnú hodnotu pre nonce (používané na jedinečnosť šifrovania)
+    // Pevne nastavený nonce pre testovanie (nebezpečné pre produkciu)
     memcpy(ctx->npub, "simple_nonce_123", NONCE_SIZE);
 }
+```
+- Inicializuje štruktúru ClientServerContext do čistého stavu.
 
-// ========================================================================
-// Funkcia na výpis dát v hexadecimálnom formáte
-// ========================================================================
-void hexdump(const uch *data, size_t length) {
-// Prejdi každý bajt v poskytnutých dátach
-for (size_t i = 0; i < length; i++) {
-// Vytlač bajt v hexadecimálnom formáte
-printf("%02x", data[i]);
+- Používa sa pred každou sieťovou alebo kryptografickou operáciou.
 
-        // Pridaj nový riadok po každom 16. bajte pre lepšiu čitateľnosť
+- Zabezpečuje, že pamäť nebude obsahovať neznáme hodnoty.
+
+## 2. `hexdump` (Výpis bajtov v hex formáte)
+```c
+void hexdump(const uch *data, size_t length)
+{
+    printf("\n");
+    for (size_t i = 0; i < length; i++) {
+        printf("%02x", data[i]);  // Výpis bajtu v hex formáte
+
         if ((i + 1) % 16 == 0)
-            printf("\n");
+            printf("\n");  // Nový riadok každých 16 bajtov
     }
 
-    // Uisti sa, že sa vytlačí nový riadok, ak dĺžka dát nie je 
-    //násobkom 16
     if (length % 16 != 0)
-        printf("\n");
-}
+        printf("\n");  // Záverečný nový riadok, ak treba
 
-// ====================================================
-// Funkcia na generovanie náhodného súkromného kľúča (256 bitov/32 bajty)
-// ====================================================
-void generate_private_key(uch private_key[32]) {
-// Pokús sa získať 32 bajtov náhodných dát pomocou rdrand
-// (generátor náhodných čísel)
-// Ak dostaneme menej ako 32 bajtov, vytlačíme chybu
-if (rdrand_get_bytes(32, (unsigned char *) private_key) < 32) {
-// Spracovanie chyby, ak náhodné dáta nie sú k dispozícii
-fprintf(stderr, "Náhodné hodnoty nie sú k dispozícii\n");
-return;  // Ukonči funkciu, ak náhodné dáta nie sú k dispozícii
+    printf("\n");
 }
+```
+- Užitočná pomocná funkcia na ladenie: vypisuje dáta v hex formáte.
+- Rozdeľuje výstup po 16 bajtoch pre čitateľnosť.
 
-    // Vytlač vygenerovaný súkromný kľúč v hexadecimálnom formáte
-    printf("rdrand128:\n");
-    hexdump(private_key, 32);  // Zavolaj funkciu na výpis súkromného kľúča
-     v hex formáte
-}
+- Vhodné na zobrazenie kľúčov, šifrovaných dát a pod.
 
-// ========================================================================
-// Funkcia na spracovanie chýb vytlačením chybovej správy a ukončením 
-// ========================================================================
-void error(char *msg) {
-perror(msg);  // Vytlač chybovú správu pomocou perror
-exit(1);  // Ukonči program s chybovým kódom 1
-}
+## 3. `generate_private_key` (Generovanie 32-bajtového súkromného kľúča)
+```c
+void generate_private_key(uch private_key[32])
+{
+    if (rdrand_get_bytes(32, (unsigned char *) private_key) < 32) {
+        error("Random values not available");  // Chyba generovania náhodných hodnôt
+    }
 
-// ========================================================================
-// Funkcia na výpis danej dátovej poľa v hexadecimálnom formáte
-// ========================================================================
-void print_hex(uch *data, int length) {
-// Prejdi po dátovom poli a vytlač každý bajt v
-// hexadecimálnom formáte
-for (int i = 0; i < length; i++) {
-printf("%02X", data[i]);
+    printf("Private key: \n");
+    hexdump(private_key, 32);  // Výpis vygenerovaného kľúča v hex formáte
 }
-// Vytlač nový riadok po vytlačení všetkých dát
-printf("\n");
-}
+```
+- Generuje kryptograficky bezpečný súkromný kľúč s dĺžkou 256 bitov (32 bajtov).
+
+- Využíva hardvérový generátor náhodných čísel rdrand od Intelu.
+
+- Ak sa nepodarí získať dostatok náhodných bajtov, vyvolá sa chyba.
+
+- Výpis v hex formáte slúži na ladenie (nevhodné pre produkciu).

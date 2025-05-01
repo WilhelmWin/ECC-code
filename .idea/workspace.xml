@@ -25,11 +25,146 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="62a155e0-cb44-4b23-a8e6-2982237608cb" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/2.0/English/session.c" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/2.0/English/session.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/2.0/Russian/session.c" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/2.0/Russian/session.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/2.0/Slovak/session.c" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/2.0/Slovak/session.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/docs/English/error.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/docs/English/session.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/docs/Russian/error.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/docs/Russian/session.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/docs/Slovak/session.md" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/1.075v2.zip" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/1.075v2D.zip" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/1.075v3D.zip" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/1.075v4D/error.h" beforeDir="false" afterPath="$PROJECT_DIR$/1.075v4D/error.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/1.0/.gitignore" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/1.0/ASCON/aead.c" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/1.0/ASCON/api.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/1.0/ASCON/ascon.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/1.0/ASCON/constants.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/1.0/ASCON/crypto_aead.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/1.0/ASCON/permutations.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/1.0/ASCON/printstate.c" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/1.0/ASCON/printstate.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/1.0/ASCON/round.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/1.0/ASCON/word.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/1.0/ECC.c" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/1.0/ECC.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/1.0/Makefile" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/1.0/README.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/1.0/client.c" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/1.0/drng.c" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/1.0/drng.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/1.0/images/img1.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/1.0/images/img2.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/1.0/server.c" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/1.0/session.c" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/1.0/session.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/1.075/ASCON/aead.c" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/1.075/ASCON/api.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/1.075/ASCON/ascon.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/1.075/ASCON/constants.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/1.075/ASCON/crypto_aead.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/1.075/ASCON/permutations.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/1.075/ASCON/printstate.c" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/1.075/ASCON/printstate.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/1.075/ASCON/round.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/1.075/ASCON/word.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/1.075/ECC.c" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/1.075/ECC.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/1.075/Makefile" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/1.075/client" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/1.075/client.c" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/1.075/drng.c" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/1.075/drng.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/1.075/server" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/1.075/server.c" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/1.075/session.c" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/1.075/session.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/1.075v2/ASCON/aead.c" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/1.075v2/ASCON/api.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/1.075v2/ASCON/ascon.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/1.075v2/ASCON/constants.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/1.075v2/ASCON/crypto_aead.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/1.075v2/ASCON/permutations.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/1.075v2/ASCON/printstate.c" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/1.075v2/ASCON/printstate.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/1.075v2/ASCON/round.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/1.075v2/ASCON/word.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/1.075v2/ECC.c" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/1.075v2/ECC.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/1.075v2/Makefile" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/1.075v2/client" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/1.075v2/client.c" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/1.075v2/drng.c" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/1.075v2/drng.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/1.075v2/server" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/1.075v2/server.c" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/1.075v2/session.c" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/1.075v2/session.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/1.075v2D/ASCON/aead.c" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/1.075v2D/ASCON/api.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/1.075v2D/ASCON/ascon.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/1.075v2D/ASCON/constants.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/1.075v2D/ASCON/crypto_aead.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/1.075v2D/ASCON/permutations.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/1.075v2D/ASCON/printstate.c" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/1.075v2D/ASCON/printstate.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/1.075v2D/ASCON/round.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/1.075v2D/ASCON/word.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/1.075v2D/ECC.c" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/1.075v2D/ECC.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/1.075v2D/Makefile" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/1.075v2D/client" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/1.075v2D/client.c" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/1.075v2D/drng.c" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/1.075v2D/drng.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/1.075v2D/server" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/1.075v2D/server.c" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/1.075v2D/session.c" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/1.075v2D/session.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/1.075v3D/ASCON/aead.c" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/1.075v3D/ASCON/api.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/1.075v3D/ASCON/ascon.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/1.075v3D/ASCON/constants.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/1.075v3D/ASCON/crypto_aead.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/1.075v3D/ASCON/permutations.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/1.075v3D/ASCON/round.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/1.075v3D/ASCON/word.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/1.075v3D/ECC.c" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/1.075v3D/ECC.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/1.075v3D/Makefile" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/1.075v3D/client" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/1.075v3D/client.c" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/1.075v3D/drng.c" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/1.075v3D/drng.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/1.075v3D/server" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/1.075v3D/server.c" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/1.075v3D/session.c" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/1.075v3D/session.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/1.075v4D.zip" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/1.075v4D/ASCON/aead.c" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/1.075v4D/ASCON/ascon.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/1.075v4D/ASCON/constants.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/1.075v4D/ASCON/word.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/1.075v4D/ECC.c" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/1.075v4D/ECC.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/1.075v4D/Makefile" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/1.075v4D/client" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/1.075v4D/client.c" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/1.075v4D/drng.c" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/1.075v4D/drng.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/1.075v4D/error.c" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/1.075v4D/error.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/1.075v4D/server" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/1.075v4D/server.c" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/1.075v4D/session.c" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/1.075v4D/session.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/Russian/ECC.md" beforeDir="false" afterPath="$PROJECT_DIR$/docs/Russian/ECC.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/archiv/English/session.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/archiv/Russian/Readme.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/archiv/Russian/session.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/archiv/Slovak/session.md" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -100,7 +235,7 @@
     "cf.first.check.clang-format": "false",
     "cidr.known.project.marker": "true",
     "git-widget-placeholder": "master",
-    "last_opened_file_path": "/home/kali/ECC-code/2.0/Source",
+    "last_opened_file_path": "/home/kali/ECC-code/2.0/English",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
     "node.js.selected.package.eslint": "(autodetect)",
@@ -111,9 +246,9 @@
 }]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/2.0/English" />
       <recent name="$PROJECT_DIR$/2.0/Source" />
       <recent name="$PROJECT_DIR$/2.0/English/ASCON" />
-      <recent name="$PROJECT_DIR$/2.0/English" />
       <recent name="$PROJECT_DIR$/2.0/Slovak" />
       <recent name="$PROJECT_DIR$/2.0/Russian" />
     </key>
@@ -192,7 +327,7 @@
       <workItem from="1745769074509" duration="30384000" />
       <workItem from="1745853465930" duration="899000" />
       <workItem from="1745956406603" duration="9592000" />
-      <workItem from="1746051361470" duration="28433000" />
+      <workItem from="1746051361470" duration="31498000" />
     </task>
     <servers />
   </component>

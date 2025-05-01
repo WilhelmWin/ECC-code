@@ -1,7 +1,3 @@
-//
-// Created by kali on 5/1/25.
-//
-
 #include "error.h"
 
 // ========================================================================
@@ -14,7 +10,6 @@ void error(char *msg) {
     perror(msg);  // Print the error message using perror
     exit(1);  // Exit the program with an error code 1
 }
-
 
 void error_server(const char *msg, int sockfd, int newsockfd) {
     if (sockfd >= 0) {

@@ -1,3 +1,5 @@
+
+#define ERROR_H
 #ifndef ERROR_H
 
 #include "session.h"
@@ -21,7 +23,5 @@ void handle_signal(int sig, siginfo_t *si, void *ucontext); // to destroy
 // Ctrl+Z
 #endif
 
-
-#define ERROR_H
 
 #endif //ERROR_H

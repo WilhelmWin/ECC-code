@@ -118,120 +118,84 @@ Alias for `unsigned char`.
 
 ---
 
-## Session.c
+# Session.c
 
+## 1. `initializeContext` (Client/Server context initialization)
 ```c
-#include "session.h" // Main library for communication with the outside world
-#include "drng.h" // For generating private key
+void initializeContext(ClientServerContext *ctx)
+{
+    ctx->portno = 0;  // No port set
+    ctx->sockfd = 0;  // Socket not opened
+    memset(&ctx->serv_addr, 0, sizeof(ctx->serv_addr));  // Clear server address
+    ctx->optval = 1;  // Socket option: allow address reuse
 
-// ========================================================================
-// Function to initialize the context for client-server communication
-// ========================================================================
-void initializeContext(ClientServerContext *ctx) {
-// Initialize port number with 0 (port not yet set)
-ctx->portno = 0;
+    ctx->server = NULL;  // Server pointer is NULL
 
-    // Initialize socket descriptor with 0 (socket not yet opened)
-    ctx->sockfd = 0;
+    memset(ctx->buffer, 0, sizeof(ctx->buffer));  // Clear communication buffer
+    ctx->bufferlen = 0;  // Buffer length = 0
 
-    // Zero out the server address structure
-    memset(&ctx->serv_addr, 0, sizeof(ctx->serv_addr));
+    memset(ctx->client_public_key, 0, sizeof(ctx->client_public_key));  // Clear client public key
+    memset(ctx->server_public_key, 0, sizeof(ctx->server_public_key));  // Clear server public key
+    memset(ctx->private_key, 0, sizeof(ctx->private_key));              // Clear private key
+    memset(ctx->shared_secret, 0, sizeof(ctx->shared_secret));          // Clear shared secret
+    memset(ctx->decrypted_msg, 0, sizeof(ctx->decrypted_msg));          // Clear decrypted message buffer
+    ctx->decrypted_msglen = 0;                                          // Decrypted message length = 0
 
-    // Set server pointer to NULL (server not yet set)
-    ctx->server = NULL;
+    ctx->nsec = NULL;  // Nonce security parameter = NULL
 
-    // Zero out the buffer used for communication
-    memset(ctx->buffer, 0, sizeof(ctx->buffer));
+    memset(ctx->encrypted_msg, 0, sizeof(ctx->encrypted_msg));  // Clear encrypted message buffer
+    ctx->encrypted_msglen = 0;                                  // Encrypted message length = 0
 
-    // Set buffer length to 0
-    ctx->bufferlen = 0;
-
-    // Zero out the private key
-    // (it will be used for cryptographic operations)
-    memset(ctx->private_key, 0, sizeof(ctx->private_key));
-
-    // Zero out the shared secret (used for encryption and decryption)
-    memset(ctx->shared_secret, 0, sizeof(ctx->shared_secret));
-
-    // Zero out the decrypted message buffer
-    memset(ctx->decrypted_msg, 0, sizeof(ctx->decrypted_msg));
-
-    // Initialize decrypted message length to 0
-    ctx->decrypted_msglen = 0;
-
-    // Set the nonce security parameter to NULL
-    ctx->nsec = NULL;
-
-    // Zero out the encrypted message buffer
-    memset(ctx->encrypted_msg, 0, sizeof(ctx->encrypted_msg));
-
-    // Initialize encrypted message length to 0
-    ctx->encrypted_msglen = 0;
-
-    // Set associated data (ad) to NULL
-    ctx->ad = NULL;
-
-    // Initialize associated data length to 0
-    ctx->adlen = 0;
-
-    // Set a fixed value for nonce (used for encryption uniqueness)
+    // Set a fixed nonce for testing (unsafe for production)
     memcpy(ctx->npub, "simple_nonce_123", NONCE_SIZE);
 }
+```
+- Sets up the ClientServerContext structure to a clean initial state.
 
-// ========================================================================
-// Function to print data in hexadecimal format
-// ========================================================================
-void hexdump(const uch *data, size_t length) {
-// Iterate over each byte in the provided data
-for (size_t i = 0; i < length; i++) {
-// Print byte in hexadecimal format
-printf("%02x", data[i]);
+- Used before any network or crypto operations.
 
-        // Add a new line after every 16 bytes for readability
+- Ensures no uninitialized memory is left.
+
+## 2. `hexdump` (Print bytes in hex format)
+```c
+void hexdump(const uch *data, size_t length)
+{
+    printf("\n");
+    for (size_t i = 0; i < length; i++) {
+        printf("%02x", data[i]);  // Print byte in hex
+
         if ((i + 1) % 16 == 0)
-            printf("\n");
+            printf("\n");  // Line break after every 16 bytes
     }
 
-    // Ensure a new line if the data length is not a multiple of 16
     if (length % 16 != 0)
-        printf("\n");
-}
+        printf("\n");  // Final newline if needed
 
-// ====================================================
-// Function to generate a random private key (256 bits / 32 bytes)
-// ====================================================
-void generate_private_key(uch private_key[32]) {
-// Try to get 32 bytes of random data using rdrand
-// (random number generator)
-// If fewer than 32 bytes are received, print an error
-if (rdrand_get_bytes(32, (unsigned char *) private_key) < 32) {
-// Error handling if random data is not available
-fprintf(stderr, "Random values not available\n");
-return;  // Exit the function if random data is not available
+    printf("\n");
 }
+```
+- Handy debug function to display data in hex format.
 
-    // Print the generated private key in hexadecimal format
-    printf("rdrand128:\n");
-    hexdump(private_key, 32);  // Call the function to print the private key in hex format
-}
+- Breaks output every 16 bytes for readability.
 
-// ========================================================================
-// Function to handle errors by printing an error message and exiting the program
-// ========================================================================
-void error(char *msg) {
-perror(msg);  // Print the error message using perror
-exit(1);  // Exit the program with an error code 1
-}
+- Useful for printing keys, ciphertexts, etc.
 
-// ========================================================================
-// Function to print a given data array in hexadecimal format
-// ========================================================================
-void print_hex(uch *data, int length) {
-// Iterate through the data array and print each byte in
-// hexadecimal format
-for (int i = 0; i < length; i++) {
-printf("%02X", data[i]);
+## 3. `generate_private_key` (Generate 32-byte private key)
+```c
+void generate_private_key(uch private_key[32])
+{
+    if (rdrand_get_bytes(32, (unsigned char *) private_key) < 32) {
+        error("Random values not available");  // Random generation error
+    }
+
+    printf("Private key: \n");
+    hexdump(private_key, 32);  // Print generated key in hex
 }
-// Print a newline after printing all the data
-printf("\n");
-}
+```
+- Generates a cryptographically secure 256-bit private key (32 bytes).
+
+- Uses Intel's hardware rdrand random number generator.
+
+- Fails if insufficient randomness is obtained.
+
+- Hex output is shown for debugging (not safe for production use).
