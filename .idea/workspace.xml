@@ -25,10 +25,24 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="62a155e0-cb44-4b23-a8e6-2982237608cb" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/2.0/Russian/drng.c" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/2.0/Russian/drng.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/docs/archiv/Russian/drng.md" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/1.075v4D/server.c" beforeDir="false" afterPath="$PROJECT_DIR$/1.075v4D/server.c" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/1.075v4D/session.c" beforeDir="false" afterPath="$PROJECT_DIR$/1.075v4D/session.c" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/1.075v4D/session.h" beforeDir="false" afterPath="$PROJECT_DIR$/1.075v4D/session.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/English/ECC.md" beforeDir="false" afterPath="$PROJECT_DIR$/docs/archiv/English/ECC.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/English/client.md" beforeDir="false" afterPath="$PROJECT_DIR$/docs/archiv/English/client.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/English/server.md" beforeDir="false" afterPath="$PROJECT_DIR$/docs/archiv/English/server.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/English/session.md" beforeDir="false" afterPath="$PROJECT_DIR$/docs/archiv/English/session.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/Russian/ECC.md" beforeDir="false" afterPath="$PROJECT_DIR$/docs/archiv/Russian/ECC.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/Russian/Readme.md" beforeDir="false" afterPath="$PROJECT_DIR$/docs/archiv/Russian/Readme.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/Russian/client.md" beforeDir="false" afterPath="$PROJECT_DIR$/docs/archiv/Russian/client.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/Russian/drng.md" beforeDir="false" afterPath="$PROJECT_DIR$/docs/Russian/drng.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/Russian/server.md" beforeDir="false" afterPath="$PROJECT_DIR$/docs/archiv/Russian/server.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/Russian/session.md" beforeDir="false" afterPath="$PROJECT_DIR$/docs/archiv/Russian/session.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/Slovak/ECC.md" beforeDir="false" afterPath="$PROJECT_DIR$/docs/archiv/Slovak/ECC.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/Slovak/client.md" beforeDir="false" afterPath="$PROJECT_DIR$/docs/archiv/Slovak/client.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/Slovak/server.md" beforeDir="false" afterPath="$PROJECT_DIR$/docs/archiv/Slovak/server.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/Slovak/session.md" beforeDir="false" afterPath="$PROJECT_DIR$/docs/archiv/Slovak/session.md" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -114,6 +128,7 @@
       <recent name="$PROJECT_DIR$/1.075" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/docs/archiv" />
       <recent name="$PROJECT_DIR$/docs/English" />
     </key>
   </component>
@@ -184,7 +199,7 @@
       <workItem from="1745769074509" duration="30384000" />
       <workItem from="1745853465930" duration="899000" />
       <workItem from="1745956406603" duration="9592000" />
-      <workItem from="1746051361470" duration="4143000" />
+      <workItem from="1746051361470" duration="10572000" />
     </task>
     <servers />
   </component>
