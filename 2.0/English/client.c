@@ -157,6 +157,27 @@ int main(int argc, char *argv[]) {
 
     printf("Shared secret key:\n");
     hexdump(ctx.shared_secret, 32);  // Print the shared secret key
+    // ====================================================================
+    // Ctrl+Z and Ctrl+C checking
+    // ====================================================================
+
+#ifdef _WIN32
+   // SetConsoleCtrlHandler(console_handler, TRUE);
+#else
+    // Настройка обработчика сигнала SIGTSTP (Ctrl+Z)
+    struct sigaction sa;
+    sa.sa_flags = SA_SIGINFO;
+    sa.sa_sigaction = handle_signal;
+    sigemptyset(&sa.sa_mask);
+
+    union sigval val;
+    val.sival_ptr = &ctx;
+
+    // Установка обработчика SIGTSTP
+    sigaction(SIGTSTP, &sa, NULL);
+
+#endif
+
 
     // ====================================================================
     // Begin encrypted message exchange loop

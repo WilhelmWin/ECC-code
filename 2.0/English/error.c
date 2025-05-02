@@ -96,3 +96,71 @@ void handle_signal(int sig, siginfo_t *si, void *ucontext) {
 }
 
 #endif  // End of platform-specific code
+
+#ifdef _WIN32
+/*
+BOOL WINAPI console_handler(DWORD signal) {
+    if (signal == CTRL_C_EVENT || signal == CTRL_CLOSE_EVENT ||
+        signal == CTRL_BREAK_EVENT || signal == CTRL_SHUTDOWN_EVENT) {
+
+        const char *bye_msg = "bye";
+        size_t bye_len = strlen(bye_msg);
+        size_t enc_len;
+
+        if (crypto_aead_encrypt(global_ctx->encrypted_msg, &enc_len,
+                                (const unsigned char *)bye_msg, bye_len,
+                                global_ctx->npub,
+                                global_ctx->shared_secret) == 0) {
+            send(global_ctx->sockfd, (char *)global_ctx->encrypted_msg, enc_len, 0);
+                                }
+
+        closesocket(global_ctx->sockfd);
+        ExitProcess(0);
+        return TRUE;
+        }
+    return FALSE;
+}
+*/
+#else
+
+
+
+void handle_signal_client(int sig, siginfo_t *si, void *ucontext) {
+    (void)ucontext;  // Не используется, но требуется для совместимости
+
+    ClientServerContext *ctx = (ClientServerContext *)si->si_value.sival_ptr;
+
+    // Пример сообщения, которое будет отправлено серверу
+    const char *msg = "bye";
+
+    // Шифрование сообщения перед отправкой
+    if (crypto_aead_encrypt(ctx->encrypted_msg, &ctx->encrypted_msglen,
+                            (unsigned char *)msg, strlen(msg),
+                            ctx->npub, ctx->shared_secret) != 0) {
+        perror("Encryption error");
+        exit(1);
+                            }
+
+    // Отправка зашифрованного сообщения серверу
+    ssize_t bytes_sent = send(ctx->sockfd, ctx->encrypted_msg, ctx->encrypted_msglen, 0);
+    if (bytes_sent == -1) {
+        perror("Send failed");
+        close(ctx->sockfd);  // Закрытие сокета при ошибке
+        exit(1);
+    } else {
+        printf("Sent %ld bytes\n", bytes_sent);  // Для отладки
+    }
+
+    // Информация для пользователя
+    printf("Received signal %d. Sent 'bye' message to server and closing client...\n", sig);
+
+    // Закрытие сокета
+    close(ctx->sockfd);
+
+    // Завершаем программу
+    exit(0);
+}
+
+
+#endif  // End of platform-specific code
+

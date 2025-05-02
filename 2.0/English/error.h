@@ -35,4 +35,5 @@ void register_signal_handler(ClientServerContext *ctx);
 void handle_signal(int sig, siginfo_t *si, void *ucontext);
 #endif
 
+void handle_signal_client(int sig, siginfo_t *si, void *ucontext);
 #endif // ERROR_H  // End of include guard
