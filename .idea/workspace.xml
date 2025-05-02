@@ -25,17 +25,9 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="62a155e0-cb44-4b23-a8e6-2982237608cb" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/2.0/English/error.c" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/2.0/English/error.h" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/2.0/Russian/error.c" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/2.0/Russian/error.h" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/2.0/Slovak/error.c" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/2.0/Slovak/error.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Archiv v1/1.075v4D/error.h" beforeDir="false" afterPath="$PROJECT_DIR$/Archiv v1/1.075v4D/error.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/English/error.md" beforeDir="false" afterPath="$PROJECT_DIR$/docs/English/error.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/Russian/ECC.md" beforeDir="false" afterPath="$PROJECT_DIR$/docs/Russian/ECC.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/Slovak/error.md" beforeDir="false" afterPath="$PROJECT_DIR$/docs/Slovak/error.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/2.0/English/The Hunter2.wav" beforeDir="false" afterPath="$PROJECT_DIR$/2.0/English/The Hunter.wav" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/Russian/server.md" beforeDir="false" afterPath="$PROJECT_DIR$/docs/Russian/server.md" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -106,12 +98,13 @@
     "cf.first.check.clang-format": "false",
     "cidr.known.project.marker": "true",
     "git-widget-placeholder": "master",
-    "last_opened_file_path": "/home/kali/ECC-code/2.0/English",
+    "last_opened_file_path": "/home/kali/Downloads/music/Makefile",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
     "node.js.selected.package.eslint": "(autodetect)",
     "node.js.selected.package.tslint": "(autodetect)",
     "nodejs_package_manager_path": "npm",
+    "run.code.analysis.last.selected.profile": "pProject Default",
     "vue.rearranger.settings.migration": "true"
   }
 }]]></component>
@@ -124,11 +117,11 @@
       <recent name="$PROJECT_DIR$/2.0/Russian" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
-      <recent name="$PROJECT_DIR$/2.0/English/ASCON" />
+      <recent name="$PROJECT_DIR$/docs/Russian" />
       <recent name="$PROJECT_DIR$/2.0/English" />
-      <recent name="$PROJECT_DIR$/docs/Slovak" />
-      <recent name="$PROJECT_DIR$/docs/English" />
       <recent name="$PROJECT_DIR$/2.0/Russian" />
+      <recent name="$PROJECT_DIR$/2.0/English/ASCON" />
+      <recent name="$PROJECT_DIR$/docs/Slovak" />
     </key>
   </component>
   <component name="RunManager" selected="Native Application.server">
@@ -198,7 +191,7 @@
       <workItem from="1745769074509" duration="30384000" />
       <workItem from="1745853465930" duration="899000" />
       <workItem from="1745956406603" duration="9592000" />
-      <workItem from="1746051361470" duration="34587000" />
+      <workItem from="1746051361470" duration="49967000" />
     </task>
     <servers />
   </component>
