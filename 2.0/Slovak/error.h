@@ -4,8 +4,8 @@
 #include "session.h"       // Zahrňuje definíciu ClientServerContext (používa sa pre správu soketov)
 
 #ifdef _WIN32
-#include <windows.h>       // Windows špecifické typy a spracovanie signálov
-#include <winsock2.h>      // Práca so sieťami (Winsock2) vo Windows
+#include <winsock2.h>       // Windows špecifické typy a spracovanie signálov
+#include <windows.h>      // Práca so sieťami (Winsock2) vo Windows
 #else
 #include <signal.h>        // Pre sigaction, siginfo_t a signály v systémoch Unix/Linux
 #endif

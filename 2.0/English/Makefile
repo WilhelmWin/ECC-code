@@ -3,8 +3,13 @@
 # ========================================================================
 
 CC = gcc
+ifeq ($(OS), Windows_NT)
+CFLAGS = -Wall -Wextra -O2 -fstack-protector-strong -fPIE -D_FORTIFY_SOURCE=2
+LDFLAGS = -pie -Wl,-z,relro -Wl,-z,now -lws2_32 -lwinmm
+else
 CFLAGS = -Wall -Wextra -O2 -fstack-protector-strong -fPIE -D_FORTIFY_SOURCE=2 `sdl2-config --cflags`
-LDFLAGS = `sdl2-config --libs` -lSDL2_mixer
+LDFLAGS = -pie -Wl,-z,relro -Wl,-z,now `sdl2-config --libs` -lSDL2_mixer
+endif
 
 # ========================================================================
 # Target executable names
@@ -50,7 +55,7 @@ LIBRARIES = $(LIBECC) $(LIBASCON)
 # ========================================================================
 
 ifeq ($(OS), Windows_NT)
-    LDFLAGS = -lws2_32
+    LDFLAGS = -lws2_32 -lwinmm
     RM = del /f /q
     NULL = nul
 else

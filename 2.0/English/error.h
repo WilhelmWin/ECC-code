@@ -4,8 +4,8 @@
 #include "session.h"     // Include the definition of ClientServerContext, used for socket management
 
 #ifdef _WIN32
-#include <windows.h>     // For Windows-specific types and signal handling
 #include <winsock2.h>    // For Windows socket programming (Winsock2)
+#include <windows.h>     // For Windows-specific types and signal handling
 #else
 #include <signal.h>      // For sigaction, siginfo_t, and signal constants on Unix/Linux systems
 #endif

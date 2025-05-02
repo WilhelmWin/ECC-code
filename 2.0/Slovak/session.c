@@ -1,6 +1,6 @@
 #include "session.h"
 #include "drng.h" // pre rdrand_get_bytes
-
+#include "error.h"       // Na spracovanie chýb
 // ========================================================================
 // Funkcia na inicializáciu kontextu pre klient-server komunikáciu
 // ========================================================================

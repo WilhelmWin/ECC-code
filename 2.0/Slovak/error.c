@@ -1,5 +1,5 @@
+#include "session.h"
 #include "error.h"
-
 // ========================================================================
 // Funkcia na spracovanie všeobecných chýb: vypíše chybu a ukončí program
 // ========================================================================

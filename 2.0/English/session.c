@@ -1,6 +1,6 @@
 #include "session.h"
 #include "drng.h" // for rdrand_get_bytes
-
+#include "error.h"        // For errors
 // ========================================================================
 // Function to initialize the context for client-server communication
 // ========================================================================
@@ -105,7 +105,7 @@ void generate_private_key(uch private_key[32]) {
 
 void play_music(const char *music_file, int loops) {
 #ifdef _WIN32
-    loops = 0;
+    (void)loops;
     PlaySound(music_file, NULL, SND_FILENAME | SND_ASYNC | SND_LOOP);
 #else
     if (SDL_Init(SDL_INIT_AUDIO) < 0) {

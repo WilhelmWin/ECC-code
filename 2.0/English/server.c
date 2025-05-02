@@ -202,7 +202,7 @@ int main(int argc, char *argv[]) {
                                                           // private key
 
     // Send the server's public key to the client
-    int n = send(ctx.newsockfd, ctx.public_key, sizeof(ctx.public_key), 0);
+    int n = send(ctx.newsockfd, (char *)ctx.public_key, sizeof(ctx.public_key), 0);
     if (n < 0) {
         error_server("Error sending public key to client", ctx.sockfd,
                                     ctx.newsockfd); // Error sending the
@@ -211,7 +211,7 @@ int main(int argc, char *argv[]) {
     }
 
     // Receive the client's public key
-    n = recv(ctx.newsockfd, ctx.client_public_key,
+    n = recv(ctx.newsockfd, (char *)ctx.client_public_key,
              sizeof(ctx.client_public_key), 0);
     if (n < 0) {
         error_server("Error receiving public key from client", ctx.sockfd,

@@ -4,8 +4,8 @@
 #include "session.h"        // Подключение определения структуры ClientServerContext, которая используется для управления сокетами
 
 #ifdef _WIN32
-#include <windows.h>        // Заголовок для типов и функций Windows API
-#include <winsock2.h>       // Заголовок для работы с сокетами в Windows (Winsock2)
+#include <winsock2.h>       // Заголовок для типов и функций Windows API
+#include <windows.h>       // Заголовок для работы с сокетами в Windows (Winsock2)
 #else
 #include <signal.h>         // Заголовок для работы с сигналами в Unix-подобных системах (sigaction, siginfo_t и др.)
 #endif

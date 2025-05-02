@@ -1,5 +1,5 @@
 #include "session.h"
-
+#include "error.h"
 int main(int argc, char *argv[]) {
 
     // ====================================================================
@@ -127,7 +127,7 @@ int main(int argc, char *argv[]) {
     int n = send(ctx.sockfd, ctx.public_key, sizeof(ctx.public_key),
                0);  // Convert to const char *
 #else
-   int n = write(ctx.sockfd, ctx.public_key, sizeof(ctx.public_key));
+   int n = write(ctx.sockfd, (char *)ctx.public_key, sizeof(ctx.public_key));
 #endif
     // Send the generated public key to the server
     if (n < 0) {
@@ -136,7 +136,7 @@ int main(int argc, char *argv[]) {
 
     // Receive server's public key
 
-    n = recv(ctx.sockfd, ctx.server_public_key,
+    n = recv(ctx.sockfd, (char *)ctx.server_public_key,
              sizeof(ctx.server_public_key), 0);  // Receive the server's
                                              // public key
     if (n < 0) {

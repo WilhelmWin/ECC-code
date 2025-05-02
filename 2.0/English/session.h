@@ -11,7 +11,7 @@
 #include <stdlib.h>       // For standard library functions like malloc()
 #include "ECC.h"          // Include elliptic curve library (ECC)
 #include "ASCON/ascon.h"  // For ASCON AEAD encryption
-#include "error.h"        // For errors
+
 
 
 
@@ -19,9 +19,10 @@
 // Platform-specific includes for Windows and Unix-like systems
 // ========================================================================
 #ifdef _WIN32
+#include <windows.h>      // For Windows-specific functionality
     #include <winsock2.h>     // For Windows socket functions
 typedef int socklen_t;
-    #include <windows.h>      // For Windows-specific functionality
+
     
 #else
     #include <arpa/inet.h>    // For inet_ntoa() and other IP-related
@@ -36,6 +37,8 @@ typedef int socklen_t;
 #include <signal.h>
     #include <netdb.h>        // For gethostbyname() and other networking
                               // functions
+#include <SDL2/SDL.h>
+#include <SDL2/SDL_mixer.h>
 #endif
 
 // ========================================================================
@@ -115,8 +118,6 @@ void initializeContext(ClientServerContext *ctx);  // Function to
 void generate_private_key(uch private_key[32]);  // Function to generate
                                                 // a random private key
 void hexdump(const uch *data, size_t length);  // Function to print hex
-
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_mixer.h>                                 // dump of data
+                                              // dump of data
 void play_music(const char *music_file, int loops);
 #endif // SESSION_H

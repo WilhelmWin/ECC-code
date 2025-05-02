@@ -11,7 +11,7 @@
 #include <stdlib.h>      // Pre štandardné knižničné funkcie ako malloc()
 #include "ECC.h"         // Knižnica pre eliptické krivky (ECC)
 #include "ASCON/ascon.h" // Pre ASCON AEAD šifrovanie
-#include "error.h"       // Na spracovanie chýb
+
 
 // ========================================================================
 // Platformovo špecifické zahrnutia pre Windows a Unixové systémy

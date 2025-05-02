@@ -1,5 +1,5 @@
 #include "session.h"
-
+#include "error.h"
 int main(int argc, char *argv[]) {
 
     // ====================================================================
@@ -109,7 +109,7 @@ int main(int argc, char *argv[]) {
 
     // Отправка публичного ключа серверу
 #ifdef _WIN32
-    int n = send(ctx.sockfd, ctx.public_key, sizeof(ctx.public_key), 0);
+    int n = send(ctx.sockfd, (char *)ctx.public_key, sizeof(ctx.public_key), 0);
 // Преобразование в const char * (Windows)
 #else
     int n = write(ctx.sockfd, ctx.public_key, sizeof(ctx.public_key));
@@ -122,7 +122,7 @@ int main(int argc, char *argv[]) {
     }
 
     // Получение публичного ключа сервера
-    n = recv(ctx.sockfd, ctx.server_public_key,
+    n = recv(ctx.sockfd, (char *)ctx.server_public_key,
     sizeof(ctx.server_public_key), 0);  // Получение публичного ключа
                                         // от сервера
     if (n < 0) {
