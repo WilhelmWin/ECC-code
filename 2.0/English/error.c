@@ -98,29 +98,47 @@ void handle_signal(int sig, siginfo_t *si, void *ucontext) {
 #endif  // End of platform-specific code
 
 #ifdef _WIN32
-/*
-BOOL WINAPI console_handler(DWORD signal) {
-    if (signal == CTRL_C_EVENT || signal == CTRL_CLOSE_EVENT ||
-        signal == CTRL_BREAK_EVENT || signal == CTRL_SHUTDOWN_EVENT) {
+static ClientServerContext *g_ctx = NULL;
 
-        const char *bye_msg = "bye";
-        size_t bye_len = strlen(bye_msg);
-        size_t enc_len;
+BOOL WINAPI ConsoleHandler(DWORD signal) {
+    if (signal == CTRL_C_EVENT || signal == CTRL_BREAK_EVENT) {
+        if (g_ctx) {
+            const char *msg = "bye";
 
-        if (crypto_aead_encrypt(global_ctx->encrypted_msg, &enc_len,
-                                (const unsigned char *)bye_msg, bye_len,
-                                global_ctx->npub,
-                                global_ctx->shared_secret) == 0) {
-            send(global_ctx->sockfd, (char *)global_ctx->encrypted_msg, enc_len, 0);
-                                }
+            if (crypto_aead_encrypt(g_ctx->encrypted_msg, &g_ctx->encrypted_msglen,
+                                    (const unsigned char *)msg, strlen(msg),
+                                    g_ctx->npub, g_ctx->shared_secret) != 0) {
+                fprintf(stderr, "Encryption error\n");
+                exit(1);
+            }
 
-        closesocket(global_ctx->sockfd);
-        ExitProcess(0);
-        return TRUE;
+            int bytes_sent = send(g_ctx->sockfd, (const char *)g_ctx->encrypted_msg, (int)g_ctx->encrypted_msglen, 0);
+            if (bytes_sent == SOCKET_ERROR) {
+                fprintf(stderr, "Send failed: %d\n", WSAGetLastError());
+                closesocket(g_ctx->sockfd);
+                exit(1);
+            } else {
+                printf("Sent %d bytes\n", bytes_sent);
+            }
+
+            printf("Received signal. Sent 'bye' message to server and closing client...\n");
+            closesocket(g_ctx->sockfd);
         }
-    return FALSE;
+
+        exit(0);
+    }
+
+    return TRUE;
 }
-*/
+
+
+void setup_signal_handler(ClientServerContext *ctx) {
+    g_ctx = ctx;
+    if (!SetConsoleCtrlHandler(ConsoleHandler, TRUE)) {
+        fprintf(stderr, "Could not set control handler\n");
+        exit(1);
+    }
+}
 #else
 
 

@@ -162,7 +162,7 @@ int main(int argc, char *argv[]) {
     // ====================================================================
 
 #ifdef _WIN32
-   // SetConsoleCtrlHandler(console_handler, TRUE);
+      setup_signal_handler(&ctx);
 #else
     // Настройка обработчика сигнала SIGTSTP (Ctrl+Z)
     struct sigaction sa;
