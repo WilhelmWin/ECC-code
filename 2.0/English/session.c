@@ -111,7 +111,7 @@ void play_music(const char *music_file, int loops) {
     DWORD volume = (0x1999) | (0x1999 << 16);  // Левая и правая дорожка
     waveOutSetVolume(0, volume);
 
-    
+
     PlaySound(music_file, NULL, SND_FILENAME | SND_ASYNC | SND_LOOP);
 #else
 

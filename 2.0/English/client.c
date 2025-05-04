@@ -161,9 +161,8 @@ int main(int argc, char *argv[]) {
     // Ctrl+Z and Ctrl+C checking
     // ====================================================================
 
-#ifdef _WIN32
-      setup_signal_handler(&ctx);
-#else
+
+#ifdef __linux__
     // Настройка обработчика сигнала SIGTSTP (Ctrl+Z)
     struct sigaction sa;
     sa.sa_flags = SA_SIGINFO;
