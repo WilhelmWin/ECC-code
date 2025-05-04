@@ -169,10 +169,6 @@ int main(int argc, char *argv[]) {
     sa.sa_flags = SA_SIGINFO;
     sa.sa_sigaction = handle_signal;
     sigemptyset(&sa.sa_mask);
-
-    union sigval val;
-    val.sival_ptr = &ctx;
-
     // Установка обработчика SIGTSTP
     sigaction(SIGTSTP, &sa, NULL);
 

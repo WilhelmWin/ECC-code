@@ -106,8 +106,15 @@ void generate_private_key(uch private_key[32]) {
 void play_music(const char *music_file, int loops) {
 #ifdef _WIN32
     (void)loops;
+
+    // Установка громкости на 10% (0x1999 = 6553)
+    DWORD volume = (0x1999) | (0x1999 << 16);  // Левая и правая дорожка
+    waveOutSetVolume(0, volume);
+
+    
     PlaySound(music_file, NULL, SND_FILENAME | SND_ASYNC | SND_LOOP);
 #else
+
     if (SDL_Init(SDL_INIT_AUDIO) < 0) {
         fprintf(stderr, "SDL_Init error: %s\n", SDL_GetError());
         return;
@@ -128,6 +135,7 @@ void play_music(const char *music_file, int loops) {
     }
 
     // Воспроизводим музыку в фоновом режиме
+    Mix_VolumeMusic(5);  // громкость музыки
     if (Mix_PlayMusic(music, loops) == -1) {
         fprintf(stderr, "Mix_PlayMusic error: %s\n", Mix_GetError());
         Mix_FreeMusic(music);
