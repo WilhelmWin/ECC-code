@@ -20,25 +20,25 @@ typedef struct {
 
 // AEAD Encryption function
 int crypto_aead_encrypt(
-  unsigned char *c,              // Output ciphertext (encrypted message)
-  unsigned long long *clen,      // Length of the ciphertext (output)
-  const unsigned char *m,        // Input message (plaintext)
-  unsigned long long mlen,       // Length of the message (plaintext)
-  const unsigned char *npub,     // Public nonce (typically used for uniqueness)
-  const unsigned char *k         // Key (secret key used for encryption)
+  uint8_t *c,               // Output ciphertext (encrypted message)
+  uint64_t *clen,           // Length of the ciphertext (output)
+  const uint8_t *m,         // Input message (plaintext)
+  uint64_t mlen,            // Length of the message (plaintext)
+  const uint8_t *npub,      // Public nonce (typically used for uniqueness)
+  const uint8_t *k          // Key (secret key used for encryption)
 );
 
 // =====================================================================
 // AEAD Decryption function
 // =====================================================================
 int crypto_aead_decrypt(
-  unsigned char *m,              // Output message (decrypted message)
-  unsigned long long *mlen,      // Length of the decrypted message (output)
-  unsigned char *nsec,           // Secret nonce (may be set to null if not used)
-  const unsigned char *c,        // Input ciphertext (encrypted message)
-  unsigned long long clen,       // Length of the ciphertext
-  const unsigned char *npub,     // Public nonce (same as encryption)
-  const unsigned char *k         // Key (same key as encryption)
+  uint8_t *m,              // Output message (decrypted message)
+  uint64_t *mlen,          // Length of the decrypted message (output)
+  uint8_t *nsec,           // Secret nonce (may be set to null if not used)
+  const uint8_t *c,        // Input ciphertext (encrypted message)
+  uint64_t clen,           // Length of the ciphertext
+  const uint8_t *npub,     // Public nonce (same as encryption)
+  const uint8_t *k         // Key (same key as encryption)
 );
 
 #endif /* ASCON_H_ */

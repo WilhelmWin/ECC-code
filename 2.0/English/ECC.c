@@ -4,7 +4,7 @@
 static gf _121665 = {0xDB41, 1};
 
 // Base point of the elliptic curve (used in X25519)
-static uch base[32] = {9};
+static uint8_t base[32] = {9};
 
 // ========================================================================
 // Carry operation for field elements (GF)
@@ -116,7 +116,7 @@ sv sel(gf p, gf q, int b)
 
 // Implements scalar multiplication algorithm using conditional selection
 // and field operations.
-sv mainloop(lli x[32], uch *z)
+sv mainloop(lli x[32], uint8_t *z)
 {
     gf a, b, c, d, e, f;
     lli p, i;
@@ -161,7 +161,7 @@ sv mainloop(lli x[32], uch *z)
 // ========================================================================
 
 // Converts a 32-byte array into 16 16-bit elements (little-endian).
-sv unpack(gf o, const uch *n)
+sv unpack(gf o, const uint8_t *n)
 {
     int i;
     for (i = 0; i < 16; i++)
@@ -173,7 +173,7 @@ sv unpack(gf o, const uch *n)
 // ========================================================================
 
 // Normalizes values and converts back to byte format.
-sv pack(uch *o, gf n)
+sv pack(uint8_t *o, gf n)
 {
     int i, j, b;
     gf m;
@@ -203,9 +203,9 @@ sv pack(uch *o, gf n)
 
 // Accepts scalar n and point p, and computes q = n * p on the elliptic
 // curve.
-int crypto_scalarmult(uch *q, const uch *n, const uch *p)
+int crypto_scalarmult(uint8_t *q, const uint8_t *n, const uint8_t *p)
 {
-    uch z[32];
+    uint8_t z[32];
     lli x[32];
     int i;
     for (i = 0; i < 31; ++i)
@@ -225,7 +225,7 @@ int crypto_scalarmult(uch *q, const uch *n, const uch *p)
 // ========================================================================
 
 // Simplified wrapper calling the main function with fixed base point.
-int crypto_scalarmult_base(uch *q, const uch *n)
+int crypto_scalarmult_base(uint8_t *q, const uint8_t *n)
 {
     return crypto_scalarmult(q, n, base);
 }

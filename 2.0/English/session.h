@@ -19,8 +19,9 @@
 // Platform-specific includes for Windows and Unix-like systems
 // ========================================================================
 #ifdef _WIN32
+#include <winsock2.h>     // For Windows socket functions
 #include <windows.h>      // For Windows-specific functionality
-    #include <winsock2.h>     // For Windows socket functions
+
 typedef int socklen_t;
 
     
@@ -42,72 +43,46 @@ typedef int socklen_t;
 #endif
 
 // ========================================================================
-// Definition of custom types
-// ========================================================================
-
-typedef unsigned char uch;  // Define 'uch' as a shorthand for unsigned
-// char
-typedef unsigned long long ullh; // Define 'ullh' as a shorthand for
-// unsigned long long
-
-// ========================================================================
 // Constants for buffer sizes, nonce size, and key sizes
 // ========================================================================
-#define BUFFER_SIZE 256        // Size of the communication buffer
-                               // (in bytes)
-
-#define NONCE_SIZE 16          // Size of the nonce
-                               // (for encryption, 16 bytes)
-
-#define KEY_SIZE 32    // Size of the private key
-                               // (32 bytes, 256 bits)
-
-#define SHARED_SECRET_SIZE 32  // Size of the shared secret
-                               // (32 bytes, 256 bits)
+#define BUFFER_SIZE 256
+#define NONCE_SIZE 16
+#define KEY_SIZE 32
+#define SHARED_SECRET_SIZE 32
 
 // ========================================================================
 // Structure to hold client-server context information
 // ========================================================================
 typedef struct {
-    int portno;                // Port number for communication
-    int sockfd;                // Socket file descriptor for the
-                               // communication
-    struct sockaddr_in serv_addr;  // Server address structure
-    struct hostent *server;    // Server information (e.g., hostname)
-    int optval; // Set socket option to allow address reuse
-    // (for graceful termination)
+    int portno;                        // Port number for communication
+    int sockfd;                        // Socket file descriptor
+    struct sockaddr_in serv_addr;     // Server address
+    struct hostent *server;           // Server info (hostname, etc.)
+    int optval;                        // Socket options
 
-    uch client_public_key[KEY_SIZE];
-    uch server_public_key[KEY_SIZE];
-    uch public_key[KEY_SIZE];
-    // Communication buffers
-    uch buffer[BUFFER_SIZE];  // Buffer for sending/receiving
-                                        // data
-    uch bufferlen;    // Length of the data in the buffer
-    uch private_key[KEY_SIZE];  // Private key
-                                                  // (for ECC)
+    uint8_t client_public_key[KEY_SIZE];
+    uint8_t server_public_key[KEY_SIZE];
+    uint8_t public_key[KEY_SIZE];
 
-    uch shared_secret[SHARED_SECRET_SIZE];  // Shared secret
-                                                      // (256 bits)
-    uch decrypted_msg[BUFFER_SIZE];        // Decrypted message
-                                                     // buffer
-    ullh decrypted_msglen;             // Length of the
-                                                     // decrypted message
+    uint8_t buffer[BUFFER_SIZE];       // General communication buffer
+    uint8_t bufferlen;                 // Length of valid data in buffer
 
-    uch *nsec;  // Security parameter (could be NULL if
-                          // not used)
-    uch encrypted_msg[BUFFER_SIZE]; // Encrypted message
-                                              // buffer
-    ullh encrypted_msglen; // Length of the encrypted
-                                         // message
+    uint8_t private_key[KEY_SIZE];     // ECC private key
+    uint8_t shared_secret[SHARED_SECRET_SIZE];  // Shared key (X25519)
 
-    uch npub[NONCE_SIZE];  // Nonce (used for encryption,
-                                     // 16 bytes)
-    struct sockaddr_in cli_addr;     // Client address structure
-    socklen_t clilen;               // Length of the client address
-    int newsockfd;                  // Socket for accepted connections
+    uint8_t decrypted_msg[BUFFER_SIZE];      // Output buffer
+    uint64_t decrypted_msglen;               // Decrypted data length
+
+    uint8_t *nsec;                           // Optional security param
+    uint8_t encrypted_msg[BUFFER_SIZE];      // Encrypted message buffer
+    uint64_t encrypted_msglen;              // Encrypted data length
+
+    uint8_t npub[NONCE_SIZE];                // Nonce (ASCON, 128-bit)
+
+    struct sockaddr_in cli_addr;             // For server to accept()
+    socklen_t clilen;
+    int newsockfd;                           // Accepted client socket
 } ClientServerContext;
-
 
 
 // ========================================================================
@@ -115,9 +90,9 @@ typedef struct {
 // ========================================================================
 void initializeContext(ClientServerContext *ctx);  // Function to
                                                   // initialize context
-void generate_private_key(uch private_key[32]);  // Function to generate
+void generate_private_key(uint8_t private_key[32]);  // Function to generate
                                                 // a random private key
-void hexdump(const uch *data, size_t length);  // Function to print hex
+void hexdump(const uint8_t *data, size_t length);  // Function to print hex
                                               // dump of data
-void play_music(const char *music_file, int loops);
+void play_music(const char *music_file, int loops); //music
 #endif // SESSION_H

@@ -9,10 +9,14 @@
 // AEAD encryption function for ASCON-128a
 // ========================================================================
 
-int crypto_aead_encrypt(unsigned char* c, unsigned long long* clen,
-                        const unsigned char* m, unsigned long long mlen,
-                        const unsigned char* npub,
-                        const unsigned char* k) {
+int crypto_aead_encrypt(
+  uint8_t *c,               // Output ciphertext (encrypted message)
+  uint64_t *clen,           // Length of the ciphertext (output)
+  const uint8_t *m,         // Input message (plaintext)
+  uint64_t mlen,            // Length of the message (plaintext)
+  const uint8_t *npub,      // Public nonce (typically used for uniqueness)
+  const uint8_t *k          // Key (secret key used for encryption)
+){
 
 
   // =====================================================================
@@ -107,11 +111,15 @@ int crypto_aead_encrypt(unsigned char* c, unsigned long long* clen,
 // ========================================================================
 // Decryption function for AEAD using ASCON-128a.
 // ========================================================================
-int crypto_aead_decrypt(unsigned char* m, unsigned long long* mlen,
-                        unsigned char* nsec, const unsigned char* c,
-                        unsigned long long clen,
-                        const unsigned char* npub,
-                        const unsigned char* k) {
+int crypto_aead_decrypt(
+  uint8_t *m,              // Output message (decrypted message)
+  uint64_t *mlen,          // Length of the decrypted message (output)
+  uint8_t *nsec,           // Secret nonce (may be set to null if not used)
+  const uint8_t *c,        // Input ciphertext (encrypted message)
+  uint64_t clen,           // Length of the ciphertext
+  const uint8_t *npub,     // Public nonce (same as encryption)
+  const uint8_t *k         // Key (same key as encryption)
+){
   (void)nsec;  // 'nsec' is unused in this function, suppress warning
 
   // Check if the ciphertext length is at least the size of the tag

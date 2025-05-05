@@ -51,7 +51,7 @@ int rdrand64_step(uint64_t *rand);
    will retry up to the given number of times if generation fails. */
 
 // Function for retrying random number generation
-int rdrand64_retry(unsigned int retries, uint64_t *rand);
+int rdrand64_retry(uint32_t retries, uint64_t *rand);
 
 // ========================================================================
 //   Generate Multiple Bytes Using RDRAND
@@ -63,6 +63,6 @@ int rdrand64_retry(unsigned int retries, uint64_t *rand);
    The function returns the number of bytes successfully generated. */
 
 // Function for generating multiple random bytes
-unsigned int rdrand_get_bytes(unsigned int n, unsigned char *dest);
+unsigned int rdrand_get_bytes(uint32_t n, uint8_t *dest);
 
 #endif  /* __DRNG__H */

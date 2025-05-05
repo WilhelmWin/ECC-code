@@ -37,8 +37,12 @@ void handle_signal(int sig, siginfo_t *si, void *ucontext);
 
 
 #ifdef _WIN32
+// Registers the Windows console control handler.
+// Must be called during client initialization with valid context pointer.
 void setup_signal_handler(ClientServerContext *ctx);
 #else
+// Signal handler function for Unix/Linux systems.
+// Should be registered using sigaction, passing context via sigqueue or global var.
 void handle_signal_client(int sig, siginfo_t *si, void *ucontext);
 #endif
 

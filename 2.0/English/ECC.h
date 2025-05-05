@@ -1,6 +1,8 @@
 #ifndef ECC_H
 #define ECC_H
 
+#include <stdint.h>       // For uint8_t and other fixed-width types
+
 // ========================================================================
 // Type Definitions
 // ========================================================================
@@ -16,9 +18,6 @@ typedef long long int lli;
 // The size 16 matches the field used in Curve25519.
 typedef lli gf[16];
 
-// 'uch' is a shorthand for 'unsigned char'. It is used to represent
-// bytes (e.g., when passing keys, scalars, and points as byte arrays).
-typedef unsigned char uch;
 
 // ========================================================================
 // Macro Definitions
@@ -75,31 +74,31 @@ sv sel(gf p, gf q, int b);
 // point on the elliptic curve. Inputs: scalar 'z' and point data 'x'.
 // Outputs: x[0..15] — x-coordinate of the resulting point,
 // x[16..31] — denominator (to be inverted later).
-sv mainloop(lli x[32], uch *z);
+sv mainloop(lli x[32], uint8_t *z);
 
 // Byte Array to Field Element (unpack)
 // The 'unpack' function converts a 32-byte array 'n' into a field element
 // 'o',
 // interpreting each pair of bytes as a 16-bit value.
-sv unpack(gf o, const uch *n);
+sv unpack(gf o, const uint8_t *n);
 
 // Field Element to Byte Array (pack)
 // The 'pack' function converts a field element 'n' into a 32-byte array
 // 'o'.
 // This is used when sending or storing the result of scalar
 // multiplication.
-sv pack(uch *o, gf n);
+sv pack(uint8_t *o, gf n);
 
 // Scalar Multiplication of Point (crypto_scalarmult)
 // The 'crypto_scalarmult' function computes n * p
 // and stores the result in 'q'. This is a key operation in
 // key exchange protocols such as X25519 (used in TLS, Signal, etc.).
-int crypto_scalarmult(uch *q, const uch *n, const uch *p);
+int crypto_scalarmult(uint8_t *q, const uint8_t *n, const uint8_t *p);
 
 // Scalar Multiplication with Base Point (crypto_scalarmult_base)
 // The 'crypto_scalarmult_base' function computes n * G,
 // where G is the base point of the curve (usually x = 9).
 // The result is stored in 'q' and used for public key generation.
-int crypto_scalarmult_base(uch *q, const uch *n);
+int crypto_scalarmult_base(uint8_t *q, const uint8_t *n);
 
 #endif // ECC_H

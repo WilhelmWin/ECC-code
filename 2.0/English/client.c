@@ -124,7 +124,7 @@ int main(int argc, char *argv[]) {
 
     // Send public key to the server
     #ifdef _WIN32
-    int n = send(ctx.sockfd, ctx.public_key, sizeof(ctx.public_key),
+    int n = send(ctx.sockfd,(char *)ctx.public_key, sizeof(ctx.public_key),
                0);  // Convert to const char *
 #else
    int n = write(ctx.sockfd, (char *)ctx.public_key, sizeof(ctx.public_key));
@@ -163,14 +163,21 @@ int main(int argc, char *argv[]) {
 
 
 #ifdef __linux__
-    // Настройка обработчика сигнала SIGTSTP (Ctrl+Z)
-    struct sigaction sa;
-    sa.sa_flags = SA_SIGINFO;
-    sa.sa_sigaction = handle_signal;
-    sigemptyset(&sa.sa_mask);
-    // Установка обработчика SIGTSTP
-    sigaction(SIGTSTP, &sa, NULL);
+// Declare a sigaction structure to specify signal handling behavior
+struct sigaction sa;
 
+// Set the flag to indicate we want detailed signal information
+sa.sa_flags = SA_SIGINFO;
+
+// Set the signal handler function that will be called on signal receipt
+sa.sa_sigaction = handle_signal;
+
+// Initialize the signal mask to an empty set (no signals are blocked
+// during the handler execution)
+sigemptyset(&sa.sa_mask);
+
+// Register the signal handler for SIGTSTP (typically triggered by Ctrl+Z)
+sigaction(SIGTSTP, &sa, NULL);
 #endif
 
 

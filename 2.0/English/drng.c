@@ -61,14 +61,14 @@ int rdrand64_retry(unsigned int retries, uint64_t *rand)
 // Returns:
 //   - the number of bytes actually retrieved (may be < n on error)
 // ========================================================================
-unsigned int rdrand_get_bytes(unsigned int n, unsigned char *dest)
+unsigned int rdrand_get_bytes(uint32_t n, uint8_t *dest)
 {
-    unsigned char *headstart;       // start of the buffer (possibly
+    uint8_t *headstart;       // start of the buffer (possibly
                                     // unaligned)
-    unsigned char *tailstart = NULL;// tail part (remaining bytes < 8)
+    uint8_t *tailstart = NULL;// tail part (remaining bytes < 8)
     uint64_t *blockstart;           // pointer to the 64-bit aligned
                                     // portion
-    unsigned int count, ltail, lhead, lblock;
+    uint32_t count, ltail, lhead, lblock;
     uint64_t i, temprand;
 
     // === Step 1: Determine buffer alignment ===
@@ -84,10 +84,10 @@ unsigned int rdrand_get_bytes(unsigned int n, unsigned char *dest)
         blockstart = (uint64_t *)(((uint64_t)headstart & ~7ULL) + 8);
 
         // lblock is the aligned portion after the head
-        lblock = n - (8 - (unsigned int)((uint64_t)headstart % 8));
+        lblock = n - (8 - (uint32_t)((uint64_t)headstart % 8));
 
         // Number of bytes in the unaligned head part
-        lhead = (unsigned int)((uint64_t)blockstart - (uint64_t)headstart);
+        lhead = (uint32_t)((uint64_t)blockstart - (uint64_t)headstart);
     }
 
     // Calculate length of tail part (remaining bytes after aligned block)
@@ -98,7 +98,7 @@ unsigned int rdrand_get_bytes(unsigned int n, unsigned char *dest)
 
     // tailstart — start address of the tail portion
     if (ltail) {
-        tailstart = (unsigned char *)((uint64_t)blockstart + lblock);
+        tailstart = (uint8_t *)((uint64_t)blockstart + lblock);
     }
 
     // === Step 2: Handle unaligned head part, if any ===

@@ -71,8 +71,7 @@ void register_signal_handler(ClientServerContext *ctx) {
 
     // Set the custom handler function
     if (!SetConsoleCtrlHandler(handle_signal, TRUE)) {
-        fprintf(stderr, "Failed to register signal handler\n");
-        exit(1);
+        error("Failed to register signal handler\n");
     }
 }
 
@@ -95,90 +94,93 @@ void handle_signal(int sig, siginfo_t *si, void *ucontext) {
     exit(1);
 }
 
-#endif  // End of platform-specific code
+#endif
 
 #ifdef _WIN32
+// Global pointer to the client-server context (used for cleanup on signal)
 static ClientServerContext *g_ctx = NULL;
 
+// Windows console control handler function
+// This function is called when the user presses Ctrl+C or Ctrl+Break
 BOOL WINAPI ConsoleHandler(DWORD signal) {
+    // Check for Ctrl+C or Ctrl+Break signal
     if (signal == CTRL_C_EVENT || signal == CTRL_BREAK_EVENT) {
         if (g_ctx) {
+            // Message to be sent to the server before closing
             const char *msg = "bye";
 
+            // Encrypt the message using the shared secret and nonce
             if (crypto_aead_encrypt(g_ctx->encrypted_msg, &g_ctx->encrypted_msglen,
                                     (const unsigned char *)msg, strlen(msg),
                                     g_ctx->npub, g_ctx->shared_secret) != 0) {
-                fprintf(stderr, "Encryption error\n");
-                exit(1);
+                error("Encryption error\n");  // Log encryption error
             }
 
+            // Send the encrypted message to the server
             int bytes_sent = send(g_ctx->sockfd, (const char *)g_ctx->encrypted_msg, (int)g_ctx->encrypted_msglen, 0);
             if (bytes_sent == SOCKET_ERROR) {
-                fprintf(stderr, "Send failed: %d\n", WSAGetLastError());
-                closesocket(g_ctx->sockfd);
-                exit(1);
+                error("Send failed: %d\n");  // Log send error
             } else {
-                printf("Sent %d bytes\n", bytes_sent);
+                printf("Sent %d bytes\n", bytes_sent);  // Debug info
             }
 
+            // Inform the user and close the socket
             printf("Received signal. Sent 'bye' message to server and closing client...\n");
-            closesocket(g_ctx->sockfd);
+            closesocket(g_ctx->sockfd);  // Close the socket
         }
 
-        exit(0);
+        exit(1);  // Terminate the application
     }
 
-    return TRUE;
+    return TRUE;  // Signal handled
 }
 
 
+
 void setup_signal_handler(ClientServerContext *ctx) {
-    g_ctx = ctx;
+    g_ctx = ctx;  // Save the context globally for use in the signal handler
+
+    // Register the ConsoleHandler function as the console control handler
     if (!SetConsoleCtrlHandler(ConsoleHandler, TRUE)) {
-        fprintf(stderr, "Could not set control handler\n");
-        exit(1);
-    }
+        error("Could not set control handler\n");  // Log error if registration fails
 }
 #else
 
 
 
 void handle_signal_client(int sig, siginfo_t *si, void *ucontext) {
-    (void)ucontext;  // Не используется, но требуется для совместимости
+    (void)ucontext;  // Not used, included for compatibility with sigaction
 
+    // Extract context from the signal info (sent via sigqueue)
     ClientServerContext *ctx = (ClientServerContext *)si->si_value.sival_ptr;
 
-    // Пример сообщения, которое будет отправлено серверу
+    // Message to be sent to the server before shutdown
     const char *msg = "bye";
 
-    // Шифрование сообщения перед отправкой
+    // Encrypt the message using AEAD encryption
     if (crypto_aead_encrypt(ctx->encrypted_msg, &ctx->encrypted_msglen,
                             (unsigned char *)msg, strlen(msg),
                             ctx->npub, ctx->shared_secret) != 0) {
-        perror("Encryption error");
-        exit(1);
-                            }
-
-    // Отправка зашифрованного сообщения серверу
-    ssize_t bytes_sent = send(ctx->sockfd, ctx->encrypted_msg, ctx->encrypted_msglen, 0);
-    if (bytes_sent == -1) {
-        perror("Send failed");
-        close(ctx->sockfd);  // Закрытие сокета при ошибке
-        exit(1);
-    } else {
-        printf("Sent %ld bytes\n", bytes_sent);  // Для отладки
+        error("Encryption error");  // Log encryption failure
     }
 
-    // Информация для пользователя
+    // Send the encrypted message to the server
+    ssize_t bytes_sent = send(ctx->sockfd, ctx->encrypted_msg, ctx->encrypted_msglen, 0);
+    if (bytes_sent == -1) {
+        error("Send failed");  // Log send error
+    } else {
+        printf("Sent %ld bytes\n", bytes_sent);  // Debug output
+    }
+
+    // Notify the user about signal handling and shutdown
     printf("Received signal %d. Sent 'bye' message to server and closing client...\n", sig);
 
-    // Закрытие сокета
+    // Close the client socket
     close(ctx->sockfd);
 
-    // Завершаем программу
-    exit(0);
+    // Terminate the client application
+    exit(1);
 }
-
 
 #endif  // End of platform-specific code
 

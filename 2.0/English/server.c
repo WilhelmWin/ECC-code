@@ -60,8 +60,8 @@ int main(int argc, char *argv[]) {
     #ifdef _WIN32
         ctx.sockfd = socket(AF_INET, SOCK_STREAM, 0); // Create TCP socket
                                                      // on Windows
-        if ((unsigned long long)ctx.sockfd ==
-            (unsigned long long)INVALID_SOCKET) {
+        if ((uint64_t)ctx.sockfd ==
+            (uint64_t)INVALID_SOCKET) {
             error_server("ERROR opening socket", ctx.sockfd, ctx.newsockfd);
             // Error opening socket
         }
@@ -146,22 +146,32 @@ int main(int argc, char *argv[]) {
 
 #ifdef _WIN32
 
+    // On Windows, use a platform-specific function to register the signal
+    // handler
     register_signal_handler(&ctx);
-#else
-    // Registration
-    struct sigaction sa;
-    sa.sa_flags = SA_SIGINFO;  // Enable the ability to transmit data
-    sa.sa_sigaction = handle_signal;  // Specify our handler
-    sigemptyset(&sa.sa_mask);  // Clearing the signal mask
 
-    // Passing a pointer to the context via sa_sigaction
+#else
+    // POSIX: Set up a signal handler using sigaction
+
+    struct sigaction sa;
+
+    // Use SA_SIGINFO to allow passing additional data (via siginfo_t)
+    sa.sa_flags = SA_SIGINFO;
+
+    // Set our custom signal handler function
     sa.sa_sigaction = handle_signal;
 
-    // Signal registration
-    sigaction(SIGINT, &sa, NULL);
-    sigaction(SIGTERM, &sa, NULL);
-    sigaction(SIGTSTP, &sa, NULL);
+    // Initialize the signal mask to empty (no signals are blocked
+    // during handler execution)
+    sigemptyset(&sa.sa_mask);
+
+    // Register the signal handler for different termination-related
+    // signals
+    sigaction(SIGINT, &sa, NULL);   // Interrupt from keyboard (Ctrl+C)
+    sigaction(SIGTERM, &sa, NULL);  // Termination signal
+    sigaction(SIGTSTP, &sa, NULL);  // Terminal stop signal (Ctrl+Z)
 #endif
+
     // ====================================================================
     // Accept connection from the client
     // ====================================================================
@@ -175,8 +185,8 @@ int main(int argc, char *argv[]) {
     #ifdef _WIN32
         ctx.newsockfd = accept(ctx.sockfd,
                            (struct sockaddr *)&ctx.cli_addr, &ctx.clilen);
-        if ((unsigned long long)ctx.newsockfd ==
-            (unsigned long long)INVALID_SOCKET) {
+        if ((uint64_t)ctx.newsockfd ==
+            (uint64_t)INVALID_SOCKET) {
             error_server("ERROR on accept", ctx.sockfd, ctx.newsockfd);
             // Error accepting the connection
         }
@@ -195,14 +205,16 @@ int main(int argc, char *argv[]) {
     // Diffie-Hellman Key Exchange Process
     // ====================================================================
 
-    crypto_scalarmult_base(ctx.public_key, ctx.private_key);  // Generate the
+    crypto_scalarmult_base(ctx.public_key, ctx.private_key);  // Generate
+                                                              // the
                                                           // server's
                                                           // public
                                                           // key using its
                                                           // private key
 
     // Send the server's public key to the client
-    int n = send(ctx.newsockfd, (char *)ctx.public_key, sizeof(ctx.public_key), 0);
+    int n = send(ctx.newsockfd, (char *)ctx.public_key,
+                 sizeof(ctx.public_key), 0);
     if (n < 0) {
         error_server("Error sending public key to client", ctx.sockfd,
                                     ctx.newsockfd); // Error sending the
@@ -233,13 +245,17 @@ int main(int argc, char *argv[]) {
     hexdump(ctx.shared_secret, 32);
 
     // ====================================================================
-    // Main Communication Loop with Client
+    // Waiting music
     // ====================================================================
     #ifdef _WIN32
     PlaySound(NULL, 0, 0);
     #else
     Mix_HaltMusic();
     #endif
+    // ====================================================================
+    // Main Communication Loop with Client
+    // ====================================================================
+
     while (1) {
 
         // Read the encrypted message from the client

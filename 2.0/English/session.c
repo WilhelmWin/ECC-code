@@ -64,7 +64,7 @@ void initializeContext(ClientServerContext *ctx) {
 // ========================================================================
 // Function to print data in hexadecimal format
 // ========================================================================
-void hexdump(const uch *data, size_t length) {
+void hexdump(const uint8_t *data, size_t length) {
     printf("\n");
     // Iterate through each byte in the provided data
     for (size_t i = 0; i < length; i++) {
@@ -83,14 +83,14 @@ void hexdump(const uch *data, size_t length) {
     printf("\n");
 }
 
-// ====================================================
+// ========================================================================
 // Function to generate a random private key (256 bits / 32 bytes)
-// ====================================================
-void generate_private_key(uch private_key[32]) {
+// ========================================================================
+void generate_private_key(uint8_t private_key[32]) {
     // Try to obtain 32 bytes of random data using rdrand
     // (random number generator)
     // If the number of bytes retrieved is less than 32, print an error
-    if (rdrand_get_bytes(32, (unsigned char *) private_key) < 32) {
+    if (rdrand_get_bytes(32, (uint8_t  *) private_key) < 32) {
         // Error handling if random data couldn't be fetched
      error("Random values not available");
     }
@@ -102,50 +102,44 @@ void generate_private_key(uch private_key[32]) {
 }
 
 
+// ========================================================================
+// Just music
+// ========================================================================
 
 void play_music(const char *music_file, int loops) {
 #ifdef _WIN32
-    (void)loops;
+    (void)loops;  // 'loops' is unused on Windows (PlaySound loops indefinitely)
 
-    // Установка громкости на 10% (0x1999 = 6553)
-    DWORD volume = (0x1999) | (0x1999 << 16);  // Левая и правая дорожка
+    // Set master volume to approximately 10% for both left and right channels
+    DWORD volume = (0x1999) | (0x1999 << 16);  // 0x1999 = ~10% of max (0xFFFF)
     waveOutSetVolume(0, volume);
 
-
+    // Asynchronously play the sound file in loop mode
     PlaySound(music_file, NULL, SND_FILENAME | SND_ASYNC | SND_LOOP);
 #else
-
+    // Initialize SDL audio subsystem
     if (SDL_Init(SDL_INIT_AUDIO) < 0) {
-        fprintf(stderr, "SDL_Init error: %s\n", SDL_GetError());
-        return;
+        error("SDL_Init error: %s\n");
     }
 
+    // Open audio device with standard format
     if (Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048) < 0) {
-        fprintf(stderr, "Mix_OpenAudio error: %s\n", Mix_GetError());
-        SDL_Quit();
-        return;
+        error("Mix_OpenAudio error: %s\n");
     }
 
+    // Load music file
     Mix_Music *music = Mix_LoadMUS(music_file);
     if (!music) {
-        fprintf(stderr, "Mix_LoadMUS error: %s\n", Mix_GetError());
-        Mix_CloseAudio();
-        SDL_Quit();
-        return;
+        error("Mix_LoadMUS error: %s\n");
     }
 
-    // Воспроизводим музыку в фоновом режиме
-    Mix_VolumeMusic(5);  // громкость музыки
+    // Set music volume to 10% (range: 0–128)
+    Mix_VolumeMusic(13);
+
+    // Play music with specified loop count
     if (Mix_PlayMusic(music, loops) == -1) {
-        fprintf(stderr, "Mix_PlayMusic error: %s\n", Mix_GetError());
-        Mix_FreeMusic(music);
-        Mix_CloseAudio();
-        SDL_Quit();
-        return;
+        error("Mix_PlayMusic error: %s\n");
     }
-
-    // Не блокируем выполнение, просто разрешаем продолжить работу
-    // и продолжим работу сервера, пока музыка играет
 #endif
 }
 
