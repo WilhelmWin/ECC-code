@@ -16,8 +16,7 @@
     Provided by my academic advisor Miloš Drutarovski during the encryption method update.
 
 ### What Was Changed:
-
-    The [files](https://github.com/WilhelmWin/ECC-code/tree/master/2.0/Source/ASCON) related to printing were removed, specifically printstate.c, printstate.h, and constants for other implementations were also removed.
+The [files](https://github.com/WilhelmWin/ECC-code/tree/master/2.0/Source/ASCON) related to printing were removed, specifically printstate.c, printstate.h, and constants for other implementations were also removed.
 
 ## 🔐 Description
 
