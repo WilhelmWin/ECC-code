@@ -31,7 +31,8 @@ typedef int socklen_t;
 
     #include <netinet/in.h>   // For sockaddr_in and other structures
 
-    #include <unistd.h>       // For close,read,write and other Unix system calls
+    #include <unistd.h>       // For close,read,write and other Unix
+                              // system calls
 
     #include <sys/socket.h>   // For socket functions
                               // (socket(), bind(), etc.)

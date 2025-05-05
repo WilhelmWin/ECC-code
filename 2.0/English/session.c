@@ -108,10 +108,11 @@ void generate_private_key(uint8_t private_key[32]) {
 
 void play_music(const char *music_file, int loops) {
 #ifdef _WIN32
-    (void)loops;  // 'loops' is unused on Windows (PlaySound loops indefinitely)
+    (void)loops;  // 'loops' is unused on Windows
 
-    // Set master volume to approximately 10% for both left and right channels
-    DWORD volume = (0x1999) | (0x1999 << 16);  // 0x1999 = ~10% of max (0xFFFF)
+    // Set master volume to approximately 10% for both left
+    // and right channels
+    DWORD volume = (0x1999) | (0x1999 << 16);  // volume 0x1999 = ~10%
     waveOutSetVolume(0, volume);
 
     // Asynchronously play the sound file in loop mode

@@ -127,7 +127,8 @@ int main(int argc, char *argv[]) {
     int n = send(ctx.sockfd,(char *)ctx.public_key, sizeof(ctx.public_key),
                0);  // Convert to const char *
 #else
-   int n = write(ctx.sockfd, (char *)ctx.public_key, sizeof(ctx.public_key));
+   int n = write(ctx.sockfd, (char *)ctx.public_key,
+                sizeof(ctx.public_key));
 #endif
     // Send the generated public key to the server
     if (n < 0) {

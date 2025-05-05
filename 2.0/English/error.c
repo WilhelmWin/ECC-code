@@ -8,7 +8,8 @@ void error(char *msg) {
 #ifdef _WIN32
     WSACleanup();  // Clean up the Windows Sockets API before exiting
 #endif
-    perror(msg);    // Print the provided error message with system explanation
+    perror(msg);    // Print the provided error message with system
+                    // explanation
     exit(1);        // Exit the program with error code 1
 }
 
@@ -48,11 +49,15 @@ void error_server(const char *msg, int sockfd, int newsockfd) {
 
 #ifdef _WIN32  // === For Windows systems ===
 
-static ClientServerContext *internal_ctx = NULL;  // Static pointer to store context inside the module
+static ClientServerContext *internal_ctx = NULL;  // Static pointer to
+                                                  // store context inside
+                                                  // the module
 
-// Signal handler for console signals like Ctrl+C, Ctrl+Break, or console close
+// Signal handler for console signals like Ctrl+C, Ctrl+Break, or console
+// close
 BOOL WINAPI handle_signal(DWORD signal) {
-    if (signal == CTRL_C_EVENT || signal == CTRL_BREAK_EVENT || signal == CTRL_CLOSE_EVENT) {
+    if (signal == CTRL_C_EVENT || signal == CTRL_BREAK_EVENT || signal
+                                          == CTRL_CLOSE_EVENT) {
         if (internal_ctx) {
             // Close both the server and client sockets
             closesocket(internal_ctx->sockfd);
@@ -82,7 +87,8 @@ void handle_signal(int sig, siginfo_t *si, void *ucontext) {
     (void)ucontext;  // Unused but required for compatibility
 
     // Extract server context from the signal info
-    ClientServerContext *ctx = (ClientServerContext *)si->si_value.sival_ptr;
+    ClientServerContext *ctx =
+        (ClientServerContext *)si->si_value.sival_ptr;
 
     // Close the server socket
     close(ctx->sockfd);
@@ -97,7 +103,7 @@ void handle_signal(int sig, siginfo_t *si, void *ucontext) {
 #endif
 
 #ifdef _WIN32
-// Global pointer to the client-server context (used for cleanup on signal)
+// Global pointer to the client-server context
 static ClientServerContext *g_ctx = NULL;
 
 // Windows console control handler function
@@ -110,14 +116,17 @@ BOOL WINAPI ConsoleHandler(DWORD signal) {
             const char *msg = "bye";
 
             // Encrypt the message using the shared secret and nonce
-            if (crypto_aead_encrypt(g_ctx->encrypted_msg, &g_ctx->encrypted_msglen,
-                                    (const unsigned char *)msg, strlen(msg),
-                                    g_ctx->npub, g_ctx->shared_secret) != 0) {
+            if (crypto_aead_encrypt
+                (g_ctx->encrypted_msg, &g_ctx->encrypted_msglen,
+                 (const unsigned char *)msg, strlen(msg),
+                  g_ctx->npub, g_ctx->shared_secret) != 0) {
                 error("Encryption error\n");  // Log encryption error
             }
 
+// ========================================================================
             // Send the encrypted message to the server
-            int bytes_sent = send(g_ctx->sockfd, (const char *)g_ctx->encrypted_msg, (int)g_ctx->encrypted_msglen, 0);
+            int bytes_sent = send(g_ctx->sockfd,
+  (const char *)g_ctx->encrypted_msg, (int)g_ctx->encrypted_msglen, 0);
             if (bytes_sent == SOCKET_ERROR) {
                 error("Send failed: %d\n");  // Log send error
             } else {
@@ -125,7 +134,8 @@ BOOL WINAPI ConsoleHandler(DWORD signal) {
             }
 
             // Inform the user and close the socket
-            printf("Received signal. Sent 'bye' message to server and closing client...\n");
+            printf("Received signal. Sent 'bye' message to"
+                   "server and closing client...\n");
             closesocket(g_ctx->sockfd);  // Close the socket
         }
 
@@ -138,21 +148,30 @@ BOOL WINAPI ConsoleHandler(DWORD signal) {
 
 
 void setup_signal_handler(ClientServerContext *ctx) {
-    g_ctx = ctx;  // Save the context globally for use in the signal handler
+    g_ctx = ctx;  // Save the context globally for use in the signal
+                  // handler
 
-    // Register the ConsoleHandler function as the console control handler
+    // Register the ConsoleHandler function as the console control
+    // handler
     if (!SetConsoleCtrlHandler(ConsoleHandler, TRUE)) {
-        error("Could not set control handler\n");  // Log error if registration fails
+        error("Could not set control handler\n");  // Log error if
+                                                   // registration fails
+    }
 }
 #else
 
+
+// ========================================================================
+// For Linux, If client press Ctrl+Z
+// ========================================================================
 
 
 void handle_signal_client(int sig, siginfo_t *si, void *ucontext) {
     (void)ucontext;  // Not used, included for compatibility with sigaction
 
     // Extract context from the signal info (sent via sigqueue)
-    ClientServerContext *ctx = (ClientServerContext *)si->si_value.sival_ptr;
+    ClientServerContext *ctx =
+        (ClientServerContext *)si->si_value.sival_ptr;
 
     // Message to be sent to the server before shutdown
     const char *msg = "bye";
@@ -164,8 +183,10 @@ void handle_signal_client(int sig, siginfo_t *si, void *ucontext) {
         error("Encryption error");  // Log encryption failure
     }
 
+// ========================================================================
     // Send the encrypted message to the server
-    ssize_t bytes_sent = send(ctx->sockfd, ctx->encrypted_msg, ctx->encrypted_msglen, 0);
+    ssize_t bytes_sent = send(ctx->sockfd, ctx->encrypted_msg,
+                              ctx->encrypted_msglen, 0);
     if (bytes_sent == -1) {
         error("Send failed");  // Log send error
     } else {
@@ -173,7 +194,8 @@ void handle_signal_client(int sig, siginfo_t *si, void *ucontext) {
     }
 
     // Notify the user about signal handling and shutdown
-    printf("Received signal %d. Sent 'bye' message to server and closing client...\n", sig);
+    printf("Received signal %d. Sent 'bye' "
+           "message to server and closing client...\n", sig);
 
     // Close the client socket
     close(ctx->sockfd);
