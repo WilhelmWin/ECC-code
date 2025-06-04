@@ -2,7 +2,7 @@
 
 ## Project: Secure ECC Communication — Bachelor Thesis  
 **Author:** Vladyslav Holovko  
-**Supervisor:** prof. Ing. Miloš Drutarovský, CSc.
+**Supervisor:** prof. Ing. Miloš Drutarovský, CSc.          
 **Institution:** Technical University of Košice, Faculty of Electronics and Multimedia Telecommunications
 **Country:** Slovakia  
 **Year:** 2025  
