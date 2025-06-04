@@ -8,7 +8,7 @@ This directory contains preserved source files related to the implementation of 
 
 ### ASCON (Authenticated Encryption)
 
-Located in `ASCON/`:
+Located in [`ASCON/`](https://github.com/WilhelmWin/ECC-code/tree/master/2.0/Source/ASCON):
 
 - `aead.c`
 - `api.h`
@@ -30,7 +30,7 @@ Located in `ASCON/`:
 
 ### Elliptic Curve (Curve25519)
 
-Located in `Curve25519/`:
+Located in [`Curve25519/`](https://github.com/WilhelmWin/ECC-code/tree/master/2.0/Source/Curve25519):
 
 - `ECC.c`
 
@@ -45,7 +45,7 @@ Located in `Curve25519/`:
 
 ### DRNG (Deterministic Random Number Generator)
 
-Located in `Drng/`:
+Located in [`Drng/`](https://github.com/WilhelmWin/ECC-code/tree/master/2.0/Source/Drng):
 
 - `comp.bat`
 - `config.h`
