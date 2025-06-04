@@ -78,7 +78,7 @@ int main(int argc, char *argv[]) {
     // ====================================================================
     // Настройка адреса сервера
     // ====================================================================
-
+    memset((char *)&ctx.serv_addr, 0, sizeof(ctx.serv_addr));
     ctx.serv_addr.sin_family = AF_INET;  // Выбираем семью IPv4
     memcpy(&ctx.serv_addr.sin_addr.s_addr,
            ctx.server->h_addr,
@@ -109,7 +109,8 @@ int main(int argc, char *argv[]) {
 
     // Отправка публичного ключа серверу
 #ifdef _WIN32
-    int n = send(ctx.sockfd, (char *)ctx.public_key, sizeof(ctx.public_key), 0);
+    int n = send(ctx.sockfd, (char *)ctx.public_key, sizeof(ctx.public_key),
+                 0);
 // Преобразование в const char * (Windows)
 #else
     int n = write(ctx.sockfd, ctx.public_key, sizeof(ctx.public_key));
@@ -144,7 +145,31 @@ int main(int argc, char *argv[]) {
     printf("Вычисленный общий секрет:\n");
     hexdump(ctx.shared_secret, 32);  // Вывод общего секрета в
                                      // шестнадцатеричном формате
+    // ====================================================================
+    // Проверка на Ctrl+Z и Ctrl+C
+    // ====================================================================
 
+
+#ifdef __linux__
+    // Объявляем структуру sigaction для задания поведения обработки
+    // сигналов
+    struct sigaction sa;
+
+    // Устанавливаем флаг, чтобы получать подробную информацию о сигнале
+    sa.sa_flags = SA_SIGINFO;
+
+    // Устанавливаем функцию обработчика сигнала, которая будет вызвана при
+    // получении сигнала
+    sa.sa_sigaction = handle_signal;
+
+    // Инициализируем маску сигналов пустым набором (во время выполнения
+    // обработчика сигналы не блокируются)
+    sigemptyset(&sa.sa_mask);
+
+    // Регистрируем обработчик сигнала для SIGTSTP (обычно вызывается
+    // при нажатии Ctrl+Z)
+    sigaction(SIGTSTP, &sa, NULL);
+#endif
     // ====================================================================
     // Начало цикла обмена зашифрованными сообщениями
     // ====================================================================
@@ -168,7 +193,8 @@ int main(int argc, char *argv[]) {
         }
 
         ctx.bufferlen = strlen((char *)ctx.buffer);  // Сохранение длины
-                                                     // введённого сообщения
+                                                     // введённого
+                                                     // сообщения
 
         // Шифрование сообщения
         if (crypto_aead_encrypt(ctx.encrypted_msg, &ctx.encrypted_msglen,
@@ -201,11 +227,13 @@ int main(int argc, char *argv[]) {
 
 #ifdef _WIN32
         n = recv(ctx.sockfd, (char *)ctx.encrypted_msg,
-                 sizeof(ctx.encrypted_msg), 0);  // Получение зашифрованного
+                 sizeof(ctx.encrypted_msg), 0);  // Получение
+                                                 // зашифрованного
                                                  // ответа (Windows)
 #else
         n = read(ctx.sockfd, ctx.encrypted_msg,
-                 sizeof(ctx.encrypted_msg));     // Получение зашифрованного
+                 sizeof(ctx.encrypted_msg));     // Получение
+                                                 // зашифрованного
                                                  // ответа (Linux/Unix)
 #endif
         if (n < 0)
@@ -248,5 +276,3 @@ int main(int argc, char *argv[]) {
 
 exit(0);
 }
-
-

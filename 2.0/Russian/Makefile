@@ -3,69 +3,77 @@
 # ========================================================================
 
 CC = gcc
-CFLAGS = -Wall -Wextra -O2 -fstack-protector-strong -fPIE -D_FORTIFY_SOURCE=2
-LDFLAGS = -pie -Wl,-z,relro -Wl,-z,now
+ifeq ($(OS), Windows_NT)
+CFLAGS = -Wall -Wextra -O2 -fstack-protector-strong -fPIE
+CFLAGS = -D_FORTIFY_SOURCE=2
+LDFLAGS = -pie -Wl,-z,relro -Wl,-z,now -lws2_32 -lwinmm
+else
+CFLAGS = -Wall -Wextra -O2 -fstack-protector-strong -fPIE
+CFLAGS = -D_FORTIFY_SOURCE=2 `sdl2-config --cflags`
+LDFLAGS = -pie -Wl,-z,relro -Wl,-z,now `sdl2-config --libs` -lSDL2_mixer
+endif
 
 # ========================================================================
-# Названия исполняемых файлов
+# Имена целевых исполняемых файлов
 # ========================================================================
 
-SERVER_TARGET = server       # Серверное приложение
-CLIENT_TARGET = client       # Клиентское приложение
+SERVER_TARGET = server
+CLIENT_TARGET = client
 
 # ========================================================================
 # Каталоги
 # ========================================================================
 
-ASCON_DIR = ASCON            # Каталог, содержащий код ASCON
+ASCON_DIR = ASCON
 
 # ========================================================================
 # Исходные и объектные файлы
 # ========================================================================
 
-ECC_SRC = ECC.c              # Исходный файл модуля ECC
-ECC_OBJ = ECC.o              # Объектный файл для ECC
+ECC_SRC = ECC.c
+ECC_OBJ = ECC.o
 
-ASCON_SRC = $(ASCON_DIR)/aead.c        # Исходный файл ASCON
-ASCON_OBJ = $(ASCON_SRC:.c=.o)         # Соответствующий объектный файл
+ASCON_SRC = $(ASCON_DIR)/aead.c
+ASCON_OBJ = $(ASCON_SRC:.c=.o)
 
-SERVER_SRC = server.c session.c drng.c error.c # Исходные файлы сервера
-CLIENT_SRC = client.c session.c drng.c error.c # Исходные файлы клиента
+SERVER_SRC = server.c session.c drng.c error.c
+CLIENT_SRC = client.c session.c drng.c error.c
 
-SERVER_OBJ = $(SERVER_SRC:.c=.o)       # Объектные файлы для сервера
-CLIENT_OBJ = $(CLIENT_SRC:.c=.o)       # Объектные файлы для клиента
-COMMON_OBJ = session.o drng.o error.o  # Общие объектные файлы
+SERVER_OBJ = $(SERVER_SRC:.c=.o)
+CLIENT_OBJ = $(CLIENT_SRC:.c=.o)
 
-# ========================================================================
-# Статические библиотеки
-# ========================================================================
-
-LIBECC = libecc.a             # Статическая библиотека ECC
-LIBASCON = libascon.a         # Статическая библиотека ASCON
-LIBRARIES = $(LIBECC) $(LIBASCON)  # Список библиотек для линковки
+COMMON_OBJ = session.o drng.o error.o
 
 # ========================================================================
-# Флаги компоновщика и команды удаления файлов в зависимости от ОС
+# Библиотеки
+# ========================================================================
+
+LIBECC = libecc.a
+LIBASCON = libascon.a
+LIBRARIES = $(LIBECC) $(LIBASCON)
+
+# ========================================================================
+# Флаги компоновщика и команда удаления в зависимости от ОС
 # ========================================================================
 
 ifeq ($(OS), Windows_NT)
-    LDFLAGS = -lws2_32        # Для Windows: добавить библиотеку сокетов
-    RM = del /f /q            # Команда удаления для Windows
-    NULL = nul                # Устройство-пустышка в Windows
+    LDFLAGS = -lws2_32 -lwinmm
+    RM = del /f /q
+    NULL = nul
 else
-    LDFLAGS =                 # Для Unix-подобных систем: дополнительных флагов нет
-    RM = rm -f                # Команда удаления для Unix
-    NULL = /dev/null          # Устройство-пустышка в Unix
+    LDFLAGS += `sdl2-config --libs` -lSDL2_mixer
+    RM = rm -f
+    NULL = /dev/null
 endif
 
 # ========================================================================
-# Правило по умолчанию (сборка всего проекта)
+# Правило по умолчанию
 # ========================================================================
 
 all: $(LIBRARIES) $(SERVER_TARGET) $(CLIENT_TARGET) postbuild
 
 # ========================================================================
-# Сборка статических библиотек
+# Статические библиотеки
 # ========================================================================
 
 $(LIBECC): $(ECC_OBJ)
@@ -75,7 +83,7 @@ $(LIBASCON): $(ASCON_OBJ)
 	ar rcs $@ $^
 
 # ========================================================================
-# Сборка исполняемых файлов
+# Исполняемые файлы
 # ========================================================================
 
 $(SERVER_TARGET): $(SERVER_OBJ) $(LIBRARIES)
@@ -85,14 +93,14 @@ $(CLIENT_TARGET): $(CLIENT_OBJ) $(LIBRARIES)
 	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
 
 # ========================================================================
-# Шаблон для компиляции .c → .o
+# Правило для объектных файлов
 # ========================================================================
 
 %.o: %.c
 	$(CC) $(CFLAGS) -c $< -o $@
 
 # ========================================================================
-# Очистка после сборки (временные файлы)
+# Очистка после сборки
 # ========================================================================
 
 postbuild:
@@ -107,7 +115,7 @@ else
 endif
 
 # ========================================================================
-# Команды очистки
+# Правила очистки
 # ========================================================================
 
 clean:
@@ -117,7 +125,7 @@ ifeq ($(OS), Windows_NT)
 	-$(RM) $(SERVER_TARGET) $(CLIENT_TARGET) *.exe
 else
 	$(RM) $(ASCON_DIR)/*.o $(LIBRARIES) $(SERVER_TARGET) $(CLIENT_TARGET)
-	$(RM) $(ECC_OBJ) $(COMMON_OBJ)  $(SERVER_OBJ) $(CLIENT_OBJ)
+	$(RM) $(ECC_OBJ) $(COMMON_OBJ) $(SERVER_OBJ) $(CLIENT_OBJ)
 endif
 
 distclean:

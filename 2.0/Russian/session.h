@@ -2,95 +2,97 @@
 #define SESSION_H
 
 // ========================================================================
-// Включения для независимой от платформы работы с сокетами
+// Подключения для платформонезависимой сокетной коммуникации
 // ========================================================================
 #include <sys/types.h>   // Для socklen_t (используется для длины сокета)
 #include <stdint.h>      // Для uint8_t и других типов фиксированной ширины
-#include <string.h>      // Для строковых функций: memset(), memcpy()
-#include <stdio.h>       // Для стандартных функций ввода-вывода: printf()
-#include <stdlib.h>      // Для стандартных функций библиотеки: malloc()
-#include "ECC.h"         // Включение библиотеки эллиптических кривых (ECC)
-#include "ASCON/ascon.h" // Для AEAD-шифрования ASCON
-
+#include <string.h>      // Для строковых функций, таких как memset, memcpy
+#include <stdio.h>       // Для стандартных функций ввода-вывода
+#include <stdlib.h>      // Для стандартных библиотечных функций
+#include "ECC.h"         // Включение библиотеки эллиптических кривых
+#include "ASCON/ascon.h" // Для AEAD шифрования ASCON
 
 // ========================================================================
-// Специфические включения для Windows и Unix-подобных систем
+// Платформенно-специфичные включения для Windows и Unix-подобных систем
 // ========================================================================
 #ifdef _WIN32
-    #include <winsock2.h>     // Для работы с сокетами в Windows
+#include <winsock2.h>    // Для функций сокетов Windows
+#include <windows.h>     // Для Windows-специфичной функциональности
+
 typedef int socklen_t;
-    #include <windows.h>      // Для специфических функций Windows
+
 #else
-    #include <arpa/inet.h>    // Для функций IP: inet_ntoa() и т.д.
-    #include <netinet/in.h>   // Для структур sockaddr_in и т.д.
-    #include <unistd.h>       // Для системных вызовов: close, read, write
-    #include <sys/socket.h>   // Для функций работы с сокетами: socket(),
-                              // bind() и др.
+    #include <arpa/inet.h>   // Для inet_ntoa и других функций работы с IP
+
+    #include <netinet/in.h>  // Для sockaddr_in и других структур
+
+    #include <unistd.h>      // Для close, read, write и других Unix
+                             // системных вызовов
+
+    #include <sys/socket.h>  // Для функций сокетов (socket, bind, и др.)
     #include <signal.h>
-    #include <netdb.h>        // Для gethostbyname() и других сетевых функций
+    #include <netdb.h>       // Для gethostbyname и других сетевых функций
+    #include <SDL2/SDL.h>
+    #include <SDL2/SDL_mixer.h>
 #endif
 
 // ========================================================================
-// Определение пользовательских типов
+// Константы для размеров буферов, nonce и ключей
 // ========================================================================
-typedef unsigned char uch;     // Краткое имя для unsigned char
-typedef unsigned long long ullh; // Краткое имя для unsigned long long
+#define BUFFER_SIZE 256
+#define NONCE_SIZE 16
+#define KEY_SIZE 32
+#define SHARED_SECRET_SIZE 32
 
 // ========================================================================
-// Константы: размеры буфера, nonce и ключей
-// ========================================================================
-#define BUFFER_SIZE 256           // Размер буфера обмена (в байтах)
-#define NONCE_SIZE 16             // Размер nonce
-                                  // (для шифрования, 16 байт)
-#define KEY_SIZE 32               // Размер закрытого ключа (32 байта,
-                                  // 256 бит)
-#define SHARED_SECRET_SIZE 32     // Размер общего секрета (32 байта,
-                                  // 256 бит)
-
-// ========================================================================
-// Структура для хранения контекста клиента/сервера
+// Структура для хранения контекста клиент-серверного взаимодействия
 // ========================================================================
 typedef struct {
-    int portno;                      // Номер порта
-    int sockfd;                      // Дескриптор сокета
-    struct sockaddr_in serv_addr;   // Структура адреса сервера
-    struct hostent *server;         // Информация о сервере
-                                    // (например, имя хоста)
-    int optval;                      // Опция сокета — повторное
-                                     // использование адреса
+    int portno;                        // Номер порта для связи
+    int sockfd;                        // Дескриптор сокета
+    struct sockaddr_in serv_addr;     // Адрес сервера
+    struct hostent *server;           // Информация о сервере (имя хоста)
+    int optval;                       // Опции сокета
 
-    uch client_public_key[KEY_SIZE];  // Публичный ключ клиента
-    uch server_public_key[KEY_SIZE];  // Публичный ключ сервера
-    uch public_key[KEY_SIZE];         // Общий публичный ключ (если нужен)
+    uint8_t client_public_key[KEY_SIZE];
+    uint8_t server_public_key[KEY_SIZE];
+    uint8_t public_key[KEY_SIZE];
 
-    uch buffer[BUFFER_SIZE];       // Буфер передачи/приема данных
-    uch bufferlen;                 // Длина данных в буфере
+    uint8_t buffer[BUFFER_SIZE];      // Общий буфер для коммуникации
+    uint8_t bufferlen;                // Длина валидных данных в буфере
 
-    uch private_key[KEY_SIZE];     // Приватный ключ (для ECC)
-    uch shared_secret[SHARED_SECRET_SIZE];  // Общий секрет (256 бит)
+    uint8_t private_key[KEY_SIZE];      // Приватный ключ ECC
+    uint8_t shared_secret[SHARED_SECRET_SIZE];  // Общий секрет (X25519)
 
-    uch decrypted_msg[BUFFER_SIZE];  // Буфер расшифрованного сообщения
-    ullh decrypted_msglen;           // Длина расшифрованного сообщения
+    uint8_t decrypted_msg[BUFFER_SIZE];   // Выходной буфер для
+                                          // расшифрованных сообщений
+    uint64_t decrypted_msglen;             // Длина расшифрованных данных
 
-    uch *nsec;                       // Параметр безопасности
-                                     // (может быть NULL)
-    uch encrypted_msg[BUFFER_SIZE];  // Буфер зашифрованного сообщения
-    ullh encrypted_msglen;           // Длина зашифрованного сообщения
+    uint8_t *nsec;                        // Опциональный параметр
+                                          // безопасности
+    uint8_t encrypted_msg[BUFFER_SIZE];   // Буфер для зашифрованных
+                                          // сообщений
+    uint64_t encrypted_msglen;             // Длина зашифрованных данных
 
-    uch npub[NONCE_SIZE];            // Nonce (для шифрования, 16 байт)
-    struct sockaddr_in cli_addr;     // Структура адреса клиента
-    socklen_t clilen;                // Длина адреса клиента
-    int newsockfd;                   // Сокет для принятого соединения
+    uint8_t npub[NONCE_SIZE];             // Nonce (ASCON, 128 бит)
+
+    struct sockaddr_in cli_addr;          // Для сервера, для accept()
+    socklen_t clilen;
+    int newsockfd;                       // Принятый клиентский сокет
 } ClientServerContext;
 
 // ========================================================================
 // Прототипы функций
 // ========================================================================
-void initializeContext(ClientServerContext *ctx);      // Инициализация
-                                                       // контекста
-void generate_private_key(uch private_key[32]);        // Генерация
-                                                       // приватного ключа
-void hexdump(const uch *data, size_t length);          // Вывод данных в
-                                                       // hex-формате
+void initializeContext(ClientServerContext *ctx);  // Функция инициализации
+                                                   // контекста
+void generate_private_key(uint8_t private_key[32]); // Функция генерации
+                                                   // случайного приватного
+                                                   // ключа
+void hexdump(const uint8_t *data, size_t length);   // Функция вывода данных
+                                                   // в шестнадцатеричном
+                                                   // виде
+void play_music(const char *music_file, int loops); // проигрывание музыки
 
 #endif // SESSION_H
+

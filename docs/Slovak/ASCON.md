@@ -18,7 +18,7 @@ Ako bola získaná:
 Čo bolo zmenené?
 
 - Z [súborov](https://github.com/WilhelmWin/ECC-code/tree/master/2.0/Source/ASCON) bolo odstránené zobrazenie, konkrétne printstate.c, printstate.h, a taktiež boli odstránené konštanty pre iné realizácie.
-
+ 
 ## 🔐 Popis
 
 ASCON-128a je algoritmus AEAD

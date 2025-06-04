@@ -2,7 +2,7 @@
 #include "error.h"
 
 // ========================================================================
-// Function to handle general errors: prints an error message and exits
+// Function to handle general errors
 // ========================================================================
 void error(char *msg) {
 #ifdef _WIN32

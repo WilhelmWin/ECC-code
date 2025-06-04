@@ -1,30 +1,34 @@
 #include "session.h"
 #include "error.h"
+
 // ========================================================================
-// Funkcia na spracovanie všeobecných chýb: vypíše chybu a ukončí program
+// Funkcia na spracovanie všeobecných chýb
 // ========================================================================
 void error(char *msg) {
 #ifdef _WIN32
-    WSACleanup();  // Vyčistí Winsock pred ukončením (Windows)
+    WSACleanup();  // Uvoľnenie Windows Sockets API pred ukončením
 #endif
-    perror(msg);    // Vypíše chybové hlásenie vrátane systémovej chyby
-    exit(1);        // Ukončí program s návratovým kódom 1
+    perror(msg);    // Vypíše zadanú chybovú správu so systémovým
+                    // vysvetlením
+    exit(1);        // Ukončí program s chybovým kódom 1
 }
 
 // ========================================================================
-// Funkcia na spracovanie chýb servera: zatvára sockety a ukončuje program
+// Funkcia na spracovanie chýb servera: zatvorí sokety a ukončí program
 // ========================================================================
 void error_server(const char *msg, int sockfd, int newsockfd) {
-    // Ak je serverový socket otvorený, zatvoriť ho
+    // Zatvorenie hlavného serverového soketu, ak je platný
     if (sockfd >= 0) {
 #ifdef _WIN32
-        closesocket(sockfd);  // Windows: zatvorenie pomocou closesocket
+        closesocket(sockfd);  // Windows: zatvorenie soketu pomocou
+                              // closesocket
 #else
-        close(sockfd);        // Unix/Linux: zatvorenie pomocou close
+        close(sockfd);        // Unix/Linux: zatvorenie soketu pomocou
+                              // close
 #endif
     }
 
-    // Ak je otvorený klientský socket, zatvoriť ho
+    // Zatvorenie soketu klientského pripojenia, ak je platný
     if (newsockfd >= 0) {
 #ifdef _WIN32
         closesocket(newsockfd);
@@ -34,65 +38,146 @@ void error_server(const char *msg, int sockfd, int newsockfd) {
     }
 
 #ifdef _WIN32
-    WSACleanup();  // Vyčistenie prostredia Winsock
+    WSACleanup();  // Uvoľnenie prostredia Winsock
 #endif
 
-    perror(msg);    // Vypíše chybové hlásenie
+    perror(msg);    // Vypíše chybovú správu
     exit(1);        // Ukončí program s chybou
 }
 
 // ========================================================================
-// Spracovanie signálov: bezpečné ukončenie servera cez Ctrl+C / Ctrl+Z
+// Spracovanie signálov: bezpečné ukončenie servera pri Ctrl+C / Ctrl+Z
 // ========================================================================
 
 #ifdef _WIN32  // === Pre Windows systémy ===
 
-static ClientServerContext *internal_ctx = NULL;  // Statický ukazovateľ na kontext (len v tomto súbore)
+static ClientServerContext *internal_ctx = NULL;  // Statický ukazovateľ
+                                                  // na uloženie kontextu
+                                                  // v module
 
-// Obsluha signálov ako Ctrl+C, Ctrl+Break alebo zatvorenie konzoly
+// Spracovanie signálov konzoly ako Ctrl+C, Ctrl+Break, zatvorenie konzoly
 BOOL WINAPI handle_signal(DWORD signal) {
-    if (signal == CTRL_C_EVENT || signal == CTRL_BREAK_EVENT || signal == CTRL_CLOSE_EVENT) {
+    if (signal == CTRL_C_EVENT || signal == CTRL_BREAK_EVENT ||
+      signal == CTRL_CLOSE_EVENT) {
         if (internal_ctx) {
-            // Zatvorenie oboch socketov: server a klient
+            // Zatvorenie serverového aj klientského soketu
             closesocket(internal_ctx->sockfd);
             closesocket(internal_ctx->newsockfd);
-            printf("Signal received. Closing server socket...\n");
+            printf("Signál prijatý. Zatváram serverový soket...\n");
         }
-        WSACleanup();  // Vyčistiť Winsock
-        exit(1);       // Ukončiť program
+        WSACleanup();  // Uvoľnenie prostredia soketov
+        exit(1);       // Ukončenie programu
     }
-    return FALSE;  // Ak signál nebol obslúžený
+    return FALSE;  // Ak signál nebol spracovaný, vráti FALSE
 }
 
-// Registrácia signal handlera (len Windows)
+// Registrácia spracovania signálu (špecifické pre Windows)
 void register_signal_handler(ClientServerContext *ctx) {
     internal_ctx = ctx;  // Uloženie kontextu pre neskoršie použitie
 
-    // Nastavenie vlastnej funkcie na spracovanie signálov
     if (!SetConsoleCtrlHandler(handle_signal, TRUE)) {
-        fprintf(stderr, "Failed to register signal handler\n");
-        exit(1);
+        error("Nepodarilo sa zaregistrovať spracovanie signálu\n");
     }
 }
 
 #else  // === Pre Unix/Linux systémy ===
 
-// Obsluha signálov ako SIGINT (Ctrl+C) alebo iných ukončovacích signálov
+// Spracovanie signálu SIGINT alebo iných ukončovacích signálov
 void handle_signal(int sig, siginfo_t *si, void *ucontext) {
-    (void)ucontext;  // Nepoužíva sa, ale potrebné pre kompatibilitu
+    (void)ucontext;  // Nepoužité, vyžadované pre kompatibilitu
 
-    // Získanie kontextu zo signálu
-    ClientServerContext *ctx = (ClientServerContext *)si->si_value.sival_ptr;
+    // Získanie kontextu servera zo signálovej štruktúry
+    ClientServerContext *ctx =
+        (ClientServerContext *)si->si_value.sival_ptr;
 
-    // Zatvorenie socketu servera
+    // Zatvorenie serverového soketu
     close(ctx->sockfd);
 
-    // Výpis do konzoly
-    printf("Received signal %d. Closing server...\n", sig);
+    // Informovanie užívateľa
+    printf("Prijatý signál %d. Zatváram server...\n", sig);
 
-    // Ukončenie programu
+    exit(1);
+}
+
+#endif
+
+#ifdef _WIN32
+// Globálny ukazovateľ na kontext klient-server
+static ClientServerContext *g_ctx = NULL;
+
+// Spracovanie konzolových signálov (Ctrl+C alebo Ctrl+Break)
+BOOL WINAPI ConsoleHandler(DWORD signal) {
+    if (signal == CTRL_C_EVENT || signal == CTRL_BREAK_EVENT) {
+        if (g_ctx) {
+            const char *msg = "bye";
+
+            if (crypto_aead_encrypt(g_ctx->encrypted_msg,
+                                    &g_ctx->encrypted_msglen,
+                                    (const unsigned char *)msg,
+                                    strlen(msg),
+                                    g_ctx->npub,
+                                    g_ctx->shared_secret) != 0) {
+                error("Chyba šifrovania\n");
+            }
+
+            int bytes_sent = send(g_ctx->sockfd,
+                                  (const char *)g_ctx->encrypted_msg,
+                                  (int)g_ctx->encrypted_msglen, 0);
+            if (bytes_sent == SOCKET_ERROR) {
+                error("Chyba pri odoslaní: %d\n");
+            } else {
+                printf("Odoslaných %d bajtov\n", bytes_sent);
+            }
+
+            printf("Signál prijatý. Odoslaná správa "
+                   " 'bye' serveru a zatváram klienta...\n");
+            closesocket(g_ctx->sockfd);
+        }
+        exit(1);
+    }
+    return TRUE;
+}
+
+void setup_signal_handler(ClientServerContext *ctx) {
+    g_ctx = ctx;  // Uloženie kontextu pre použitie v spracovaní signálu
+
+    if (!SetConsoleCtrlHandler(ConsoleHandler, TRUE)) {
+        error("Nepodarilo sa nastaviť spracovanie konzolového signálu\n");
+    }
+}
+#else
+
+// ========================================================================
+// Pre Linux: Ak klient stlačí Ctrl+Z
+// ========================================================================
+
+void handle_signal_client(int sig, siginfo_t *si, void *ucontext) {
+    (void)ucontext;
+
+    ClientServerContext *ctx =
+        (ClientServerContext *)si->si_value.sival_ptr;
+
+    const char *msg = "bye";
+
+    if (crypto_aead_encrypt(ctx->encrypted_msg, &ctx->encrypted_msglen,
+                            (unsigned char *)msg, strlen(msg),
+                            ctx->npub, ctx->shared_secret) != 0) {
+        error("Chyba šifrovania");
+    }
+
+    ssize_t bytes_sent = send(ctx->sockfd, ctx->encrypted_msg,
+                              ctx->encrypted_msglen, 0);
+    if (bytes_sent == -1) {
+        error("Chyba pri odoslaní");
+    } else {
+        printf("Odoslaných %ld bajtov\n", bytes_sent);
+    }
+
+    printf("Prijatý signál %d. "
+           "Odoslaná správa 'bye' serveru a zatváram klienta...\n", sig);
+
+    close(ctx->sockfd);
     exit(1);
 }
 
 #endif  // Koniec platformovo špecifického kódu
-

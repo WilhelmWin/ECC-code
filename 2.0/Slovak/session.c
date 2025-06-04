@@ -85,3 +85,44 @@ void generate_private_key(uch private_key[32]) {
     printf("Súkromný kľúč: \n");
     hexdump(private_key, 32);
 }
+// ========================================================================
+// Len hudba
+// ========================================================================
+
+void play_music(const char *music_file, int loops) {
+#ifdef _WIN32
+    (void)loops;  // 'loops' sa na Windows nepoužíva
+
+    // Nastavenie hlavnej hlasitosti približne na 10% pre ľavý
+    // aj pravý kanál
+    DWORD volume = (0x1999) | (0x1999 << 16);  // hlasitosť 0x1999 = ~10%
+    waveOutSetVolume(0, volume);
+
+    // Asynchrónne prehrávanie zvukového súboru v slučkovom režime
+    PlaySound(music_file, NULL, SND_FILENAME | SND_ASYNC | SND_LOOP);
+#else
+    // Inicializácia audio subsystému SDL
+    if (SDL_Init(SDL_INIT_AUDIO) < 0) {
+        error("Chyba SDL_Init: %s\n");
+    }
+
+    // Otvorenie audio zariadenia so štandardným formátom
+    if (Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048) < 0) {
+        error("Chyba Mix_OpenAudio: %s\n");
+    }
+
+    // Načítanie hudobného súboru
+    Mix_Music *music = Mix_LoadMUS(music_file);
+    if (!music) {
+        error("Chyba Mix_LoadMUS: %s\n");
+    }
+
+    // Nastavenie hlasitosti hudby na 10% (rozsah: 0–128)
+    Mix_VolumeMusic(13);
+
+    // Prehrávanie hudby so zadaným počtom slučiek
+    if (Mix_PlayMusic(music, loops) == -1) {
+        error("Chyba Mix_PlayMusic: %s\n");
+    }
+#endif
+}

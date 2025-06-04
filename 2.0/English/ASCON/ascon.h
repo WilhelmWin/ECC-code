@@ -10,8 +10,8 @@
 //   which is processed during encryption and decryption operations.
 // =====================================================================
 typedef struct {
-    uint64_t x[5];  // 5 x 64-bit state variables to hold the ASCON cipher
-    // state
+    uint64_t x[5];  // 5 x 64-bit state variables to hold the ASCON
+    // cipher state
 } ascon_state_t;
 
 // =====================================================================
@@ -24,7 +24,7 @@ int crypto_aead_encrypt(
   uint64_t *clen,           // Length of the ciphertext (output)
   const uint8_t *m,         // Input message (plaintext)
   uint64_t mlen,            // Length of the message (plaintext)
-  const uint8_t *npub,      // Public nonce (typically used for uniqueness)
+  const uint8_t *npub,      // Public nonce
   const uint8_t *k          // Key (secret key used for encryption)
 );
 
@@ -34,7 +34,7 @@ int crypto_aead_encrypt(
 int crypto_aead_decrypt(
   uint8_t *m,              // Output message (decrypted message)
   uint64_t *mlen,          // Length of the decrypted message (output)
-  uint8_t *nsec,           // Secret nonce (may be set to null if not used)
+  uint8_t *nsec,           // Secret nonce 
   const uint8_t *c,        // Input ciphertext (encrypted message)
   uint64_t clen,           // Length of the ciphertext
   const uint8_t *npub,     // Public nonce (same as encryption)

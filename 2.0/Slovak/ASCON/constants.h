@@ -29,12 +29,20 @@
 // - Počet kôl pre permutáciu PB
 // - Veľkosť tagu
 // - Rýchlosť šifrovania
+
+// Zloženie bitového poľa pre parametre variantu AEAD:
+// - 8 bitov pre variant AEAD
+// - 8 bitov pre počet kôl permutácie PA
+// - 4 bity pre počet kôl permutácie PB
+// - 8 bitov pre veľkosť tagu (násobené 8 pre bity)
+// - 8 bitov pre rýchlosť šifrovania
+
 #define ASCON_128A_IV                           \
-  (((uint64_t)(ASCON_AEAD_VARIANT)      << 0)   // 8 bitov pre variant AEAD
-  | ((uint64_t)(ASCON_PA_ROUNDS)        << 16)  // 8 bitov pre počet kôl permutácie PA
-  | ((uint64_t)(ASCON_128A_PB_ROUNDS)   << 20)  // 4 bity pre počet kôl permutácie PB
-  | ((uint64_t)(ASCON_TAG_SIZE * 8)     << 24)  // 8 bitov pre veľkosť tagu (vynásobené 8 pre bity)
-  | ((uint64_t)(ASCON_128A_RATE)        << 40)) // 8 bitov pre rýchlosť šifrovania
+  (((uint64_t)(ASCON_AEAD_VARIANT)      << 0)   \
+  | ((uint64_t)(ASCON_PA_ROUNDS)        << 16)  \
+  | ((uint64_t)(ASCON_128A_PB_ROUNDS)   << 20)  \
+  | ((uint64_t)(ASCON_TAG_SIZE * 8)     << 24)  \
+  | ((uint64_t)(ASCON_128A_RATE)        << 40)) \
 
 // =====================================================================
 // API pre šifrovanie a autentifikáciu

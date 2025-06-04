@@ -181,7 +181,6 @@ sigemptyset(&sa.sa_mask);
 sigaction(SIGTSTP, &sa, NULL);
 #endif
 
-
     // ====================================================================
     // Begin encrypted message exchange loop
     // ====================================================================
@@ -284,4 +283,3 @@ n = recv(ctx.sockfd, (char *)ctx.encrypted_msg,
 
 exit(0);
 }
-

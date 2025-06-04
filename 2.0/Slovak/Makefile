@@ -3,69 +3,77 @@
 # ========================================================================
 
 CC = gcc
-CFLAGS = -Wall -Wextra -O2 -fstack-protector-strong -fPIE -D_FORTIFY_SOURCE=2
-LDFLAGS = -pie -Wl,-z,relro -Wl,-z,now
+ifeq ($(OS), Windows_NT)
+CFLAGS = -Wall -Wextra -O2 -fstack-protector-strong -fPIE
+CFLAGS = -D_FORTIFY_SOURCE=2
+LDFLAGS = -pie -Wl,-z,relro -Wl,-z,now -lws2_32 -lwinmm
+else
+CFLAGS = -Wall -Wextra -O2 -fstack-protector-strong -fPIE
+CFLAGS = -D_FORTIFY_SOURCE=2 `sdl2-config --cflags`
+LDFLAGS = -pie -Wl,-z,relro -Wl,-z,now `sdl2-config --libs` -lSDL2_mixer
+endif
 
 # ========================================================================
-# Názvy spustiteľných súborov
+# Názvy cieľových spustiteľných súborov
 # ========================================================================
 
-SERVER_TARGET = server       # Serverová aplikácia
-CLIENT_TARGET = client       # Klientská aplikácia
+SERVER_TARGET = server
+CLIENT_TARGET = client
 
 # ========================================================================
-# Priečinky
+# Adresáre
 # ========================================================================
 
-ASCON_DIR = ASCON            # Priečinok obsahujúci ASCON kód
+ASCON_DIR = ASCON
 
 # ========================================================================
 # Zdrojové a objektové súbory
 # ========================================================================
 
-ECC_SRC = ECC.c              # Zdrojový súbor pre ECC modul
-ECC_OBJ = ECC.o              # Objektový súbor pre ECC
+ECC_SRC = ECC.c
+ECC_OBJ = ECC.o
 
-ASCON_SRC = $(ASCON_DIR)/aead.c        # Zdrojový súbor pre ASCON
-ASCON_OBJ = $(ASCON_SRC:.c=.o)         # Zodpovedajúci objektový súbor
+ASCON_SRC = $(ASCON_DIR)/aead.c
+ASCON_OBJ = $(ASCON_SRC:.c=.o)
 
-SERVER_SRC = server.c session.c drng.c error.c # Serverové zdrojové súbory
-CLIENT_SRC = client.c session.c drng.c error.c # Klientské zdrojové súbory
+SERVER_SRC = server.c session.c drng.c error.c
+CLIENT_SRC = client.c session.c drng.c error.c
 
-SERVER_OBJ = $(SERVER_SRC:.c=.o)       # Objektové súbory pre server
-CLIENT_OBJ = $(CLIENT_SRC:.c=.o)       # Objektové súbory pre klienta
-COMMON_OBJ = session.o drng.o error.o  # Spoločné objektové súbory
+SERVER_OBJ = $(SERVER_SRC:.c=.o)
+CLIENT_OBJ = $(CLIENT_SRC:.c=.o)
 
-# ========================================================================
-# Statické knižnice
-# ========================================================================
-
-LIBECC = libecc.a             # Statická knižnica ECC
-LIBASCON = libascon.a         # Statická knižnica ASCON
-LIBRARIES = $(LIBECC) $(LIBASCON)  # Zoznam knižníc pre linkovanie
+COMMON_OBJ = session.o drng.o error.o
 
 # ========================================================================
-# Linkovacie príznaky a príkazy na mazanie podľa OS
+# Knižnice
+# ========================================================================
+
+LIBECC = libecc.a
+LIBASCON = libascon.a
+LIBRARIES = $(LIBECC) $(LIBASCON)
+
+# ========================================================================
+# Linker flagy a príkaz na vymazanie podľa OS
 # ========================================================================
 
 ifeq ($(OS), Windows_NT)
-    LDFLAGS = -lws2_32        # Pre Windows: pridať knižnicu pre sockety
-    RM = del /f /q            # Príkaz na mazanie pre Windows
-    NULL = nul                # Null zariadenie vo Windows
+    LDFLAGS = -lws2_32 -lwinmm
+    RM = del /f /q
+    NULL = nul
 else
-    LDFLAGS =                 # Pre Unix systémy: bez ďalších príznakov
-    RM = rm -f                # Príkaz na mazanie pre Unix
-    NULL = /dev/null          # Null zariadenie v Unix systémoch
+    LDFLAGS += `sdl2-config --libs` -lSDL2_mixer
+    RM = rm -f
+    NULL = /dev/null
 endif
 
 # ========================================================================
-# Predvolené pravidlo (kompilácia celého projektu)
+# Predvolené pravidlo
 # ========================================================================
 
 all: $(LIBRARIES) $(SERVER_TARGET) $(CLIENT_TARGET) postbuild
 
 # ========================================================================
-# Kompilácia statických knižníc
+# Statické knižnice
 # ========================================================================
 
 $(LIBECC): $(ECC_OBJ)
@@ -75,7 +83,7 @@ $(LIBASCON): $(ASCON_OBJ)
 	ar rcs $@ $^
 
 # ========================================================================
-# Kompilácia spustiteľných súborov
+# Spustiteľné súbory
 # ========================================================================
 
 $(SERVER_TARGET): $(SERVER_OBJ) $(LIBRARIES)
@@ -85,14 +93,14 @@ $(CLIENT_TARGET): $(CLIENT_OBJ) $(LIBRARIES)
 	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
 
 # ========================================================================
-# Šablóna pre kompiláciu .c → .o
+# Vzorové pravidlo pre objektové súbory
 # ========================================================================
 
 %.o: %.c
 	$(CC) $(CFLAGS) -c $< -o $@
 
 # ========================================================================
-# Upratovanie po kompilácii (dočasné súbory)
+# Čistenie po zostavení
 # ========================================================================
 
 postbuild:
@@ -107,7 +115,7 @@ else
 endif
 
 # ========================================================================
-# Príkazy na čistenie
+# Pravidlá na čistenie
 # ========================================================================
 
 clean:
@@ -117,7 +125,7 @@ ifeq ($(OS), Windows_NT)
 	-$(RM) $(SERVER_TARGET) $(CLIENT_TARGET) *.exe
 else
 	$(RM) $(ASCON_DIR)/*.o $(LIBRARIES) $(SERVER_TARGET) $(CLIENT_TARGET)
-	$(RM) $(ECC_OBJ) $(COMMON_OBJ)  $(SERVER_OBJ) $(CLIENT_OBJ)
+	$(RM) $(ECC_OBJ) $(COMMON_OBJ) $(SERVER_OBJ) $(CLIENT_OBJ)
 endif
 
 distclean:
@@ -126,3 +134,4 @@ ifeq ($(OS), Windows_NT)
 else
 	$(RM) *~ *.bak
 endif
+

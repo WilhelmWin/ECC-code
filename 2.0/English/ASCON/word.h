@@ -61,24 +61,48 @@ static inline void ROUND(ascon_state_t* s, uint8_t C) {
     s->x[2] ^= s->x[1];  // XOR with 1st state element
 
     /* Start of Keccak S-box */
-    t.x[0] = s->x[0] ^ (~s->x[1] & s->x[2]);  // XOR with inverted 1st and 2nd state elements
-    t.x[1] = s->x[1] ^ (~s->x[2] & s->x[3]);  // XOR with inverted 2nd and 3rd state elements
-    t.x[2] = s->x[2] ^ (~s->x[3] & s->x[4]);  // XOR with inverted 3rd and 4th state elements
-    t.x[3] = s->x[3] ^ (~s->x[4] & s->x[0]);  // XOR with inverted 4th and 0th state elements
-    t.x[4] = s->x[4] ^ (~s->x[0] & s->x[1]);  // XOR with inverted 0th and 1st state elements
+    t.x[0] = s->x[0] ^ (~s->x[1] & s->x[2]);  // XOR with inverted 1st
+                                              // and 2nd state elements
+    t.x[1] = s->x[1] ^ (~s->x[2] & s->x[3]);  // XOR with inverted 2nd
+                                              // and 3rd state elements
+    t.x[2] = s->x[2] ^ (~s->x[3] & s->x[4]);  // XOR with inverted 3rd
+                                              // and 4th state elements
+    t.x[3] = s->x[3] ^ (~s->x[4] & s->x[0]);  // XOR with inverted 4th
+                                              // and 0th state elements
+    t.x[4] = s->x[4] ^ (~s->x[0] & s->x[1]);  // XOR with inverted 0th
+                                              // and 1st state elements
     /* End of Keccak S-box */
 
     t.x[1] ^= t.x[0];  // XOR between 1st and 0th state elements
     t.x[0] ^= t.x[4];  // XOR between 4th and 0th state elements
     t.x[3] ^= t.x[2];  // XOR between 3rd and 2nd state elements
     t.x[2] = ~t.x[2];  // Invert 2nd state element
-
+    // =====================================================================
     /* Linear diffusion layer */
-    s->x[0] = t.x[0] ^ ROR(t.x[0], 19) ^ ROR(t.x[0], 28);  // Linear diffusion for 0th state element
-    s->x[1] = t.x[1] ^ ROR(t.x[1], 61) ^ ROR(t.x[1], 39);  // Linear diffusion for 1st state element
-    s->x[2] = t.x[2] ^ ROR(t.x[2], 1) ^ ROR(t.x[2], 6);    // Linear diffusion for 2nd state element
-    s->x[3] = t.x[3] ^ ROR(t.x[3], 10) ^ ROR(t.x[3], 17);  // Linear diffusion for 3rd state element
-    s->x[4] = t.x[4] ^ ROR(t.x[4], 7) ^ ROR(t.x[4], 41);   // Linear diffusion for 4th state element
+    s->x[0] = t.x[0] ^ ROR(t.x[0], 19) ^ ROR(t.x[0], 28);  // Linear
+                                                           // diffusion for
+                                                           // 0th state
+                                                           // element
+
+    s->x[1] = t.x[1] ^ ROR(t.x[1], 61) ^ ROR(t.x[1], 39);  // Linear
+                                                           // diffusion for
+                                                           // 1st state
+                                                           // element
+
+    s->x[2] = t.x[2] ^ ROR(t.x[2], 1) ^ ROR(t.x[2], 6);    // Linear
+                                                           // diffusion for
+                                                           // 2nd state
+                                                           // element
+
+    s->x[3] = t.x[3] ^ ROR(t.x[3], 10) ^ ROR(t.x[3], 17);  // Linear
+                                                           // diffusion for
+                                                           // 3rd state
+                                                           // element
+
+    s->x[4] = t.x[4] ^ ROR(t.x[4], 7) ^ ROR(t.x[4], 41);   // Linear
+                                                           // diffusion for
+                                                           // 4th state
+                                                           // element
 }
 
 #endif /* WORD_H_ */

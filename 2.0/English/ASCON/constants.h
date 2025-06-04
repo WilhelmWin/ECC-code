@@ -29,6 +29,13 @@
 // - Number of rounds for PB permutation
 // - Tag size
 // - Encryption rate
+
+// Bit field composition for AEAD variant parameters:
+// - 8 bits for AEAD variant
+// - 8 bits for the number of PA permutation rounds
+// - 4 bits for the number of PB permutation rounds
+// - 8 bits for the tag size (multiplied by 8 to convert bytes to bits)
+// - 8 bits for the encryption rate
 #define ASCON_128A_IV                           \
 (((uint64_t)(ASCON_AEAD_VARIANT)      << 0)   \
 | ((uint64_t)(ASCON_PA_ROUNDS)        << 16)  \

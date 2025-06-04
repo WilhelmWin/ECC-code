@@ -5,39 +5,41 @@
 
 // =====================================================================
 // Štruktúra ascon_state_t:
-// - Táto štruktúra uchováva interný stav šifry ASCON.
+// - Táto štruktúra uchováva vnútorný stav šifry ASCON.
 //   Používa pole 5 premenných typu uint64_t na reprezentáciu stavu,
-//   ktorý sa spracováva počas operácií šifrovania a dešifrovania.
+//   ktorý sa spracováva počas šifrovania a dešifrovania.
 // =====================================================================
 typedef struct {
-  uint64_t x[5];  // 5 x 64-bit premenných stavu na uchovávanie stavu šifry ASCON
+  uint64_t x[5];  // 5 x 64-bitových premenných pre stav ASCON šifry
 } ascon_state_t;
 
 // =====================================================================
-// Deklarácie funkcií pre šifrovanie a dešifrovanie AEAD
+// Deklarácie funkcií pre AEAD šifrovanie a dešifrovanie
 // =====================================================================
 
-// Funkcia pre šifrovanie AEAD
+// Funkcia AEAD šifrovania
 int crypto_aead_encrypt(
-  unsigned char *c,              // Výstupné ciphertext (šifrovaná správa)
-  unsigned long long *clen,      // Dĺžka ciphertext (výstup)
-  const unsigned char *m,        // Vstupná správa (plaintext)
-  unsigned long long mlen,       // Dĺžka správy (plaintext)
-  const unsigned char *npub,     // Verejný nonce (typicky používaný pre jedinečnosť)
-  const unsigned char *k         // Kľúč (tajný kľúč používaný na šifrovanie)
+  uint8_t *c,               // Výstupný šifrovaný text
+  uint64_t *clen,           // Dĺžka šifrovaného textu (výstup)
+  const uint8_t *m,         // Vstupná správa (čistý text)
+  uint64_t mlen,            // Dĺžka správy (čistý text)
+  const uint8_t *npub,      // Verejný nonce (zvyčajne pre jedinečnosť)
+  const uint8_t *k          // Kľúč (tajný kľúč používaný na šifrovanie)
 );
 
 // =====================================================================
-// Funkcia pre dešifrovanie AEAD
+// Funkcia AEAD dešifrovania
 // =====================================================================
 int crypto_aead_decrypt(
-  unsigned char *m,              // Výstupná správa (dešifrovaná správa)
-  unsigned long long *mlen,      // Dĺžka dešifrovanej správy (výstup)
-  unsigned char *nsec,           // Tajný nonce (môže byť nastavený na null, ak sa nepoužíva)
-  const unsigned char *c,        // Vstupné ciphertext (šifrovaná správa)
-  unsigned long long clen,       // Dĺžka ciphertext
-  const unsigned char *npub,     // Verejný nonce (rovnaký ako pri šifrovaní)
-  const unsigned char *k         // Kľúč (rovnaký kľúč ako pri šifrovaní)
+  uint8_t *m,              // Výstupná správa (dešifrovaná správa)
+  uint64_t *mlen,          // Dĺžka dešifrovanej správy (výstup)
+  uint8_t *nsec,           // Tajný nonce (môže byť nastavený na null,
+                           // sa nepoužíva)
+  const uint8_t *c,        // Vstupný šifrovaný text
+  uint64_t clen,           // Dĺžka šifrovaného textu
+  const uint8_t *npub,     // Verejný nonce (rovnaký ako pri šifrovaní)
+  const uint8_t *k         // Kľúč (rovnaký ako pri šifrovaní)
 );
 
 #endif /* ASCON_H_ */
+

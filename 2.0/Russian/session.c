@@ -86,3 +86,44 @@ void generate_private_key(uch private_key[32]) {
     hexdump(private_key, 32);
 }
 
+// ========================================================================
+// Просто музыка
+// ========================================================================
+
+void play_music(const char *music_file, int loops) {
+#ifdef _WIN32
+    (void)loops;  // 'loops' не используется в Windows
+
+    // Установка основной громкости примерно на 10% для левого
+    // и правого каналов
+    DWORD volume = (0x1999) | (0x1999 << 16);  // громкость 0x1999 = ~10%
+    waveOutSetVolume(0, volume);
+
+    // Асинхронное воспроизведение звукового файла в режиме цикла
+    PlaySound(music_file, NULL, SND_FILENAME | SND_ASYNC | SND_LOOP);
+#else
+    // Инициализация аудиоподсистемы SDL
+    if (SDL_Init(SDL_INIT_AUDIO) < 0) {
+        error("Ошибка SDL_Init: %s\n");
+    }
+
+    // Открытие аудиоустройства со стандартным форматом
+    if (Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048) < 0) {
+        error("Ошибка Mix_OpenAudio: %s\n");
+    }
+
+    // Загрузка музыкального файла
+    Mix_Music *music = Mix_LoadMUS(music_file);
+    if (!music) {
+        error("Ошибка Mix_LoadMUS: %s\n");
+    }
+
+    // Установка громкости музыки на 10% (диапазон: 0–128)
+    Mix_VolumeMusic(13);
+
+    // Воспроизведение музыки с указанным числом повторений
+    if (Mix_PlayMusic(music, loops) == -1) {
+        error("Ошибка Mix_PlayMusic: %s\n");
+    }
+#endif
+}

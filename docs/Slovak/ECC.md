@@ -19,44 +19,44 @@ bol prispôsobený pre klient-server štruktúru.
 ---
 ## 🔍 Popis
 
-Tento súbor obsahuje definície typov, makrá a prototypy funkcií 
-pre operácie s eliptickými krivkami (ECC), vrátane základnej 
-aritmetiky (sčítanie, odčítanie, násobenie), skalárneho násobenia 
+Tento súbor obsahuje definície typov, makrá a prototypy funkcií
+pre operácie s eliptickými krivkami (ECC), vrátane základnej
+aritmetiky (sčítanie, odčítanie, násobenie), skalárneho násobenia
 a výpočtu inverzných prvkov v Galoisovom poli (GF). Tieto operácie
 sú základné pre vykonávanie kryptografických výpočtov pomocou
-eliptických kriviek, ako je výmena kľúčov podľa Diffieho-Hellmana 
+eliptických kriviek, ako je výmena kľúčov podľa Diffieho-Hellmana
 a generovanie verejných kľúčov.
 
 ### Kľúčové vlastnosti:
-- Operácie aritmetiky v Galoisovom poli (sčítanie, odčítanie, 
-násobenie, inverzia).
+- Operácie aritmetiky v Galoisovom poli (sčítanie, odčítanie,
+  násobenie, inverzia).
 - Skalárne násobenie a s ním spojené algoritmy.
 - Balenie a rozbalenie bodov eliptickej krivky.
 - Podmienený výber hodnôt.
-- Skalárne násobenie s použitím základného bodu pre generovanie 
-verejného kľúča.
+- Skalárne násobenie s použitím základného bodu pre generovanie
+  verejného kľúča.
 
 ### Použité knižnice:
 - Hlavičkový súbor je určený na prácu s kryptografickou implementáciou,
-ktorá používa dátové typy `long long int` (lli) pre veľké čísla a polia 
-`unsigned char` na reprezentáciu bajtov.
+  ktorá používa dátové typy `long long int` (lli) pre veľké čísla a polia
+  `unsigned char` na reprezentáciu bajtov.
 - `ECC.h` -  komunikácia s vonkajším svetom
 - `session.h` -  pre dve premenné v príslušnej sekcii na prácu s krivkou
 ### Závislosti od platformy:
-Tento kód je nezávislý od platformy a môže byť použitý ako v Linuxe, tak 
+Tento kód je nezávislý od platformy a môže byť použitý ako v Linuxe, tak
 aj vo Windows s minimálnymi zmenami.
 
 ### Argumenty a funkcionalita:
-Funkcie v tomto hlavičkovom súbore vykonávajú rôzne operácie pre 
-kryptografiu pomocou eliptických kriviek, vrátane skalárneho násobenia 
+Funkcie v tomto hlavičkovom súbore vykonávajú rôzne operácie pre
+kryptografiu pomocou eliptických kriviek, vrátane skalárneho násobenia
 a aritmetiky v Galoisovom poli. Niektoré dôležité funkcie zahŕňajú:
 - `add`, `sub`, `mul`, `inv` pre aritmetiku v Galoisovom poli.
 - `crypto_scalarmult` pre skalárne násobenie s použitím bodu `p` a
-skaláru `n`.
+  skaláru `n`.
 - `crypto_scalarmult_base` pre skalárne násobenie s použitím základného
-bodu krivky.
-- `pack` a `unpack` pre konverziu medzi bajtovými poliami a prvkami 
-Galoisovho poľa.
+  bodu krivky.
+- `pack` a `unpack` pre konverziu medzi bajtovými poliami a prvkami
+  Galoisovho poľa.
 
 ### Premenné
 
@@ -65,8 +65,8 @@ Galoisovho poľa.
   - **gf** - Galoisovo pole
   - **_121665** - fixné číslo a názov premennej
   - **{0xDB41, 1}** - inicializácia premennej
-- **`static uch base[32] = {9};`**: Základný bod na Curve25519 pre 
-klienta a server. Musí byť identický pre oboch.
+- **`static uch base[32] = {9};`**: Základný bod na Curve25519 pre
+  klienta a server. Musí byť identický pre oboch.
 
 ---
 ## Príklad použitia:
@@ -90,10 +90,10 @@ klienta a server. Musí byť identický pre oboch.
 ---
 # Popis funkcií:
 ## `car(gf o)`
-- Táto funkcia vykonáva operáciu prenosu pre prvky Galoisovho poľa, 
-aby sa zabezpečilo, že všetky prvky sa nachádzajú 
-v rozsahu `[0, 2^16-1]`. Pridáva prenos, ak prvok presahuje 16 bitov, 
-a opravuje nasledujúci prvok, ak je to potrebné.
+- Táto funkcia vykonáva operáciu prenosu pre prvky Galoisovho poľa,
+  aby sa zabezpečilo, že všetky prvky sa nachádzajú
+  v rozsahu `[0, 2^16-1]`. Pridáva prenos, ak prvok presahuje 16 bitov,
+  a opravuje nasledujúci prvok, ak je to potrebné.
 
 1. Prechádza všetkými 16 prvkami poľa `o`.
 
@@ -102,70 +102,70 @@ a opravuje nasledujúci prvok, ak je to potrebné.
 3 Po výpočte prenosu opraví prvky tak, aby sa zachovali v rozsahu.
 
 ## `add(gf o, gf a, gf b)`
-- Táto funkcia vykonáva sčítanie dvoch prvkov Galoisovho poľa po prvkoch 
-a ukladá výsledok do `o`.
+- Táto funkcia vykonáva sčítanie dvoch prvkov Galoisovho poľa po prvkoch
+  a ukladá výsledok do `o`.
 1. Používa sčítanie po prvkoch medzi poľami `a` a `b`.
 2. Výsledok je uložený do poľa `o`.
 
 ## `sub(gf o, gf a, gf b)`
-- Táto funkcia vykonáva odčítanie prvkov Galoisovho poľa po prvkoch a 
-ukladá výsledok do `o`.
+- Táto funkcia vykonáva odčítanie prvkov Galoisovho poľa po prvkoch a
+  ukladá výsledok do `o`.
 1. Používa odčítanie po prvkoch medzi poľami `a` a `b`.
 2. Výsledok je uložený do poľa `o`.
 
 ## `mul(gf o, gf a, gf b)`
-- Táto funkcia vykonáva násobenie dvoch prvkov Galoisovho poľa pomocou 
-dlhého násobenia a zohľadňuje parametre krivky.
+- Táto funkcia vykonáva násobenie dvoch prvkov Galoisovho poľa pomocou
+  dlhého násobenia a zohľadňuje parametre krivky.
 1. Používa násobenie po prvkoch medzi poľami `a` a `b`.
-2. Po násobení sa výsledok uloží do poľa `c`, následne sa opraví pre 
-parametre krivky.
+2. Po násobení sa výsledok uloží do poľa `c`, následne sa opraví pre
+   parametre krivky.
 3. Vykoná sa operácia prenosu pre opravu získaných prvkov.
 
 ## `inv(gf o, gf i)`
 - Táto funkcia počíta inverzný prvok pre Galoisovo pole pomocou metódy
-umocnenia na druhú a násobenia.
+  umocnenia na druhú a násobenia.
 1. Najprv skopíruje vstupný prvok `i` do dočasného poľa `c`.
-2. Potom sa vykoná `253` iterácií, kde sa každé kolo umocní na druhú a 
-pri potreba sa vynásobí prvkom `i` pre výpočet inverzného prvku.
+2. Potom sa vykoná `253` iterácií, kde sa každé kolo umocní na druhú a
+   pri potreba sa vynásobí prvkom `i` pre výpočet inverzného prvku.
 3. Výsledkom je, že pole `c` obsahuje inverzný prvok pre `i`.
 
 ## `sel(gf p, gf q, int b)`
 - Táto funkcia vykonáva podmienený výber medzi dvoma prvkami Galoisovho
-poľa na základe hodnoty `b` (0 alebo 1).
-Ak je `b` rovné `1`, vyberie sa `p`, ak `0` — `q`.
+  poľa na základe hodnoty `b` (0 alebo 1).
+  Ak je `b` rovné `1`, vyberie sa `p`, ak `0` — `q`.
 
-    Používa bitové operácie XOR na výber medzi poľami `p` a `q`.
+  Používa bitové operácie XOR na výber medzi poľami `p` a `q`.
 
 ## `mainloop(lli x[32], uch *z)`
-- Tento cyklus vykonáva skalárne násobenie po prvkoch, spracováva každý 
-bit skalára a vykonáva operácie na eliptickej krivke.
+- Tento cyklus vykonáva skalárne násobenie po prvkoch, spracováva každý
+  bit skalára a vykonáva operácie na eliptickej krivke.
 1. Inicializuje niekoľko polí pre prácu s prvkami poľa.
-2. Proces skalárneho násobenia zahŕňa aplikáciu operácií podmieneného 
-výberu, sčítania, 
-odčítania a násobenia pre každý bit skalára, čo je súčasťou algoritmu 
-eliptickej krivky.
+2. Proces skalárneho násobenia zahŕňa aplikáciu operácií podmieneného
+   výberu, sčítania,
+   odčítania a násobenia pre každý bit skalára, čo je súčasťou algoritmu
+   eliptickej krivky.
 
 ## `unpack(gf o, const uch *n)`
-- Táto funkcia prevádza bajtové pole n na prvok Galoisovho poľa `o`, 
-rozširujúc každý bajt na 16-bitové prvky.
-1. Pre každý bajt z poľa `n` sa vytvorí 16-bitový prvok a uloží sa do 
-poľa `o`.
+- Táto funkcia prevádza bajtové pole n na prvok Galoisovho poľa `o`,
+  rozširujúc každý bajt na 16-bitové prvky.
+1. Pre každý bajt z poľa `n` sa vytvorí 16-bitový prvok a uloží sa do
+   poľa `o`.
 
 ## `pack(uch *o, gf n)`
-- Táto funkcia prevádza prvok Galoisovho poľa `n` späť na bajtové pole 
-`o`.
+- Táto funkcia prevádza prvok Galoisovho poľa `n` späť na bajtové pole
+  `o`.
 1. Vykonajú sa niektoré korekčné operácie pre parametre krivky.
-2. Každý prvok Galoisovho poľa sa prevedie na dva bajty a uloží sa do 
-poľa `o`.
+2. Každý prvok Galoisovho poľa sa prevedie na dva bajty a uloží sa do
+   poľa `o`.
 
 ## `crypto_scalarmult(uch *q, const uch *n, const uch *p)`
-- Táto funkcia vykonáva skalárne násobenie bodu `p` na skalár `n`, 
-pomocou algoritmu eliptickej krivky.
+- Táto funkcia vykonáva skalárne násobenie bodu `p` na skalár `n`,
+  pomocou algoritmu eliptickej krivky.
 1. Bajtové pole `n` sa skopíruje do poľa `z`.
-2. Bod `p` sa rozbalí do Galoisovho poľa, potom sa vykoná hlavný cyklus 
-skalárneho násobenia.
-3. Po vykonaní násobenia sa výsledok inverzuje, potom sa vynásobí sám so 
-sebou a výsledok sa zabalí do `q`.
+2. Bod `p` sa rozbalí do Galoisovho poľa, potom sa vykoná hlavný cyklus
+   skalárneho násobenia.
+3. Po vykonaní násobenia sa výsledok inverzuje, potom sa vynásobí sám so
+   sebou a výsledok sa zabalí do `q`.
 
 ### V našom prípade klienta a servera
 
@@ -176,9 +176,9 @@ sebou a výsledok sa zabalí do `q`.
 - p: Verejný kľúč konektora
 
 ## `crypto_scalarmult_base(uch *q, const uch *n)`
-- Vykonáva skalárne násobenie s použitím základného bodu eliptickej 
-krivky. Výsledok je `q = n * G`, 
-kde `G` je základný bod a `n` je skalár. Výsledok sa uloží do `q`.
+- Vykonáva skalárne násobenie s použitím základného bodu eliptickej
+  krivky. Výsledok je `q = n * G`,
+  kde `G` je základný bod a `n` je skalár. Výsledok sa uloží do `q`.
 
 ### V našom prípade klienta a servera
 - q: Verejný kľúč hostiteľa
@@ -204,21 +204,21 @@ sv car(gf o)
 }
 
 ```
-- `for (i = 0; i < 16; i++)`: Tento cyklus prechádza všetkými 16 prvkami 
-poľa o, ktoré reprezentuje prvok v Galoisovom poli GF.
+- `for (i = 0; i < 16; i++)`: Tento cyklus prechádza všetkými 16 prvkami
+  poľa o, ktoré reprezentuje prvok v Galoisovom poli GF.
 
 - `o[i] += (1 << 16);`: Pre každý prvok sa pridá 65536 (čo je ekvivalentné
-`2^16`), aby sa zabezpečil správny rozsah hodnôt.
+  `2^16`), aby sa zabezpečil správny rozsah hodnôt.
 
-- `c = o[i] >> 16;`: Získa sa prenos (carry) z vyšších bitov, ak 
-hodnota prvku presahuje 16 bitov.
+- `c = o[i] >> 16;`: Získa sa prenos (carry) z vyšších bitov, ak
+  hodnota prvku presahuje 16 bitov.
 
-- `o[(i + 1) * (i < 15)] += c - 1 + 37 * (c - 1) * (i == 15);`: Ak 
-ide o prvok, ktorý nie je posledný `(i < 15)`, prenos sa pridá k 
-nasledujúcemu prvku.
+- `o[(i + 1) * (i < 15)] += c - 1 + 37 * (c - 1) * (i == 15);`: Ak
+  ide o prvok, ktorý nie je posledný `(i < 15)`, prenos sa pridá k
+  nasledujúcemu prvku.
 
 - `o[i] -= c << 16;`: Obnoví sa aktuálny prvok, pričom sa odstráni
-prenos, aby zostal v rozsahu 0..65535.
+  prenos, aby zostal v rozsahu 0..65535.
 
 ## `add` (Sčítanie dvoch prvkov GF)
 ```c
@@ -231,10 +231,10 @@ sv add(gf o, gf a, gf b)
 
 ```
 
-- `for (i = 0; i < 16; i++)`: Jednoduchý cyklus pre počiatočné 
-sčítanie dvoch prvkov Galoisovho poľa
+- `for (i = 0; i < 16; i++)`: Jednoduchý cyklus pre počiatočné
+  sčítanie dvoch prvkov Galoisovho poľa
   `a a b` a uloženie výsledku do poľa `o`. Pre každý index `i` sa
-vykoná sčítanie príslušných prvkov.
+  vykoná sčítanie príslušných prvkov.
 
 ## `sub` (Odčítanie dvoch prvkov GF)
 ```c
@@ -246,9 +246,9 @@ sv sub(gf o, gf a, gf b)
 }
 
 ```
-- `for (i = 0; i < 16; i++)`: Podobne ako pri sčítaní, tento cyklus 
-vykonáva odčítanie prvkov Galoisovho
-poľa `b` od prvkov poľa a a ukladá výsledok do poľa `o`.
+- `for (i = 0; i < 16; i++)`: Podobne ako pri sčítaní, tento cyklus
+  vykonáva odčítanie prvkov Galoisovho
+  poľa `b` od prvkov poľa a a ukladá výsledok do poľa `o`.
 
 ## `mul` (Násobenie dvoch prvkov GF)
 ```c
@@ -269,17 +269,17 @@ sv mul(gf o, gf a, gf b)
 }
 
 ```
-- `c[31]`: Vytvára sa pole pre uloženie medzi výsledkov násobenia 
-dvoch prvkov Galoisovho poľa.
+- `c[31]`: Vytvára sa pole pre uloženie medzi výsledkov násobenia
+  dvoch prvkov Galoisovho poľa.
 
-- `for (i = 0; i < 16; i++)` a vnorený cyklus for `(j = 0; j < 16; j++)`: 
-Tieto dva cykly vykonávajú počiatočné násobenie každého prvku poľa `a` s 
-každým prvkom poľa `b`. 
-Výsledky násobenia sa pridávajú do poľa c na pozíciách `i` + `j`.
+- `for (i = 0; i < 16; i++)` a vnorený cyklus for `(j = 0; j < 16; j++)`:
+  Tieto dva cykly vykonávajú počiatočné násobenie každého prvku poľa `a` s
+  každým prvkom poľa `b`.
+  Výsledky násobenia sa pridávajú do poľa c na pozíciách `i` + `j`.
 
-- `c[i - 16] += 38 * c[i];`: Po vykonaní hlavného násobenia sa pridáva 
-korekcia pre 
-parametre krivky (zohľadňujúc jej špecifikácie).
+- `c[i - 16] += 38 * c[i];`: Po vykonaní hlavného násobenia sa pridáva
+  korekcia pre
+  parametre krivky (zohľadňujúc jej špecifikácie).
 
 - `car(o);`: Používa sa prenosová operácia na úpravu výsledku.
 
@@ -303,12 +303,12 @@ sv inv(gf o, gf i)
 
 ```
 - `for (a = 253; a >= 0; a--)`: Tento cyklus vykonáva výpočet
-inverzného prvku v Galoisovom poli pomocou metódy zvyšovania na 
-druhú a násobenia (Edwardsov algoritmus). Každý krok v cykle je buď z
-vyšovanie na druhú, alebo násobenie s prvkom `i`.
+  inverzného prvku v Galoisovom poli pomocou metódy zvyšovania na
+  druhú a násobenia (Edwardsov algoritmus). Každý krok v cykle je buď z
+  vyšovanie na druhú, alebo násobenie s prvkom `i`.
 
 - `if (a != 2 && a != 4)`: V určitých iteráciách sa násobenie preskočí,
-aby sa zlepšila efektivita.
+  aby sa zlepšila efektivita.
 
 ## `sel` (Podmienený výber medzi dvoma prvkami GF)
 ```c
@@ -324,10 +324,10 @@ sv sel(gf p, gf q, int b)
 }
 
 ```
-- `for (i = 0; i < 16; i++)`: Prechádza všetkými prvkami a vykonáva 
-bitovú operáciu 
-XOR medzi prvkami `p` a `q` na základe flagu `b`. Tento flag určuje, 
-ktorý z dvoch polí (`p` alebo `q`) bude vybraný.
+- `for (i = 0; i < 16; i++)`: Prechádza všetkými prvkami a vykonáva
+  bitovú operáciu
+  XOR medzi prvkami `p` a `q` na základe flagu `b`. Tento flag určuje,
+  ktorý z dvoch polí (`p` alebo `q`) bude vybraný.
 
 ## `mainloop` (Hlavná slučka pre násobenie skalárom)
 ```c
@@ -392,17 +392,17 @@ sv mainloop(lli x[32], uch *z)
 }
 
 ```
-- `for (i = 254; i >= 0; --i)`: Toto je hlavná slučka, ktorá spracováva 
-každý bit skalára a vykonáva operácie eliptickej krivky na základe 
-tohto bitu. 
-Každá iterácia vykonáva množstvo operácií, ako sú sčítanie, odčítanie, 
-násobenie 
-a zvyšovanie na druhú, čo je typické pre rýchly algoritmus násobenia 
-skalárom na eliptickej krivke.
+- `for (i = 254; i >= 0; --i)`: Toto je hlavná slučka, ktorá spracováva
+  každý bit skalára a vykonáva operácie eliptickej krivky na základe
+  tohto bitu.
+  Každá iterácia vykonáva množstvo operácií, ako sú sčítanie, odčítanie,
+  násobenie
+  a zvyšovanie na druhú, čo je typické pre rýchly algoritmus násobenia
+  skalárom na eliptickej krivke.
 
 ## `crypto_scalarmult` a `crypto_scalarmult_base`
 
-- Tieto funkcie vykonávajú operáciu násobenia bodu skalárom. 
-Funkcia crypto_scalarmult prijíma bod `p` a skalár `n`, 
-zatiaľ čo `crypto_scalarmult_base` používa základný bod (napríklad v 
-kryptografii to môže byť bod na krivke, ktorý je vopred vybraný).
+- Tieto funkcie vykonávajú operáciu násobenia bodu skalárom.
+  Funkcia crypto_scalarmult prijíma bod `p` a skalár `n`,
+  zatiaľ čo `crypto_scalarmult_base` používa základný bod (napríklad v
+  kryptografii to môže byť bod na krivke, ktorý je vopred vybraný).
