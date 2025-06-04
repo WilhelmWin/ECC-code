@@ -15,7 +15,11 @@ This project implements a secure communication channel between a client and a se
 ## Project Structure
 
 - [1.0/](https://github.com/WilhelmWin/ECC-code/tree/master/1.0) — Version 1.0 of the project  
-- [2.0/](https://github.com/WilhelmWin/ECC-code/tree/master/1.0) — Version 2.0 with multilingual support and source original archiv used code
+- [2.0/](https://github.com/WilhelmWin/ECC-code/tree/master/2.0) — Version 2.0 with multilingual support and source original archiv used code
+- - [English](https://github.com/WilhelmWin/ECC-code/tree/master/2.0/English)
+- - [Russian](https://github.com/WilhelmWin/ECC-code/tree/master/2.0/Russian)
+- - [Slovak](https://github.com/WilhelmWin/ECC-code/tree/master/2.0/Slovak)
+- - [Source](https://github.com/WilhelmWin/ECC-code/tree/master/2.0/Source)
 - [docs/](https://github.com/WilhelmWin/ECC-code/tree/master/docs) — Documentation in multiple languages
 - - [English](https://github.com/WilhelmWin/ECC-code/tree/master/docs/English) 
 - - [Russian](https://github.com/WilhelmWin/ECC-code/tree/master/docs/Russian)  
